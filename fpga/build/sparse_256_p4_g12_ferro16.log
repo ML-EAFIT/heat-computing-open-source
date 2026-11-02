@@ -1,0 +1,134 @@
+Info: Using uarch 'gowin' for device 'GW1NR-LV9QN88PC6/I5'
+
+Info: Cell O_psram_ck[0] not found
+Info: Cell O_psram_ck[1] not found
+Info: Cell O_psram_ck_n[0] not found
+Info: Cell O_psram_ck_n[1] not found
+Info: Cell O_psram_cs_n[0] not found
+Info: Cell O_psram_cs_n[1] not found
+Info: Cell O_psram_reset_n[0] not found
+Info: Cell O_psram_reset_n[1] not found
+Info: Cell IO_psram_dq[0] not found
+Info: Cell IO_psram_dq[1] not found
+Info: Cell IO_psram_dq[2] not found
+Info: Cell IO_psram_dq[3] not found
+Info: Cell IO_psram_dq[4] not found
+Info: Cell IO_psram_dq[5] not found
+Info: Cell IO_psram_dq[6] not found
+Info: Cell IO_psram_dq[7] not found
+Info: Cell IO_psram_dq[8] not found
+Info: Cell IO_psram_dq[9] not found
+Info: Cell IO_psram_dq[10] not found
+Info: Cell IO_psram_dq[11] not found
+Info: Cell IO_psram_dq[12] not found
+Info: Cell IO_psram_dq[13] not found
+Info: Cell IO_psram_dq[14] not found
+Info: Cell IO_psram_dq[15] not found
+Info: Cell IO_psram_rwds[0] not found
+Info: Cell IO_psram_rwds[1] not found
+Info: Reading constraints...
+Info: Create constant nets...
+Info: Modify LUTs...
+Info: Pack IOBs...
+Info: Pack I3C IOs...
+Info: Pack MIPI IOs...
+Info: Pack diff IOBs...
+Info: Pack FFs into IO cells...
+Info: Pack IODELAY...
+Info: Pack Input Edge Monitors...
+Info: Pack IO logic...
+Info: Pack DESER16 logic...
+Info: Pack GSR...
+Info: Pack HCLK cells...
+Info: Pack DLLDLYs...
+Info: Pack wide LUTs...
+Info: Packed MUX2_LUT8:30, MUX2_LU7:10, MUX2_LUT6:161, MUX2_LUT5:373
+Info: Pack ALUs...
+Info: Pack SSRAMs...
+Info: Constrained 1118 LUTFF pairs.
+Info: Pack PLL...
+Info: Pack ADC...
+Info: Pack GW JTAG...
+Info: Pack BSRAMs...
+Info: Pack DSP...
+Info: Pack INV...
+Info: Pack buffered nets...
+Info: Pack EMCU and UserFlash cells...
+Info: Pack UserFlash cells...
+Info: Pack DQCE cells...
+Info: Pack DCS cells...
+Info: Checksum: 0x78c39dce
+
+Info: Device utilisation:
+Info: 	                 VCC:       1/      1   100%
+Info: 	                 IOB:      11/    276     3%
+Info: 	                LUT4:    6321/   8640    73%
+Info: 	              OSER16:       0/     80     0%
+Info: 	              IDES16:       0/     80     0%
+Info: 	            IOLOGICI:       0/    276     0%
+Info: 	            IOLOGICO:       0/    276     0%
+Info: 	           MUX2_LUT5:     975/   4320    22%
+Info: 	           MUX2_LUT6:     301/   2160    13%
+Info: 	           MUX2_LUT7:      70/   1080     6%
+Info: 	           MUX2_LUT8:      30/   1080     2%
+Info: 	                 ALU:     924/   6480    14%
+Info: 	                 GND:       1/      1   100%
+Info: 	                 DFF:    2446/   6480    37%
+Info: 	           RAM16SDP4:      84/    270    31%
+Info: 	               BSRAM:      17/     26    65%
+Info: 	              ALU54D:       0/     10     0%
+Info: 	     MULTADDALU18X18:       0/     10     0%
+Info: 	        MULTALU18X18:       0/     10     0%
+Info: 	        MULTALU36X18:       0/     10     0%
+Info: 	           MULT36X36:       0/      5     0%
+Info: 	           MULT18X18:       0/     20     0%
+Info: 	             MULT9X9:       0/     40     0%
+Info: 	              PADD18:       0/     20     0%
+Info: 	               PADD9:       0/     40     0%
+Info: 	                 GSR:       1/      1   100%
+Info: 	                 OSC:       0/      1     0%
+Info: 	                rPLL:       0/      2     0%
+Info: 	           FLASH608K:       0/      1     0%
+Info: 	                BUFG:       0/     22     0%
+Info: 	                DQCE:       0/     24     0%
+Info: 	                 DCS:       0/      8     0%
+Info: 	               DHCEN:       0/     24     0%
+Info: 	              CLKDIV:       0/      8     0%
+Info: 	             CLKDIV2:       0/     16     0%
+Info: 	           MIPI_IBUF:       0/     22     0%
+Info: 	           MIPI_OBUF:       0/     20     0%
+
+Info: Running custom HCLK placer...
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 4331 cells, random placement wirelen = 164791.
+Info:     at initial placer iter 0, wirelen = 2235
+Info:     at initial placer iter 1, wirelen = 2096
+Info:     at initial placer iter 2, wirelen = 2087
+Info:     at initial placer iter 3, wirelen = 2255
+Info: Running main analytical placer, max placement attempts per cell = 15629640.
+Info:     at iteration #1, type ALL: wirelen solved = 2082, spread = 51120, legal = 116700; time = 4.32s
+Info:     at iteration #2, type ALL: wirelen solved = 3362, spread = 43793, legal = 94234; time = 1.23s
+Info:     at iteration #3, type ALL: wirelen solved = 6826, spread = 40073, legal = 81619; time = 1.07s
+Info:     at iteration #4, type ALL: wirelen solved = 9391, spread = 34440, legal = 69441; time = 0.93s
+Info:     at iteration #5, type ALL: wirelen solved = 9984, spread = 34488, legal = 66559; time = 1.04s
+Info:     at iteration #6, type ALL: wirelen solved = 11023, spread = 32277, legal = 63930; time = 0.73s
+Info:     at iteration #7, type ALL: wirelen solved = 11824, spread = 31481, legal = 65861; time = 0.72s
+Info:     at iteration #8, type ALL: wirelen solved = 12751, spread = 31224, legal = 64035; time = 0.72s
+Info:     at iteration #9, type ALL: wirelen solved = 13698, spread = 30568, legal = 59273; time = 0.64s
+Info:     at iteration #10, type ALL: wirelen solved = 13784, spread = 32209, legal = 61326; time = 0.66s
+Info:     at iteration #11, type ALL: wirelen solved = 15481, spread = 33732, legal = 60540; time = 0.66s
+Info:     at iteration #12, type ALL: wirelen solved = 15334, spread = 33953, legal = 59895; time = 0.62s
+Info:     at iteration #13, type ALL: wirelen solved = 16707, spread = 29496, legal = 55589; time = 0.56s
+Info:     at iteration #14, type ALL: wirelen solved = 16163, spread = 32885, legal = 57758; time = 0.99s
+Info:     at iteration #15, type ALL: wirelen solved = 17118, spread = 32237, legal = 62546; time = 2.58s
+Info:     at iteration #16, type ALL: wirelen solved = 17963, spread = 32090, legal = 61461; time = 0.96s
+Info:     at iteration #17, type ALL: wirelen solved = 18540, spread = 33218, legal = 59862; time = 1.15s
+Info:     at iteration #18, type ALL: wirelen solved = 18900, spread = 31145, legal = 56888; time = 1.39s
+Info: HeAP Placer Time: 22.65s
+Info:   of which solving equations: 3.34s
+Info:   of which spreading cells: 0.36s
+Info:   of which strict legalisation: 17.92s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 1424, wirelen = 55589
+Info:   at iteration #5: temp = 0.000000, timing cost = 897, wirelen = 39006

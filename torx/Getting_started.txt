@@ -1,0 +1,78 @@
+Getting started
+
+Torx is a JAX framework for parametrised stochastic circuits (PSCs): programs that transform probability distributions instead of fixed values. This page installs Torx and runs a first circuit.
+Installation
+
+Torx requires Python 3.11 or newer. Install it from PyPI:
+
+pip install extro-torx
+
+Or with uv:
+
+uv pip install extro-torx
+
+If you are developing Torx from a local checkout, install that checkout with the optional test and example dependencies:
+
+git clone https://github.com/extropic-ai/torx.git
+cd torx
+pip install -e ".[testing,examples]"
+
+Your first circuit
+
+A circuit is an ordered list of gates applied to an initial state. Build a one-gate circuit from PSWAP, compile it on a BranchingSimulator, and draw samples:
+
+import jax
+import jax.numpy as jnp
+from torx.psc import DiscretePCircuit, BranchingSimulator, PSWAP
+
+# PSWAP swaps two pbits with probability sigma(theta); here p(swap) = 0.3.
+# Gates are structure-only; parameters are a separate list of logit leaves.
+circuit = DiscretePCircuit([PSWAP([0, 1])])
+thetas = [jnp.array([jnp.log(0.3 / 0.7)])]
+
+sim = BranchingSimulator(num_samples=20_000)
+compiled = sim.build_circuit(circuit, thetas)
+
+# Start in |10) and sample the two output pbits.
+state10 = jnp.array([1, 0], dtype=jnp.int32)
+state01 = jnp.array([0, 1], dtype=jnp.int32)
+samples = sim.sample(compiled, state10, jax.random.key(0))
+stay = jnp.mean(jnp.all(samples == state10, axis=1))
+swap = jnp.mean(jnp.all(samples == state01, axis=1))
+print(f"stay |10): {float(stay):.3f}, swap |01): {float(swap):.3f}")
+
+Starting from |10), the swap fires on about 30% of samples, so roughly 70% of outputs stay |10) and 30% become |01). For this discrete gate, the transition matrix is column-stochastic, and the simulator pushes samples through it.
+Output distribution from |10): about 70% |10) and 30% |01)
+Note
+
+For this discrete PSWAP, theta is the logit of the swap probability p. Apply the sigmoid, p = sigma(theta), to read the switching probability back; the logit ranges over all of the reals, so it trains cleanly with gradients.
+Running the notebooks
+
+The example notebooks live in the examples/ directory of the Torx repository, alongside their helpers. Clone it, install the example dependencies, and open the notebooks:
+
+git clone https://github.com/extropic-ai/torx.git
+cd torx
+pip install -e ".[examples]" jupyterlab
+jupyter lab examples/
+
+Where to go next
+Introduction notebook →
+
+Build a PSC from scratch and meet the core gate for each of the three primitives.
+Citation
+
+If you found this library useful in academic research, please cite:
+
+@misc{verdon2026frameworkstochasticdifferentiableprogramming,
+  title         = {A Framework for Stochastic Differentiable Programming},
+  author        = {Guillaume Verdon and Leo Tyrpak and Owen Lockwood and Seth Morton and Alexander Neagoe and Anton Sugolov and Ian MacCormack and Mirko Amico},
+  year          = {2026},
+  eprint        = {2608.01612},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.ET},
+  url           = {https://arxiv.org/abs/2608.01612},
+}
+
+See also
+
+Other libraries in the JAX ecosystem: Awesome JAX, a longer list of other JAX projects.

@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" role="img" aria-label="Anatomy of one p-bit: the physical sampling cell above, the FPGA emulation below, with matching stages aligned" font-family="IBM Plex Sans, system-ui, sans-serif">
+<style>
+svg{--bg:#faf9f6;--ink:#1d2329;--mut:#66707a;--line:#8f99a3;--warm:#c4501d;--warmf:#fbe5d8;
+--cool:#16708a;--coolf:#dbeef3;--ok:#2c8a4b;--okf:#ddf0e3;--bad:#b9b5ac;--badf:#efede8;--panel:#f1efea}
+@media (prefers-color-scheme:dark){svg{--bg:#14181c;--ink:#e5e8eb;--mut:#9aa4ae;--line:#64707b;
+--warm:#f08a5c;--warmf:#3b2418;--cool:#5cc1d9;--coolf:#12303a;--ok:#6dca8b;--okf:#163322;--bad:#6d6a64;
+--badf:#24272a;--panel:#1b2025}}
+
+.bg{fill:var(--bg)} .panel{fill:var(--panel)}
+.t{fill:var(--ink);font:13px 'IBM Plex Sans',system-ui,sans-serif}
+.ts{fill:var(--mut);font:11px 'IBM Plex Sans',system-ui,sans-serif}
+.tm{fill:var(--ink);font:11.5px 'IBM Plex Mono',ui-monospace,monospace}
+.tms{fill:var(--mut);font:10.5px 'IBM Plex Mono',ui-monospace,monospace}
+.th{fill:var(--ink);font:600 15px 'IBM Plex Sans',system-ui,sans-serif}
+.tb{fill:var(--ink);font:600 13px 'IBM Plex Sans',system-ui,sans-serif}
+.tw{fill:var(--warm)} .tc{fill:var(--cool)} .tok{fill:var(--ok)}
+.warm{fill:var(--warmf);stroke:var(--warm);stroke-width:1.4}
+.cool{fill:var(--coolf);stroke:var(--cool);stroke-width:1.4}
+.ok{fill:var(--okf);stroke:var(--ok);stroke-width:1.4}
+.bad{fill:var(--badf);stroke:var(--bad);stroke-width:1.2}
+.plain{fill:var(--bg);stroke:var(--line);stroke-width:1.2}
+.ln{stroke:var(--line);stroke-width:1.4;fill:none}
+.lw{stroke:var(--warm);stroke-width:1.6;fill:none}
+.lc{stroke:var(--cool);stroke-width:1.6;fill:none}
+.lk{stroke:var(--ink);stroke-width:1.6;fill:none}
+.dash{stroke-dasharray:4 4}
+.fw{fill:var(--warm)} .fc{fill:var(--cool)} .fk{fill:var(--ink)} .fl{fill:var(--line)}
+</style>
+<rect width="1000" height="520" class="bg"/>
+<text x="24.0" y="32.0" class="th" text-anchor="start" >One p-bit, two implementations</text>
+<text x="24.0" y="52.0" class="ts" text-anchor="start" >Same five stages. Top: the analog cell the DTM paper describes (Fig. 10, App. K). Bottom: rtl/pbit_array.v + rtl/pbit.v.</text>
+<text x="24.0" y="84.0" class="ts" text-anchor="start" letter-spacing="1">1 INPUTS</text>
+<text x="196.0" y="84.0" class="ts" text-anchor="start" letter-spacing="1">2 WEIGH + SUM</text>
+<text x="390.0" y="84.0" class="ts" text-anchor="start" letter-spacing="1">3 TO PROBABILITY</text>
+<text x="590.0" y="84.0" class="ts" text-anchor="start" letter-spacing="1">4 RANDOM DECISION</text>
+<text x="790.0" y="84.0" class="ts" text-anchor="start" letter-spacing="1">5 HOLD + BROADCAST</text>
+<rect x="14.0" y="96.0" width="972.0" height="170.0" rx="10" class="panel"/>
+<text x="24.0" y="114.0" class="ts tw" text-anchor="start" letter-spacing="1">PHYSICAL (thermodynamic chip)</text>
+<circle cx="46.0" cy="138.0" r="13" class="warm"/>
+<text x="46.0" y="142.0" class="tm" text-anchor="middle" >x1</text>
+<circle cx="98.0" cy="138.0" r="11" class="plain"/>
+<text x="98.0" y="142.0" class="t" text-anchor="middle" >⊕</text>
+<line x1="59.0" y1="138.0" x2="86.0" y2="138.0" class="lw"/>
+<polygon points="86.0,138.0 78.0,142.0 78.0,134.0" class="fw"/>
+<text x="98.0" y="123.0" class="tms" text-anchor="middle" >s1</text>
+<polyline points="120.0,138.0 128.0,133.0 136.0,143.0 144.0,133.0 152.0,143.0 160.0,133.0 168.0,143.0 184.0,138.0" class="lw"/>
+<text x="152.0" y="128.0" class="tms" text-anchor="middle" >G1</text>
+<line x1="184.0" y1="138.0" x2="250.0" y2="176.0" class="lw"/>
+<circle cx="46.0" cy="176.0" r="13" class="warm"/>
+<text x="46.0" y="180.0" class="tm" text-anchor="middle" >x2</text>
+<circle cx="98.0" cy="176.0" r="11" class="plain"/>
+<text x="98.0" y="180.0" class="t" text-anchor="middle" >⊕</text>
+<line x1="59.0" y1="176.0" x2="86.0" y2="176.0" class="lw"/>
+<polygon points="86.0,176.0 78.0,180.0 78.0,172.0" class="fw"/>
+<text x="98.0" y="161.0" class="tms" text-anchor="middle" >s2</text>
+<polyline points="120.0,176.0 128.0,171.0 136.0,181.0 144.0,171.0 152.0,181.0 160.0,171.0 168.0,181.0 184.0,176.0" class="lw"/>
+<text x="152.0" y="166.0" class="tms" text-anchor="middle" >G2</text>
+<line x1="184.0" y1="176.0" x2="250.0" y2="176.0" class="lw"/>
+<circle cx="46.0" cy="214.0" r="13" class="warm"/>
+<text x="46.0" y="218.0" class="tm" text-anchor="middle" >xn</text>
+<circle cx="98.0" cy="214.0" r="11" class="plain"/>
+<text x="98.0" y="218.0" class="t" text-anchor="middle" >⊕</text>
+<line x1="59.0" y1="214.0" x2="86.0" y2="214.0" class="lw"/>
+<polygon points="86.0,214.0 78.0,218.0 78.0,210.0" class="fw"/>
+<text x="98.0" y="199.0" class="tms" text-anchor="middle" >sn</text>
+<polyline points="120.0,214.0 128.0,209.0 136.0,219.0 144.0,209.0 152.0,219.0 160.0,209.0 168.0,219.0 184.0,214.0" class="lw"/>
+<text x="152.0" y="204.0" class="tms" text-anchor="middle" >Gn</text>
+<line x1="184.0" y1="214.0" x2="250.0" y2="176.0" class="lw"/>
+<circle cx="256.0" cy="176.0" r="7" class="warm"/>
+<text x="256.0" y="202.0" class="ts" text-anchor="middle" >V_b node</text>
+<line x1="256.0" y1="183.0" x2="256.0" y2="216.0" class="ln"/>
+<line x1="244.0" y1="216.0" x2="268.0" y2="216.0" class="lk"/>
+<line x1="244.0" y1="222.0" x2="268.0" y2="222.0" class="lk"/>
+<text x="276.0" y="226.0" class="tms" text-anchor="start" >C</text>
+<line x1="263.0" y1="176.0" x2="400.0" y2="176.0" class="lw"/>
+<polygon points="400.0,176.0 392.0,180.0 392.0,172.0" class="fw"/>
+<text x="331.5" y="170.0" class="ts" text-anchor="middle" >bias voltage</text>
+<rect x="404.0" y="144.0" width="150.0" height="64.0" rx="6" class="warm"/>
+<text x="479.0" y="173.0" class="tb" text-anchor="middle" >noise shifted</text>
+<text x="479.0" y="188.0" class="ts" text-anchor="middle" >Gaussian shot noise</text>
+<text x="479.0" y="201.0" class="ts" text-anchor="middle" >+ bias voltage</text>
+<line x1="554.0" y1="176.0" x2="600.0" y2="176.0" class="lw"/>
+<polygon points="600.0,176.0 592.0,180.0 592.0,172.0" class="fw"/>
+<rect x="604.0" y="144.0" width="150.0" height="64.0" rx="6" class="warm"/>
+<text x="679.0" y="173.0" class="tb" text-anchor="middle" >comparator</text>
+<text x="679.0" y="188.0" class="ts" text-anchor="middle" >noise &gt; threshold ?</text>
+<line x1="754.0" y1="176.0" x2="800.0" y2="176.0" class="lw"/>
+<polygon points="800.0,176.0 792.0,180.0 792.0,172.0" class="fw"/>
+<text x="777.0" y="170.0" class="ts" text-anchor="middle" >0/1</text>
+<rect x="804.0" y="144.0" width="150.0" height="64.0" rx="6" class="warm"/>
+<text x="879.0" y="173.0" class="tb" text-anchor="middle" >latch</text>
+<text x="879.0" y="188.0" class="ts" text-anchor="middle" >freezes on clock</text>
+<line x1="879.0" y1="208.0" x2="879.0" y2="244.0" class="lw"/>
+<polyline points="879.0,244.0 46.0,244.0 46.0,229.0" class="lw dash"/>
+<polygon points="46.0,229.0 50.0,237.0 42.0,237.0" class="fw"/>
+<text x="470.0" y="240.0" class="ts" text-anchor="middle" >x_i to all neighbours</text>
+<text x="879.0" y="134.0" class="tms" text-anchor="middle" >clock</text>
+<line x1="879.0" y1="138.0" x2="879.0" y2="144.0" class="ln"/>
+<polygon points="879.0,144.0 875.0,136.0 883.0,136.0" class="fl"/>
+<rect x="14.0" y="292.0" width="972.0" height="170.0" rx="10" class="panel"/>
+<text x="24.0" y="310.0" class="ts tc" text-anchor="start" letter-spacing="1">FPGA EMULATION (this repo)</text>
+<rect x="24.0" y="330.0" width="150.0" height="84.0" rx="6" class="cool"/>
+<text x="99.0" y="369.0" class="tb" text-anchor="middle" >spins s[ ] + J row</text>
+<text x="99.0" y="384.0" class="ts" text-anchor="middle" >J RAM row i (BSRAM)</text>
+<text x="99.0" y="397.0" class="ts" text-anchor="middle" >h RAM entry h_i</text>
+<line x1="174.0" y1="372.0" x2="196.0" y2="372.0" class="lc"/>
+<polygon points="196.0,372.0 188.0,376.0 188.0,368.0" class="fc"/>
+<rect x="200.0" y="330.0" width="170.0" height="84.0" rx="6" class="cool"/>
+<text x="285.0" y="369.0" class="tb" text-anchor="middle" >weight MAC</text>
+<text x="285.0" y="384.0" class="ts" text-anchor="middle" >acc += s_j ? +J : −J</text>
+<text x="285.0" y="397.0" class="ts" text-anchor="middle" >N cycles, no multiplier</text>
+<text x="285.0" y="410.0" class="ts" text-anchor="middle" >field ℓ (AW bits)</text>
+<line x1="370.0" y1="372.0" x2="400.0" y2="372.0" class="lc"/>
+<polygon points="400.0,372.0 392.0,376.0 392.0,368.0" class="fc"/>
+<text x="385.0" y="366.0" class="ts" text-anchor="middle" >ℓ</text>
+<rect x="404.0" y="330.0" width="150.0" height="84.0" rx="6" class="cool"/>
+<text x="479.0" y="369.0" class="tb" text-anchor="middle" >× β, σ LUT</text>
+<text x="479.0" y="384.0" class="ts" text-anchor="middle" >shift-add 8 cycles</text>
+<text x="479.0" y="397.0" class="ts" text-anchor="middle" >1024×16 ROM</text>
+<text x="479.0" y="410.0" class="ts" text-anchor="middle" >p = 65536·σ(2βℓ)</text>
+<line x1="554.0" y1="372.0" x2="600.0" y2="372.0" class="lc"/>
+<polygon points="600.0,372.0 592.0,376.0 592.0,368.0" class="fc"/>
+<text x="577.0" y="366.0" class="ts" text-anchor="middle" >p16</text>
+<rect x="604.0" y="330.0" width="150.0" height="84.0" rx="6" class="cool"/>
+<text x="679.0" y="369.0" class="tb" text-anchor="middle" >rand16 &lt; p16</text>
+<text x="679.0" y="384.0" class="ts" text-anchor="middle" >LFSR32 draws 16 bits</text>
+<text x="679.0" y="397.0" class="ts" text-anchor="middle" >fresh every update</text>
+<line x1="754.0" y1="372.0" x2="800.0" y2="372.0" class="lc"/>
+<polygon points="800.0,372.0 792.0,376.0 792.0,368.0" class="fc"/>
+<text x="777.0" y="366.0" class="ts" text-anchor="middle" >bit</text>
+<rect x="804.0" y="330.0" width="150.0" height="84.0" rx="6" class="cool"/>
+<text x="879.0" y="369.0" class="tb" text-anchor="middle" >spin register</text>
+<text x="879.0" y="384.0" class="ts" text-anchor="middle" >s[i] ← bit</text>
+<text x="879.0" y="397.0" class="ts" text-anchor="middle" >read by next MAC</text>
+<polyline points="879.0,414.0 879.0,440.0 99.0,440.0 99.0,414.0" class="lc dash"/>
+<polygon points="99.0,414.0 103.0,422.0 95.0,422.0" class="fc"/>
+<text x="470.0" y="436.0" class="ts" text-anchor="middle" >next update reads the new s[i]</text>
+<line x1="99.0" y1="264.0" x2="99.0" y2="294.0" class="ln dash"/>
+<line x1="285.0" y1="264.0" x2="285.0" y2="294.0" class="ln dash"/>
+<line x1="479.0" y1="264.0" x2="479.0" y2="294.0" class="ln dash"/>
+<line x1="679.0" y1="264.0" x2="679.0" y2="294.0" class="ln dash"/>
+<line x1="879.0" y1="264.0" x2="879.0" y2="294.0" class="ln dash"/>
+<text x="24.0" y="482.0" class="ts" text-anchor="start" >Stage 3 + 4 together: P(x_i = 1) = σ(2β(Σ_j J_ij x_j + h_i))  [DTM p.5 Eq. 11]. The comparator on noise is what makes the bit random; the bias only tilts the odds.</text>
+<text x="24.0" y="500.0" class="ts" text-anchor="start" >Physical: one cell per node, all cells of a colour flip at once (~100 ns). FPGA: one engine visits nodes in turn, N + 18 cycles per update.</text>
+</svg>

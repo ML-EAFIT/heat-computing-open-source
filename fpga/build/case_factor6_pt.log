@@ -1,0 +1,466 @@
+Info: Using uarch 'gowin' for device 'GW1NR-LV9QN88PC6/I5'
+
+Info: Cell O_psram_ck[0] not found
+Info: Cell O_psram_ck[1] not found
+Info: Cell O_psram_ck_n[0] not found
+Info: Cell O_psram_ck_n[1] not found
+Info: Cell O_psram_cs_n[0] not found
+Info: Cell O_psram_cs_n[1] not found
+Info: Cell O_psram_reset_n[0] not found
+Info: Cell O_psram_reset_n[1] not found
+Info: Cell IO_psram_dq[0] not found
+Info: Cell IO_psram_dq[1] not found
+Info: Cell IO_psram_dq[2] not found
+Info: Cell IO_psram_dq[3] not found
+Info: Cell IO_psram_dq[4] not found
+Info: Cell IO_psram_dq[5] not found
+Info: Cell IO_psram_dq[6] not found
+Info: Cell IO_psram_dq[7] not found
+Info: Cell IO_psram_dq[8] not found
+Info: Cell IO_psram_dq[9] not found
+Info: Cell IO_psram_dq[10] not found
+Info: Cell IO_psram_dq[11] not found
+Info: Cell IO_psram_dq[12] not found
+Info: Cell IO_psram_dq[13] not found
+Info: Cell IO_psram_dq[14] not found
+Info: Cell IO_psram_dq[15] not found
+Info: Cell IO_psram_rwds[0] not found
+Info: Cell IO_psram_rwds[1] not found
+Info: Reading constraints...
+Info: Create constant nets...
+Info: Modify LUTs...
+Info: Pack IOBs...
+Info: Pack I3C IOs...
+Info: Pack MIPI IOs...
+Info: Pack diff IOBs...
+Info: Pack FFs into IO cells...
+Info: Pack IODELAY...
+Info: Pack Input Edge Monitors...
+Info: Pack IO logic...
+Info: Pack DESER16 logic...
+Info: Pack GSR...
+Info: Pack HCLK cells...
+Info: Pack DLLDLYs...
+Info: Pack wide LUTs...
+Info: Packed MUX2_LUT8:11, MUX2_LU7:2, MUX2_LUT6:31, MUX2_LUT5:236
+Info: Pack ALUs...
+Info: Pack SSRAMs...
+Info: Constrained 626 LUTFF pairs.
+Info: Pack PLL...
+Info: Pack ADC...
+Info: Pack GW JTAG...
+Info: Pack BSRAMs...
+Info: Pack DSP...
+Info: Pack INV...
+Info: Pack buffered nets...
+Info: Pack EMCU and UserFlash cells...
+Info: Pack UserFlash cells...
+Info: Pack DQCE cells...
+Info: Pack DCS cells...
+Info: Checksum: 0x72213ea0
+
+Info: Device utilisation:
+Info: 	                 VCC:       1/      1   100%
+Info: 	                 IOB:      11/    276     3%
+Info: 	                LUT4:    3674/   8640    42%
+Info: 	              OSER16:       0/     80     0%
+Info: 	              IDES16:       0/     80     0%
+Info: 	            IOLOGICI:       0/    276     0%
+Info: 	            IOLOGICO:       0/    276     0%
+Info: 	           MUX2_LUT5:     394/   4320     9%
+Info: 	           MUX2_LUT6:      79/   2160     3%
+Info: 	           MUX2_LUT7:      24/   1080     2%
+Info: 	           MUX2_LUT8:      11/   1080     1%
+Info: 	                 ALU:    1136/   6480    17%
+Info: 	                 GND:       1/      1   100%
+Info: 	                 DFF:    1531/   6480    23%
+Info: 	           RAM16SDP4:       9/    270     3%
+Info: 	               BSRAM:      11/     26    42%
+Info: 	              ALU54D:       0/     10     0%
+Info: 	     MULTADDALU18X18:       0/     10     0%
+Info: 	        MULTALU18X18:       0/     10     0%
+Info: 	        MULTALU36X18:       0/     10     0%
+Info: 	           MULT36X36:       0/      5     0%
+Info: 	           MULT18X18:       0/     20     0%
+Info: 	             MULT9X9:       0/     40     0%
+Info: 	              PADD18:       0/     20     0%
+Info: 	               PADD9:       0/     40     0%
+Info: 	                 GSR:       1/      1   100%
+Info: 	                 OSC:       0/      1     0%
+Info: 	                rPLL:       0/      2     0%
+Info: 	           FLASH608K:       0/      1     0%
+Info: 	                BUFG:       0/     22     0%
+Info: 	                DQCE:       0/     24     0%
+Info: 	                 DCS:       0/      8     0%
+Info: 	               DHCEN:       0/     24     0%
+Info: 	              CLKDIV:       0/      8     0%
+Info: 	             CLKDIV2:       0/     16     0%
+Info: 	           MIPI_IBUF:       0/     22     0%
+Info: 	           MIPI_OBUF:       0/     20     0%
+
+Info: Running custom HCLK placer...
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 2884 cells, random placement wirelen = 127531.
+Info:     at initial placer iter 0, wirelen = 3732
+Info:     at initial placer iter 1, wirelen = 3240
+Info:     at initial placer iter 2, wirelen = 3203
+Info:     at initial placer iter 3, wirelen = 3232
+Info: Running main analytical placer, max placement attempts per cell = 5921961.
+Info:     at iteration #1, type ALL: wirelen solved = 3195, spread = 31165, legal = 54432; time = 1.00s
+Info:     at iteration #2, type ALL: wirelen solved = 2363, spread = 26928, legal = 48849; time = 1.58s
+Info:     at iteration #3, type ALL: wirelen solved = 4036, spread = 24056, legal = 45387; time = 0.80s
+Info:     at iteration #4, type ALL: wirelen solved = 4218, spread = 22834, legal = 44662; time = 0.85s
+Info:     at iteration #5, type ALL: wirelen solved = 5002, spread = 22813, legal = 41186; time = 1.61s
+Info:     at iteration #6, type ALL: wirelen solved = 5619, spread = 22796, legal = 40652; time = 0.67s
+Info:     at iteration #7, type ALL: wirelen solved = 6037, spread = 20344, legal = 34172; time = 1.24s
+Info:     at iteration #8, type ALL: wirelen solved = 6681, spread = 20627, legal = 33556; time = 0.36s
+Info:     at iteration #9, type ALL: wirelen solved = 6989, spread = 19899, legal = 34113; time = 0.64s
+Info:     at iteration #10, type ALL: wirelen solved = 7676, spread = 21787, legal = 33924; time = 0.80s
+Info:     at iteration #11, type ALL: wirelen solved = 8165, spread = 19813, legal = 33669; time = 0.41s
+Info:     at iteration #12, type ALL: wirelen solved = 8027, spread = 21199, legal = 35070; time = 0.61s
+Info:     at iteration #13, type ALL: wirelen solved = 8647, spread = 21112, legal = 30095; time = 0.41s
+Info:     at iteration #14, type ALL: wirelen solved = 9413, spread = 21212, legal = 30964; time = 0.25s
+Info:     at iteration #15, type ALL: wirelen solved = 9364, spread = 22148, legal = 28807; time = 0.33s
+Info:     at iteration #16, type ALL: wirelen solved = 9908, spread = 22806, legal = 30904; time = 0.19s
+Info:     at iteration #17, type ALL: wirelen solved = 10764, spread = 21624, legal = 31284; time = 0.40s
+Info:     at iteration #18, type ALL: wirelen solved = 11313, spread = 21780, legal = 32926; time = 0.24s
+Info:     at iteration #19, type ALL: wirelen solved = 11749, spread = 21660, legal = 31003; time = 0.32s
+Info:     at iteration #20, type ALL: wirelen solved = 11415, spread = 21489, legal = 31296; time = 0.46s
+Info: HeAP Placer Time: 14.34s
+Info:   of which solving equations: 2.15s
+Info:   of which spreading cells: 0.25s
+Info:   of which strict legalisation: 11.14s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 291, wirelen = 28807
+Info:   at iteration #5: temp = 0.000000, timing cost = 194, wirelen = 22040
+Info:   at iteration #10: temp = 0.000000, timing cost = 174, wirelen = 20352
+Info:   at iteration #15: temp = 0.000000, timing cost = 176, wirelen = 19681
+Info:   at iteration #20: temp = 0.000000, timing cost = 170, wirelen = 19196
+Info:   at iteration #25: temp = 0.000000, timing cost = 169, wirelen = 19004
+Info:   at iteration #30: temp = 0.000000, timing cost = 169, wirelen = 18931
+Info:   at iteration #34: temp = 0.000000, timing cost = 169, wirelen = 18911 
+Info: SA placement time 21.61s
+
+Info: Max frequency for clock 'top_inst.clk': 59.69 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 9 endpoint(s)
+Info:          + represents [1,9) endpoint(s)
+Info: [ 20283,  21096) |*+
+Info: [ 21096,  21909) | 
+Info: [ 21909,  22722) | 
+Info: [ 22722,  23535) |*+
+Info: [ 23535,  24348) |*******+
+Info: [ 24348,  25161) |*****+
+Info: [ 25161,  25974) |**********+
+Info: [ 25974,  26787) |*************+
+Info: [ 26787,  27600) |************+
+Info: [ 27600,  28413) |***************************************+
+Info: [ 28413,  29226) |*******************************************************+
+Info: [ 29226,  30039) |************************************************************ 
+Info: [ 30039,  30852) |*******************************+
+Info: [ 30852,  31665) |***************************+
+Info: [ 31665,  32478) |*****************************************+
+Info: [ 32478,  33291) |****************************+
+Info: [ 33291,  34104) |***************************+
+Info: [ 34104,  34917) |*********************+
+Info: [ 34917,  35730) |********************+
+Info: [ 35730,  36543) |*********************+
+Info: Checksum: 0x4c43aaa4
+Info: Routing globals...
+Info:     'top_inst.clk' net was routed using global resources only.
+Info:     'top_inst.readout_counter_inst.gen_up_ff.upq_reg_DFF_Q_13_D_LUT4_F_I3_LUT4_F_I3[1]' is routed using segments.
+Info:     'top_inst.ret_reg_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT4_F_1_I2_LUT3_I2_F[3]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.gen_up_ff.upq_reg_DFF_Q_18_D_LUT3_F_I2_LUT4_F_I3_MUX2_LUT5_O_S0[2]' is routed using segments.
+Info:     'top_inst.gen_dense.pbit_array_inst.pbit_inst.take_reg_LUT4_I1_F_MUX2_LUT5_I1_O_LUT3_I2_F[1]' is routed using segments.
+Info:     'top_inst.gen_dense.gen_pt.temper_ctrl_inst.upd_field[12]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.gen_up_ff.upq_reg_DFF_Q_19_D_LUT4_F_I3_LUT4_F_I3_MUX2_LUT5_O_S0[3]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.gen_up_ff.upq_reg_DFF_Q_12_D_LUT4_F_I3_LUT4_F_1_I3[1]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.idx_reg_DFFE_Q_7_D_MUX2_LUT5_O_S0_MUX2_LUT5_S0_O_LUT2_I0_F' is routed using segments.
+Info:     'top_inst.gen_dense.pbit_array_inst.pbit_inst.take_reg_LUT4_I1_F_MUX2_LUT5_I1_O_LUT2_I1_F[1]' is routed using segments.
+Info:     'top_inst.hold_reg_LUT4_I2_I3_LUT2_I0_I1_LUT3_I2_F_LUT4_I3_1_F[1]' is routed using segments.
+Info:     'top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1[0]' is routed using segments.
+Info:     'top_inst.hold_reg_LUT4_I2_I3_LUT2_I0_I1_LUT3_I2_F_LUT4_I3_F' is routed using segments.
+Info:     'top_inst.aidx_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_SUM_LUT2_I1_F[0]' is routed using segments.
+Info:     'top_inst.nby_reg_DFFRE_Q_2_D_LUT4_F_I3[0]' is routed using segments.
+Info:     'top_inst.n_samples_DFFRE_Q_10_D_LUT2_F_I0[1]' is routed using segments.
+Info:     'top_inst.run_prev_LUT3_I1_F_LUT4_I3_F_LUT4_I3_F' is routed using segments.
+Info:     'top_inst.run_prev_LUT3_I1_F_LUT4_I3_F_LUT2_I1_F' is routed using segments.
+Info:     'top_inst.readout_counter_inst.idx_reg_DFFE_Q_11_D_MUX2_LUT5_O_S0_MUX2_LUT5_S0_O_LUT2_I0_F' is routed using segments.
+Info:     'top_inst.gen_dense.pbit_array_inst.coupling_row_inst.done_reg_LUT2_I0_F_LUT3_I2_F[2]' is routed using segments.
+Info:     'top_inst.gen_dense.pbit_array_inst.coupling_row_inst.done_reg_LUT2_I0_F_LUT2_I1_F[0]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.idx_reg_DFFE_Q_10_D_MUX2_LUT5_O_S0_MUX2_LUT5_S0_O_LUT2_I0_F' is routed using segments.
+Info:     'top_inst.gen_dense.gen_pt.temper_ctrl_inst.state_reg_DFFRE_Q_2_D_LUT3_F_I0_LUT4_I3_F_LUT3_I2_F' is routed using segments.
+Info:     'top_inst.gen_dense.pbit_array_inst.k_reg_DFFRE_Q_1_D_LUT3_F_I2[0]' is routed using segments.
+Info:     'top_inst.args_reg[3]' is routed using segments.
+Info:     'top_inst.args_reg[6]' is routed using segments.
+Info:     'top_inst.args_reg[7]' is routed using segments.
+Info:     'top_inst.gen_dense.gen_pt.temper_ctrl_inst.rep_at[0]_DFFE_Q_D_LUT4_F_I0_MUX2_LUT5_S0_O[5]' is routed using segments.
+Info:     'top_inst.gen_dense.gen_pt.temper_ctrl_inst.ladder.2.0_WRE_LUT3_F_I2_LUT3_I2_F_LUT2_I1_F_LUT2_I0_2_F' is routed using segments.
+Info:     'top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN_SUM_LUT3_I2_F_ALU_SUM_I0_ALU_I0_SUM[0]' is routed using segments.
+Info:     'top_inst.gen_dense.pbit_array_inst.pbit_inst.take_reg_LUT4_I1_F_MUX2_LUT5_I1_O_LUT2_I1_2_F[1]' is routed using segments.
+Info:     'top_inst.gen_dense.pbit_array_inst.pbit_inst.take_reg_LUT4_I1_F_MUX2_LUT5_I1_O_LUT2_I1_1_F[1]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.gen_up_ff.upq_reg_DFF_Q_10_D_LUT3_F_I2_LUT4_F_I3[1]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.gen_up_ff.upq_reg_DFF_Q_19_D_LUT4_F_I3_LUT4_F_I3[1]' is routed using segments.
+Info:     'top_inst.ret_reg_DFFRE_Q_D_LUT4_F_I3_LUT4_F_I2_LUT3_I2_F_MUX2_LUT5_O_S0_MUX2_LUT5_S0_O_LUT2_I0_F' is routed using segments.
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 15686 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |       17        982 |   17   982 |     14720|       0.77       0.77|
+Info:       2000 |       85       1914 |   68   932 |     13829|       0.84       1.61|
+Info:       3000 |      197       2802 |  112   888 |     13007|       0.94       2.55|
+Info:       4000 |      357       3642 |  160   840 |     12187|       1.09       3.63|
+Info:       5000 |      549       4450 |  192   808 |     11579|       1.15       4.78|
+Info:       6000 |      613       5386 |   64   936 |     10689|       1.09       5.87|
+Info:       7000 |      652       5931 |   39   545 |      9760|       0.70       6.57|
+Info:       8000 |      736       6663 |   84   732 |      8885|       0.89       7.46|
+Info:       9000 |      869       7440 |  133   777 |      8123|       0.85       8.31|
+Info:      10000 |      968       8190 |   99   750 |      7284|       0.71       9.02|
+Info:      11000 |     1089       8885 |  121   695 |      6454|       0.90       9.92|
+Info:      12000 |     1216       9590 |  127   705 |      5625|       1.00      10.93|
+Info:      13000 |     1339      10180 |  123   590 |      4803|       0.85      11.77|
+Info:      14000 |     1462      10900 |  123   720 |      4006|       0.69      12.46|
+Info:      15000 |     1539      11582 |   77   682 |      3126|       0.39      12.85|
+Info:      16000 |     1643      12429 |  104   847 |      2297|       0.58      13.43|
+Info:      17000 |     1712      13319 |   69   890 |      1391|       0.53      13.96|
+Info:      18000 |     1729      14242 |   17   923 |       413|       0.50      14.47|
+Info:      18441 |     1751      14630 |   22   388 |         0|       0.29      14.75|
+Info: Routing complete.
+Info: Router1 time 14.75s
+Info: Checksum: 0xaa966cb5
+
+Info: Critical path report for clock 'top_inst.clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.46  0.46 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.a_reg_DFFRE_Q_1.Q
+Info:    routing  1.86  2.32 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.a_reg[1] (29,10) -> (28,5)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_I1_LUT4_F_I3_MUX2_LUT5_O_S0_MUX2_LUT5_S0_O_LUT2_F.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.10  3.42 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_I1_LUT4_F_I3_MUX2_LUT5_O_S0_MUX2_LUT5_S0_O_LUT2_F.F
+Info:    routing  1.60  5.02 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_I1_MUX2_LUT5_O_S0[1] (28,5) -> (32,8)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_I1_LUT4_F_I3_MUX2_LUT5_O_S0_MUX2_LUT5_S0_I1_LUT4_F.I3
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.62  5.64 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_I1_LUT4_F_I3_MUX2_LUT5_O_S0_MUX2_LUT5_S0_I1_LUT4_F.F
+Info:    routing  0.00  5.64 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_I1_LUT4_F_I3_MUX2_LUT5_O_S0_MUX2_LUT5_S0_I1 (32,8) -> (32,8)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_I1_LUT4_F_I3_MUX2_LUT5_O_S0_MUX2_LUT5_S0.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:151.13-151.15
+Info:      logic  0.50  6.14 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_I1_LUT4_F_I3_MUX2_LUT5_O_S0_MUX2_LUT5_S0.O
+Info:    routing  1.85  7.99 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_I1_LUT4_F_I3_MUX2_LUT5_O_S0_MUX2_LUT5_S0_O[4] (32,8) -> (28,5)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I1_MUX2_LUT5_O.S0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.18  8.17 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I1_MUX2_LUT5_O.O
+Info:    routing  1.22  9.39 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I1 (28,5) -> (26,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.I1
+Info:      logic  1.04  10.43 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  10.43 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN (26,4) -> (26,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  10.49 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  10.49 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN (26,4) -> (26,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  10.54 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT.COUT
+Info:    routing  0.00  10.54 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_CIN (26,4) -> (27,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  10.60 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM.COUT
+Info:    routing  0.00  10.60 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT (27,4) -> (27,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  10.66 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN.COUT
+Info:    routing  0.00  10.66 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT (27,4) -> (27,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  10.72 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  10.72 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT (27,4) -> (27,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  10.77 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  10.77 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (27,4) -> (27,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  10.83 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  10.83 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (27,4) -> (27,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  10.89 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  10.89 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (27,4) -> (28,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  10.94 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  10.94 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (28,4) -> (28,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  11.00 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  11.00 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (28,4) -> (28,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_1.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  11.06 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_1.COUT
+Info:    routing  0.00  11.06 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_1_COUT (28,4) -> (28,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  11.11 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM.COUT
+Info:    routing  0.00  11.11 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT (28,4) -> (28,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  11.17 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN.COUT
+Info:    routing  0.00  11.17 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN_COUT (28,4) -> (28,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  11.23 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM.COUT
+Info:    routing  0.00  11.23 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_COUT (28,4) -> (29,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:156.29-156.42
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.56  11.79 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_ALU_SUM.SUM
+Info:    routing  0.81  12.60 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM[1] (29,4) -> (29,3)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.04  13.64 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  13.64 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN (29,3) -> (29,3)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:157.40-157.43
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  13.70 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT.COUT
+Info:    routing  0.00  13.70 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_ALU_SUM_CIN (29,3) -> (29,3)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:157.40-157.43
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.56  14.26 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_ALU_SUM.SUM
+Info:    routing  1.44  15.70 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM[2] (29,3) -> (32,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_SUM_LUT3_I2_F_LUT3_F_1.I2
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.82  16.52 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_SUM_LUT3_I2_F_LUT3_F_1.F
+Info:    routing  0.89  17.41 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_SUM_ALU_SUM_CIN_ALU_COUT_SUM_ALU_SUM_CIN_ALU_COUT_SUM_LUT3_I2_F[0] (32,4) -> (32,5)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.I0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.96  18.37 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  18.37 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (32,5) -> (32,5)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:161.32-161.43
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  18.42 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  18.42 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (32,5) -> (32,5)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:161.32-161.43
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  18.48 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  18.48 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (32,5) -> (32,5)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/temper_ctrl.v:161.32-161.43
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  18.54 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  18.54 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_TAIL_ALULC (32,5) -> (33,5)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_TAIL_ALULC.CIN
+Info:      logic  0.56  19.10 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_3_D_LUT4_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_TAIL_ALULC.SUM
+Info:    routing  0.41  19.51 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_10_D_LUT4_F_I0[1] (33,5) -> (34,5)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN_SUM_LUT3_I2_F_ALU_SUM_I0_ALU_I0_HEAD_ALULC.I0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.96  20.47 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN_SUM_LUT3_I2_F_ALU_SUM_I0_ALU_I0_HEAD_ALULC.COUT
+Info:    routing  0.00  20.47 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN_SUM_LUT3_I2_F_ALU_SUM_I0_ALU_I0_HEAD_ALULC (34,5) -> (34,5)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN_SUM_LUT3_I2_F_ALU_SUM_I0_ALU_I0.CIN
+Info:      logic  0.56  21.03 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_6_D_LUT4_F_I0_LUT3_F_I1_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_SUM_COUT_ALU_CIN_SUM_LUT3_I2_F_ALU_SUM_I0_ALU_I0.SUM
+Info:    routing  0.41  21.45 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFE_Q_10_D_LUT4_F_I0[3] (34,5) -> (34,4)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFRE_Q_RESET_LUT4_F.I2
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.82  22.27 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFRE_Q_RESET_LUT4_F.F
+Info:    routing  0.81  23.07 Net top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFRE_Q_RESET (34,4) -> (34,3)
+Info:                          Sink top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFRE_Q.RESET
+Info:      setup  0.04  23.12 Source top_inst.gen_dense.gen_pt.temper_ctrl_inst.sf_reg_DFFRE_Q.RESET
+Info: 11.83 ns logic, 11.29 ns routing
+
+Info: Max frequency for clock 'top_inst.clk': 43.26 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 9 endpoint(s)
+Info:          + represents [1,9) endpoint(s)
+Info: [ 13920,  15031) |*+
+Info: [ 15031,  16142) | 
+Info: [ 16142,  17253) | 
+Info: [ 17253,  18364) |+
+Info: [ 18364,  19475) |+
+Info: [ 19475,  20586) |****+
+Info: [ 20586,  21697) |********+
+Info: [ 21697,  22808) |*********************+
+Info: [ 22808,  23919) |************************************************************ 
+Info: [ 23919,  25030) |*********************************************************+
+Info: [ 25030,  26141) |*****************************+
+Info: [ 26141,  27252) |***********************+
+Info: [ 27252,  28363) |***************************+
+Info: [ 28363,  29474) |*******************+
+Info: [ 29474,  30585) |***************************+
+Info: [ 30585,  31696) |********************************+
+Info: [ 31696,  32807) |***********************************+
+Info: [ 32807,  33918) |********************************+
+Info: [ 33918,  35029) |***************************+
+Info: [ 35029,  36140) |******+
+
+Info: Program finished normally.

@@ -1,0 +1,8 @@
+{
+  "type": "qubo",
+  "comment": "items worth 15, 13, 11, 10 (diagonal = -value); every chosen pair costs 8. Best: items 0 and 1, objective -20",
+  "n": 4,
+  "Q": [[0, 0, -15], [1, 1, -13], [2, 2, -11], [3, 3, -10],
+        [0, 1, 8], [0, 2, 8], [0, 3, 8], [1, 2, 8], [1, 3, 8], [2, 3, 8]],
+  "beta": 3.0
+}

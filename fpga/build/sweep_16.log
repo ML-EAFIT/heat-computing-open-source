@@ -1,0 +1,277 @@
+Info: Using uarch 'gowin' for device 'GW1NR-LV9QN88PC6/I5'
+
+Info: Cell O_psram_ck[0] not found
+Info: Cell O_psram_ck[1] not found
+Info: Cell O_psram_ck_n[0] not found
+Info: Cell O_psram_ck_n[1] not found
+Info: Cell O_psram_cs_n[0] not found
+Info: Cell O_psram_cs_n[1] not found
+Info: Cell O_psram_reset_n[0] not found
+Info: Cell O_psram_reset_n[1] not found
+Info: Cell IO_psram_dq[0] not found
+Info: Cell IO_psram_dq[1] not found
+Info: Cell IO_psram_dq[2] not found
+Info: Cell IO_psram_dq[3] not found
+Info: Cell IO_psram_dq[4] not found
+Info: Cell IO_psram_dq[5] not found
+Info: Cell IO_psram_dq[6] not found
+Info: Cell IO_psram_dq[7] not found
+Info: Cell IO_psram_dq[8] not found
+Info: Cell IO_psram_dq[9] not found
+Info: Cell IO_psram_dq[10] not found
+Info: Cell IO_psram_dq[11] not found
+Info: Cell IO_psram_dq[12] not found
+Info: Cell IO_psram_dq[13] not found
+Info: Cell IO_psram_dq[14] not found
+Info: Cell IO_psram_dq[15] not found
+Info: Cell IO_psram_rwds[0] not found
+Info: Cell IO_psram_rwds[1] not found
+Info: Reading constraints...
+Info: Create constant nets...
+Info: Modify LUTs...
+Info: Pack IOBs...
+Info: Pack I3C IOs...
+Info: Pack MIPI IOs...
+Info: Pack diff IOBs...
+Info: Pack FFs into IO cells...
+Info: Pack IODELAY...
+Info: Pack Input Edge Monitors...
+Info: Pack IO logic...
+Info: Pack DESER16 logic...
+Info: Pack GSR...
+Info: Pack HCLK cells...
+Info: Pack DLLDLYs...
+Info: Pack wide LUTs...
+Info: Packed MUX2_LUT8:1, MUX2_LU7:10, MUX2_LUT6:6, MUX2_LUT5:139
+Info: Pack ALUs...
+Info: Pack SSRAMs...
+Info: Constrained 305 LUTFF pairs.
+Info: Pack PLL...
+Info: Pack ADC...
+Info: Pack GW JTAG...
+Info: Pack BSRAMs...
+Info: Pack DSP...
+Info: Pack INV...
+Info: Pack buffered nets...
+Info: Pack EMCU and UserFlash cells...
+Info: Pack UserFlash cells...
+Info: Pack DQCE cells...
+Info: Pack DCS cells...
+Info: Checksum: 0x1ae32d3e
+
+Info: Device utilisation:
+Info: 	                 VCC:       1/      1   100%
+Info: 	                 IOB:      11/    276     3%
+Info: 	                LUT4:    2478/   8640    28%
+Info: 	              OSER16:       0/     80     0%
+Info: 	              IDES16:       0/     80     0%
+Info: 	            IOLOGICI:       0/    276     0%
+Info: 	            IOLOGICO:       0/    276     0%
+Info: 	           MUX2_LUT5:     199/   4320     4%
+Info: 	           MUX2_LUT6:      30/   2160     1%
+Info: 	           MUX2_LUT7:      12/   1080     1%
+Info: 	           MUX2_LUT8:       1/   1080     0%
+Info: 	                 ALU:     976/   6480    15%
+Info: 	                 GND:       1/      1   100%
+Info: 	                 DFF:    1293/   6480    19%
+Info: 	           RAM16SDP4:       7/    270     2%
+Info: 	               BSRAM:      10/     26    38%
+Info: 	              ALU54D:       0/     10     0%
+Info: 	     MULTADDALU18X18:       0/     10     0%
+Info: 	        MULTALU18X18:       0/     10     0%
+Info: 	        MULTALU36X18:       0/     10     0%
+Info: 	           MULT36X36:       0/      5     0%
+Info: 	           MULT18X18:       0/     20     0%
+Info: 	             MULT9X9:       0/     40     0%
+Info: 	              PADD18:       0/     20     0%
+Info: 	               PADD9:       0/     40     0%
+Info: 	                 GSR:       1/      1   100%
+Info: 	                 OSC:       0/      1     0%
+Info: 	                rPLL:       0/      2     0%
+Info: 	           FLASH608K:       0/      1     0%
+Info: 	                BUFG:       0/     22     0%
+Info: 	                DQCE:       0/     24     0%
+Info: 	                 DCS:       0/      8     0%
+Info: 	               DHCEN:       0/     24     0%
+Info: 	              CLKDIV:       0/      8     0%
+Info: 	             CLKDIV2:       0/     16     0%
+Info: 	           MIPI_IBUF:       0/     22     0%
+Info: 	           MIPI_OBUF:       0/     20     0%
+
+Info: Running custom HCLK placer...
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 2211 cells, random placement wirelen = 97564.
+Info:     at initial placer iter 0, wirelen = 3451
+Info:     at initial placer iter 1, wirelen = 2959
+Info:     at initial placer iter 2, wirelen = 2974
+Info:     at initial placer iter 3, wirelen = 2988
+Info: Running main analytical placer, max placement attempts per cell = 3150050.
+Info:     at iteration #1, type ALL: wirelen solved = 2980, spread = 21921, legal = 37917; time = 0.91s
+Info:     at iteration #2, type ALL: wirelen solved = 2121, spread = 23758, legal = 35404; time = 0.24s
+Info:     at iteration #3, type ALL: wirelen solved = 2368, spread = 21825, legal = 34462; time = 0.29s
+Info:     at iteration #4, type ALL: wirelen solved = 2581, spread = 21059, legal = 34887; time = 0.68s
+Info:     at iteration #5, type ALL: wirelen solved = 3000, spread = 21033, legal = 29729; time = 0.72s
+Info:     at iteration #6, type ALL: wirelen solved = 3551, spread = 22106, legal = 31827; time = 1.09s
+Info:     at iteration #7, type ALL: wirelen solved = 3693, spread = 19304, legal = 30558; time = 0.32s
+Info:     at iteration #8, type ALL: wirelen solved = 3858, spread = 19842, legal = 31205; time = 0.28s
+Info:     at iteration #9, type ALL: wirelen solved = 4288, spread = 20075, legal = 31246; time = 0.42s
+Info:     at iteration #10, type ALL: wirelen solved = 4943, spread = 18760, legal = 24741; time = 0.42s
+Info:     at iteration #11, type ALL: wirelen solved = 5637, spread = 19242, legal = 26164; time = 1.20s
+Info:     at iteration #12, type ALL: wirelen solved = 5460, spread = 18714, legal = 26434; time = 0.38s
+Info:     at iteration #13, type ALL: wirelen solved = 6047, spread = 18918, legal = 26250; time = 0.31s
+Info:     at iteration #14, type ALL: wirelen solved = 6440, spread = 17510, legal = 25208; time = 0.29s
+Info:     at iteration #15, type ALL: wirelen solved = 6103, spread = 19077, legal = 26305; time = 0.37s
+Info: HeAP Placer Time: 9.00s
+Info:   of which solving equations: 1.95s
+Info:   of which spreading cells: 0.19s
+Info:   of which strict legalisation: 6.35s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 663, wirelen = 24741
+Info:   at iteration #5: temp = 0.000000, timing cost = 234, wirelen = 18451
+Info:   at iteration #10: temp = 0.000000, timing cost = 147, wirelen = 17088
+Info:   at iteration #15: temp = 0.000000, timing cost = 104, wirelen = 16331
+Info:   at iteration #20: temp = 0.000000, timing cost = 127, wirelen = 15811
+Info:   at iteration #25: temp = 0.000000, timing cost = 125, wirelen = 15483
+Info:   at iteration #30: temp = 0.000000, timing cost = 124, wirelen = 15388
+Info:   at iteration #34: temp = 0.000000, timing cost = 119, wirelen = 15329 
+Info: SA placement time 17.63s
+
+Info: Max frequency for clock 'top_inst.clk': 81.17 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 9 endpoint(s)
+Info:          + represents [1,9) endpoint(s)
+Info: [ 24717,  25308) |*+
+Info: [ 25308,  25899) |+
+Info: [ 25899,  26490) |+
+Info: [ 26490,  27081) |**+
+Info: [ 27081,  27672) |**+
+Info: [ 27672,  28263) |*************+
+Info: [ 28263,  28854) |*********************+
+Info: [ 28854,  29445) |******************************+
+Info: [ 29445,  30036) |*********************************+
+Info: [ 30036,  30627) |************************************************************ 
+Info: [ 30627,  31218) |*************************************************+
+Info: [ 31218,  31809) |**********************+
+Info: [ 31809,  32400) |******************+
+Info: [ 32400,  32991) |***********************+
+Info: [ 32991,  33582) |***************+
+Info: [ 33582,  34173) |**************+
+Info: [ 34173,  34764) |********+
+Info: [ 34764,  35355) |************+
+Info: [ 35355,  35946) |************+
+Info: [ 35946,  36537) |******************************+
+Info: Checksum: 0xa2a020e5
+Info: Routing globals...
+Info:     'top_inst.clk' net was routed using global resources only.
+Info:     'top_inst.readout_counter_inst.state_reg_LUT4_I1_F[1]' is routed using segments.
+Info:     'top_inst.n_samples_DFFRE_Q_10_D_LUT2_F_I0[1]' is routed using segments.
+Info:     'top_inst.nby_reg_DFFRE_Q_2_D_LUT3_F_I2_LUT4_F_I0[1]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_4_D_LUT4_F_I3_LUT4_F_1_I3[3]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_19_D_LUT4_F_I3_MUX2_LUT5_O_S0[2]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_4_D_LUT4_F_I3_LUT4_F_1_I3_LUT4_I2_F[3]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_15_D_LUT4_F_I3_MUX2_LUT5_O_S0[3]' is routed using segments.
+Info:     'led_OBUF_O_I_LUT4_I2_F_LUT2_I1_F[1]' is routed using segments.
+Info:     'top_inst.rst_s2_LUT2_I0_1_F[3]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_LUT4_F_I3_LUT4_F_1_I3[3]' is routed using segments.
+Info:     'top_inst.state_reg_DFFRE_Q_3_D_MUX2_LUT5_O_S0_LUT4_F_I0_LUT3_I1_F_LUT3_I1_F' is routed using segments.
+Info:     'top_inst.pbit_array_inst.coupling_row_inst.done_reg_LUT4_I0_F_MUX2_LUT5_I1_O' is routed using segments.
+Info:     'led_OBUF_O_I_LUT4_I0_F_LUT4_I3_F[0]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.state_reg_LUT2_I1_F[2]' is routed using segments.
+Info:     'top_inst.cnt_reg[1]' is routed using segments.
+Info:     'top_inst.cnt_reg[3]' is routed using segments.
+Info:     'top_inst.pbit_array_inst.coupling_row_inst.done_reg_LUT3_I0_F[2]' is routed using segments.
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 11368 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |       20        979 |   20   979 |     10396|       0.85       0.85|
+Info:       2000 |       51       1948 |   31   969 |      9442|       1.28       2.14|
+Info:       3000 |       99       2900 |   48   952 |      8506|       0.74       2.88|
+Info:       4000 |      196       3803 |   97   903 |      7642|       1.69       4.57|
+Info:       5000 |      316       4652 |  120   849 |      6853|       0.78       5.35|
+Info:       6000 |      491       5348 |  175   696 |      6134|       0.79       6.14|
+Info:       7000 |      633       5970 |  142   622 |      5358|       1.28       7.42|
+Info:       8000 |      752       6582 |  119   612 |      4548|       0.59       8.01|
+Info:       9000 |      830       7148 |   78   566 |      3658|       0.39       8.40|
+Info:      10000 |      900       7892 |   70   744 |      2747|       0.41       8.81|
+Info:      11000 |      974       8787 |   74   895 |      1839|       0.35       9.17|
+Info:      12000 |      992       9699 |   18   912 |       866|       0.55       9.72|
+Info:      12879 |     1003      10492 |   11   793 |         0|       1.04      10.75|
+Info: Routing complete.
+Info: Router1 time 10.75s
+Info: Checksum: 0xb0d5a30c
+
+Info: Critical path report for clock 'top_inst.clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.46  0.46 Source top_inst.state_reg_DFFRE_Q_1.Q
+Info:    routing  0.41  0.87 Net top_inst.state_reg[1] (15,8) -> (15,8)
+Info:                          Sink top_inst.state_reg_DFFRE_Q_4_D_LUT4_F_I3_LUT3_F_I0_LUT2_I0_F_LUT2_F.I1
+Info:                          Defined in:
+Info:                               ../rtl/top.v:176.14-176.23
+Info:      logic  1.10  1.97 Source top_inst.state_reg_DFFRE_Q_4_D_LUT4_F_I3_LUT3_F_I0_LUT2_I0_F_LUT2_F.F
+Info:    routing  0.33  2.29 Net top_inst.state_reg_DFFRE_Q_4_D_LUT4_F_I3_LUT3_F_I0_LUT2_I0_F[0] (15,8) -> (15,8)
+Info:                          Sink top_inst.run_prev_LUT4_I2_I3_LUT4_F.I3
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.62  2.92 Source top_inst.run_prev_LUT4_I2_I3_LUT4_F.F
+Info:    routing  1.28  4.20 Net top_inst.run_prev_LUT4_I2_I3[1] (15,8) -> (17,6)
+Info:                          Sink top_inst.rst_s2_LUT2_I0_1_F_LUT4_F.I3
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.62  4.83 Source top_inst.rst_s2_LUT2_I0_1_F_LUT4_F.F
+Info:    routing  2.82  7.65 Net top_inst.rst_s2_LUT2_I0_1_F[3] (17,6) -> (19,6)
+Info:                          Sink top_inst.schedule_ctrl_inst.table_mem.0.1_DO_3_LUT4_F.I3
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.62  8.27 Source top_inst.schedule_ctrl_inst.table_mem.0.1_DO_3_LUT4_F.F
+Info:    routing  1.37  9.64 Net top_inst.schedule_ctrl_inst.table_mem.0.0_DO[4] (19,6) -> (22,5)
+Info:                          Sink top_inst.schedule_ctrl_inst.table_mem.1.1_DO_LUT2_F_1.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.10  10.74 Source top_inst.schedule_ctrl_inst.table_mem.1.1_DO_LUT2_F_1.F
+Info:    routing  1.76  12.50 Net top_inst.schedule_ctrl_inst.cnt_reg_DFFRE_Q_D_LUT2_F_I0_ALU_I0_COUT[3] (22,5) -> (20,1)
+Info:                          Sink top_inst.beta_DFFE_Q_2_D_MUX2_LUT7_O.S0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.18  12.68 Source top_inst.beta_DFFE_Q_2_D_MUX2_LUT7_O.O
+Info:    routing  2.01  14.69 Net top_inst.beta_DFFE_Q_2_D (20,1) -> (25,4)
+Info:                          Sink top_inst.beta_DFFE_Q_2_passthrough_lut$.I3
+Info:      logic  0.62  15.32 Source top_inst.beta_DFFE_Q_2_passthrough_lut$.F
+Info:    routing  0.00  15.32 Net top_inst.beta_DFFE_Q_2$conn$D (25,4) -> (25,4)
+Info:                          Sink top_inst.beta_DFFE_Q_2.D
+Info:      setup  0.40  15.72 Source top_inst.beta_DFFE_Q_2.D
+Info: 5.73 ns logic, 9.99 ns routing
+
+Info: Max frequency for clock 'top_inst.clk': 63.63 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 5 endpoint(s)
+Info:          + represents [1,5) endpoint(s)
+Info: [ 21321,  22038) |+
+Info: [ 22038,  22755) |******************+
+Info: [ 22755,  23472) |************************************************************ 
+Info: [ 23472,  24189) |***************************************************+
+Info: [ 24189,  24906) |*******************************************************+
+Info: [ 24906,  25623) |*************************************************+
+Info: [ 25623,  26340) |******************************************+
+Info: [ 26340,  27057) |**************+
+Info: [ 27057,  27774) |********************+
+Info: [ 27774,  28491) |***************************************+
+Info: [ 28491,  29208) |*************************************+
+Info: [ 29208,  29925) |**************************************+
+Info: [ 29925,  30642) |**************************+
+Info: [ 30642,  31359) |****************+
+Info: [ 31359,  32076) |**********************************+
+Info: [ 32076,  32793) |********************************************+
+Info: [ 32793,  33510) |*******************************************+
+Info: [ 33510,  34227) |****************************************+
+Info: [ 34227,  34944) |************************************+
+Info: [ 34944,  35661) |***************+
+
+Info: Program finished normally.

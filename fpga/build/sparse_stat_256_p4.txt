@@ -1,0 +1,40 @@
+
+19. Printing statistics.
+
+=== sparse_top ===
+
+        +----------Local Count, excluding submodules.
+        | 
+     7402 wires
+    14377 wire bits
+     7402 public wires
+    14377 public wire bits
+        6 ports
+       11 port bits
+     9011 cells
+       23   $scopeinfo
+      831   ALU
+      217   DFF
+      776   DFFE
+       93   DFFR
+      772   DFFRE
+        5   DFFS
+       79   DFFSE
+        8   DPB
+        4   DPX9B
+        1   GND
+        4   IBUF
+      423   LUT1
+      506   LUT2
+     1631   LUT3
+     2165   LUT4
+      975   MUX2_LUT5
+      301   MUX2_LUT6
+       70   MUX2_LUT7
+       30   MUX2_LUT8
+        7   OBUF
+       84   RAM16SDP4
+        1   SDPX9B
+        4   SPX9
+        1   VCC
+

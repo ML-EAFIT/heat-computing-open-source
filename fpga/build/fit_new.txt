@@ -1,0 +1,74 @@
+=== default top
+  warnings.warn("Msgspec is not available, performance will be degraded.")
+/home/jero98772/tools/oss-cad-suite/lib/python3.11/site-packages/apycula/crc16.py:19: UserWarning: fastcrc is not available, performance will be degraded.
+  warnings.warn("fastcrc is not available, performance will be degraded.")
+Info: Device utilisation:
+Info: 	                 VCC:       1/      1   100%
+Info: 	                 IOB:      11/    276     3%
+Info: 	                LUT4:    2801/   8640    32%
+Info: 	              OSER16:       0/     80     0%
+Info: 	              IDES16:       0/     80     0%
+Info: 	            IOLOGICI:       0/    276     0%
+Info: 	            IOLOGICO:       0/    276     0%
+Info: 	           MUX2_LUT5:     281/   4320     6%
+Info: 	           MUX2_LUT6:      52/   2160     2%
+Info: 	           MUX2_LUT7:      21/   1080     1%
+Info: 	           MUX2_LUT8:       3/   1080     0%
+Info: 	                 ALU:    1000/   6480    15%
+Info: 	                 GND:       1/      1   100%
+Info: 	                 DFF:    1326/   6480    20%
+Info: 	           RAM16SDP4:       7/    270     2%
+Info: 	               BSRAM:      10/     26    38%
+Info: 	              ALU54D:       0/     10     0%
+Info: 	     MULTADDALU18X18:       0/     10     0%
+Info: 	        MULTALU18X18:       0/     10     0%
+Info: 	        MULTALU36X18:       0/     10     0%
+Info: 	           MULT36X36:       0/      5     0%
+Info: 	           MULT18X18:       0/     20     0%
+Info: 	             MULT9X9:       0/     40     0%
+Info: 	              PADD18:       0/     20     0%
+Info: 	               PADD9:       0/     40     0%
+Info: 	                 GSR:       1/      1   100%
+Info: 	                 OSC:       0/      1     0%
+Info: 	                rPLL:       0/      2     0%
+Info: 	           FLASH608K:       0/      1     0%
+Info: 	                BUFG:       0/     22     0%
+Info: 	                DQCE:       0/     24     0%
+Info: 	                 DCS:       0/      8     0%
+Info: 	               DHCEN:       0/     24     0%
+Info: 	              CLKDIV:       0/      8     0%
+Info: 	             CLKDIV2:       0/     16     0%
+Info: 	           MIPI_IBUF:       0/     22     0%
+Info: 	           MIPI_OBUF:       0/     20     0%
+
+Info: Running custom HCLK placer...
+Info: Max frequency for clock 'gen_dense.pbit_array_inst.clk': 80.80 MHz (PASS at 27.00 MHz)
+Info: Max frequency for clock 'gen_dense.pbit_array_inst.clk': 63.41 MHz (PASS at 27.00 MHz)
+=== case factor6_pt
+  warnings.warn("fastcrc is not available, performance will be degraded.")
+Info: 	                LUT4:    3674/   8640    42%
+Info: 	                 ALU:    1136/   6480    17%
+Info: 	                 DFF:    1531/   6480    23%
+Info: 	               BSRAM:      11/     26    42%
+Info: Max frequency for clock 'top_inst.clk': 43.26 MHz (PASS at 27.00 MHz)
+=== sparse noise
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:221: Warning: Range select [23:16] out of bounds on signal `\genblk1.DOB': Setting all 8 result bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:221: Warning: Range select [31:24] out of bounds on signal `\genblk1.DOB': Setting all 8 result bits to undef.
+nextpnr-himbaechel --json build/sparse_256_p4_g12_ferro16_noise.json --write build/sparse_pnr_256_p4_g12_ferro16_noise.json \
+  --device GW1NR-LV9QN88PC6/I5 --vopt family=GW1N-9C --vopt cst=tangnano9k.cst --freq 27 \
+  -l build/sparse_256_p4_g12_ferro16_noise.log > /dev/null 2>&1
+make: *** [Makefile:104: sparse] Error 125
+=== pmode chain4
+Info: 	                LUT4:    1203/   8640    13%
+Info: 	                 ALU:     420/   6480     6%
+Info: 	                 DFF:     548/   6480     8%
+Info: 	               BSRAM:       2/     26     7%
+Info: 	     MULTADDALU18X18:       0/     10     0%
+Info: 	        MULTALU18X18:       0/     10     0%
+Info: 	        MULTALU36X18:       0/     10     0%
+Info: 	           MULT36X36:       0/      5     0%
+Info: Max frequency for clock 'pmode_top_inst.clk': 52.26 MHz (PASS at 27.00 MHz)
+=== pmode fit
+M=4   	 LUT4: 1203/ 8640 13% | 	 DFF: 548/ 6480 8% | Pack DSP... 	 MULT18X18: 7/ 20 35% 'pmode_top_inst.pmode_array_inst.sq_reg_MULT18X18_A_DOUT[24]' is routed using segments.  |  'pmode_top_inst.clk': 51.30 MHz (PASS at 27.00 MHz)
+M=8   	 LUT4: 1232/ 8640 14% | 	 DFF: 678/ 6480 10% | Pack DSP... 	 MULT18X18: 7/ 20 35% 'pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_A_5_ALU_SUM_COUT_ALU_CIN_SUM_LUT3_F_1_I2_LUT4_F_I2_LUT4_I2_F_LUT4_F_I2_LUT2_I0_1_F' is routed using segments.  |  'pmode_top_inst.clk': 44.53 MHz (PASS at 27.00 MHz)
+M=16  	 LUT4: 1682/ 8640 19% | 	 DFF: 936/ 6480 14% | Pack DSP... 	 MULT18X18: 7/ 20 35% 'pmode_top_inst.pmode_array_inst.sq_reg_MULT18X18_A_DOUT[24]' is routed using segments.  |  'pmode_top_inst.clk': 41.23 MHz (PASS at 27.00 MHz)

@@ -1,0 +1,225 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 500" role="img" aria-label="p-gates NOT, AND, OR and XOR as small Ising graphs with their biases, couplings and exact truth-table probabilities" font-family="IBM Plex Sans, system-ui, sans-serif">
+<style>
+svg{--bg:#faf9f6;--ink:#1d2329;--mut:#66707a;--line:#8f99a3;--warm:#c4501d;--warmf:#fbe5d8;
+--cool:#16708a;--coolf:#dbeef3;--ok:#2c8a4b;--okf:#ddf0e3;--bad:#b9b5ac;--badf:#efede8;--panel:#f1efea}
+@media (prefers-color-scheme:dark){svg{--bg:#14181c;--ink:#e5e8eb;--mut:#9aa4ae;--line:#64707b;
+--warm:#f08a5c;--warmf:#3b2418;--cool:#5cc1d9;--coolf:#12303a;--ok:#6dca8b;--okf:#163322;--bad:#6d6a64;
+--badf:#24272a;--panel:#1b2025}}
+
+.bg{fill:var(--bg)} .panel{fill:var(--panel)}
+.t{fill:var(--ink);font:13px 'IBM Plex Sans',system-ui,sans-serif}
+.ts{fill:var(--mut);font:11px 'IBM Plex Sans',system-ui,sans-serif}
+.tm{fill:var(--ink);font:11.5px 'IBM Plex Mono',ui-monospace,monospace}
+.tms{fill:var(--mut);font:10.5px 'IBM Plex Mono',ui-monospace,monospace}
+.th{fill:var(--ink);font:600 15px 'IBM Plex Sans',system-ui,sans-serif}
+.tb{fill:var(--ink);font:600 13px 'IBM Plex Sans',system-ui,sans-serif}
+.tw{fill:var(--warm)} .tc{fill:var(--cool)} .tok{fill:var(--ok)}
+.warm{fill:var(--warmf);stroke:var(--warm);stroke-width:1.4}
+.cool{fill:var(--coolf);stroke:var(--cool);stroke-width:1.4}
+.ok{fill:var(--okf);stroke:var(--ok);stroke-width:1.4}
+.bad{fill:var(--badf);stroke:var(--bad);stroke-width:1.2}
+.plain{fill:var(--bg);stroke:var(--line);stroke-width:1.2}
+.ln{stroke:var(--line);stroke-width:1.4;fill:none}
+.lw{stroke:var(--warm);stroke-width:1.6;fill:none}
+.lc{stroke:var(--cool);stroke-width:1.6;fill:none}
+.lk{stroke:var(--ink);stroke-width:1.6;fill:none}
+.dash{stroke-dasharray:4 4}
+.fw{fill:var(--warm)} .fc{fill:var(--cool)} .fk{fill:var(--ink)} .fl{fill:var(--line)}
+</style>
+<rect width="1260" height="500" class="bg"/>
+<text x="24.0" y="32.0" class="th" text-anchor="start" >p-gates: Boolean gates as energy landscapes</text>
+<text x="24.0" y="52.0" class="ts" text-anchor="start" >Circles are p-bits (blue = input, orange = output, grey = auxiliary). Edge = coupling J (solid +: wants equal, dashed −: wants opposite). The truth-table rows are the lowest-energy states, so a free-running sampler mostly visits them.</text>
+<rect x="24.0" y="76.0" width="300.0" height="360.0" rx="10" class="panel"/>
+<text x="40.0" y="102.0" class="th" text-anchor="start" >p-NOT</text>
+<text x="40.0" y="120.0" class="ts" text-anchor="start" >1 coupling, J = −1</text>
+<line x1="94.0" y1="196.0" x2="254.0" y2="196.0" class="lc dash"/>
+<rect x="159.0" y="187.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="174.0" y="200.0" class="tms" text-anchor="middle" >-1</text>
+<circle cx="94.0" cy="196.0" r="17" class="cool"/>
+<text x="94.0" y="200.0" class="tb" text-anchor="middle" >A</text>
+<text x="70.0" y="200.0" class="tms" text-anchor="end" >h=0</text>
+<circle cx="254.0" cy="196.0" r="17" class="warm"/>
+<text x="254.0" y="200.0" class="tb" text-anchor="middle" >Y</text>
+<text x="278.0" y="200.0" class="tms" text-anchor="start" >h=0</text>
+<text x="40.0" y="282.0" class="tms" text-anchor="start" >A → Y</text>
+<text x="308.0" y="282.0" class="tms" text-anchor="end" >P at β=1</text>
+<rect x="36.0" y="294.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="46.0" y="306.0" class="tm" text-anchor="start" >0  →  1</text>
+<rect x="144.0" y="297.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="308.0" y="306.0" class="tm" text-anchor="end" >0.440</text>
+<rect x="36.0" y="313.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="46.0" y="325.0" class="tm" text-anchor="start" >1  →  0</text>
+<rect x="144.0" y="316.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="308.0" y="325.0" class="tm" text-anchor="end" >0.440</text>
+<rect x="36.0" y="332.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="46.0" y="344.0" class="tm" text-anchor="start" >0  →  0</text>
+<rect x="144.0" y="335.0" width="14.9" height="10.0" rx="2" class="bad"/>
+<text x="308.0" y="344.0" class="tm" text-anchor="end" >0.060</text>
+<rect x="36.0" y="351.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="46.0" y="363.0" class="tm" text-anchor="start" >1  →  1</text>
+<rect x="144.0" y="354.0" width="14.9" height="10.0" rx="2" class="bad"/>
+<text x="308.0" y="363.0" class="tm" text-anchor="end" >0.060</text>
+<text x="40.0" y="420.0" class="ts" text-anchor="start" >P(valid row) = 0.881</text>
+<text x="308.0" y="420.0" class="ts" text-anchor="end" >grey: 2 likeliest invalid rows</text>
+<rect x="334.0" y="76.0" width="300.0" height="360.0" rx="10" class="panel"/>
+<text x="350.0" y="102.0" class="th" text-anchor="start" >p-AND</text>
+<text x="350.0" y="120.0" class="ts" text-anchor="start" >3 p-bits, gap 4 between valid and invalid</text>
+<line x1="394.0" y1="166.0" x2="394.0" y2="236.0" class="lc dash"/>
+<rect x="379.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="394.0" y="205.0" class="tms" text-anchor="middle" >-1</text>
+<line x1="394.0" y1="166.0" x2="564.0" y2="201.0" class="lw"/>
+<rect x="464.0" y="174.5" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="479.0" y="187.5" class="tms" text-anchor="middle" >+2</text>
+<line x1="394.0" y1="236.0" x2="564.0" y2="201.0" class="lw"/>
+<rect x="464.0" y="209.5" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="479.0" y="222.5" class="tms" text-anchor="middle" >+2</text>
+<circle cx="394.0" cy="166.0" r="17" class="cool"/>
+<text x="394.0" y="170.0" class="tb" text-anchor="middle" >A</text>
+<text x="370.0" y="170.0" class="tms" text-anchor="end" >h=+1</text>
+<circle cx="394.0" cy="236.0" r="17" class="cool"/>
+<text x="394.0" y="240.0" class="tb" text-anchor="middle" >B</text>
+<text x="370.0" y="240.0" class="tms" text-anchor="end" >h=+1</text>
+<circle cx="564.0" cy="201.0" r="17" class="warm"/>
+<text x="564.0" y="205.0" class="tb" text-anchor="middle" >Y</text>
+<text x="588.0" y="205.0" class="tms" text-anchor="start" >h=-2</text>
+<text x="350.0" y="282.0" class="tms" text-anchor="start" >A B → Y</text>
+<text x="618.0" y="282.0" class="tms" text-anchor="end" >P at β=1</text>
+<rect x="346.0" y="294.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="356.0" y="306.0" class="tm" text-anchor="start" >0 0  →  0</text>
+<rect x="454.0" y="297.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="618.0" y="306.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="346.0" y="313.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="356.0" y="325.0" class="tm" text-anchor="start" >0 1  →  0</text>
+<rect x="454.0" y="316.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="618.0" y="325.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="346.0" y="332.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="356.0" y="344.0" class="tm" text-anchor="start" >1 0  →  0</text>
+<rect x="454.0" y="335.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="618.0" y="344.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="346.0" y="351.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="356.0" y="363.0" class="tm" text-anchor="start" >1 1  →  1</text>
+<rect x="454.0" y="354.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="618.0" y="363.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="346.0" y="370.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="356.0" y="382.0" class="tm" text-anchor="start" >0 1  →  1</text>
+<rect x="454.0" y="373.0" width="2.0" height="10.0" rx="2" class="bad"/>
+<text x="618.0" y="382.0" class="tm" text-anchor="end" >0.005</text>
+<rect x="346.0" y="389.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="356.0" y="401.0" class="tm" text-anchor="start" >1 0  →  1</text>
+<rect x="454.0" y="392.0" width="2.0" height="10.0" rx="2" class="bad"/>
+<text x="618.0" y="401.0" class="tm" text-anchor="end" >0.005</text>
+<text x="350.0" y="420.0" class="ts" text-anchor="start" >P(valid row) = 0.986</text>
+<text x="618.0" y="420.0" class="ts" text-anchor="end" >grey: 2 likeliest invalid rows</text>
+<rect x="644.0" y="76.0" width="300.0" height="360.0" rx="10" class="panel"/>
+<text x="660.0" y="102.0" class="th" text-anchor="start" >p-OR</text>
+<text x="660.0" y="120.0" class="ts" text-anchor="start" >AND with every bias negated</text>
+<line x1="704.0" y1="166.0" x2="704.0" y2="236.0" class="lc dash"/>
+<rect x="689.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="704.0" y="205.0" class="tms" text-anchor="middle" >-1</text>
+<line x1="704.0" y1="166.0" x2="874.0" y2="201.0" class="lw"/>
+<rect x="774.0" y="174.5" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="789.0" y="187.5" class="tms" text-anchor="middle" >+2</text>
+<line x1="704.0" y1="236.0" x2="874.0" y2="201.0" class="lw"/>
+<rect x="774.0" y="209.5" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="789.0" y="222.5" class="tms" text-anchor="middle" >+2</text>
+<circle cx="704.0" cy="166.0" r="17" class="cool"/>
+<text x="704.0" y="170.0" class="tb" text-anchor="middle" >A</text>
+<text x="680.0" y="170.0" class="tms" text-anchor="end" >h=-1</text>
+<circle cx="704.0" cy="236.0" r="17" class="cool"/>
+<text x="704.0" y="240.0" class="tb" text-anchor="middle" >B</text>
+<text x="680.0" y="240.0" class="tms" text-anchor="end" >h=-1</text>
+<circle cx="874.0" cy="201.0" r="17" class="warm"/>
+<text x="874.0" y="205.0" class="tb" text-anchor="middle" >Y</text>
+<text x="898.0" y="205.0" class="tms" text-anchor="start" >h=+2</text>
+<text x="660.0" y="282.0" class="tms" text-anchor="start" >A B → Y</text>
+<text x="928.0" y="282.0" class="tms" text-anchor="end" >P at β=1</text>
+<rect x="656.0" y="294.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="666.0" y="306.0" class="tm" text-anchor="start" >0 0  →  0</text>
+<rect x="764.0" y="297.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="928.0" y="306.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="656.0" y="313.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="666.0" y="325.0" class="tm" text-anchor="start" >0 1  →  1</text>
+<rect x="764.0" y="316.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="928.0" y="325.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="656.0" y="332.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="666.0" y="344.0" class="tm" text-anchor="start" >1 0  →  1</text>
+<rect x="764.0" y="335.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="928.0" y="344.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="656.0" y="351.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="666.0" y="363.0" class="tm" text-anchor="start" >1 1  →  1</text>
+<rect x="764.0" y="354.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="928.0" y="363.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="656.0" y="370.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="666.0" y="382.0" class="tm" text-anchor="start" >0 0  →  1</text>
+<rect x="764.0" y="373.0" width="2.0" height="10.0" rx="2" class="bad"/>
+<text x="928.0" y="382.0" class="tm" text-anchor="end" >0.005</text>
+<rect x="656.0" y="389.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="666.0" y="401.0" class="tm" text-anchor="start" >0 1  →  0</text>
+<rect x="764.0" y="392.0" width="2.0" height="10.0" rx="2" class="bad"/>
+<text x="928.0" y="401.0" class="tm" text-anchor="end" >0.005</text>
+<text x="660.0" y="420.0" class="ts" text-anchor="start" >P(valid row) = 0.986</text>
+<text x="928.0" y="420.0" class="ts" text-anchor="end" >grey: 2 likeliest invalid rows</text>
+<rect x="954.0" y="76.0" width="300.0" height="360.0" rx="10" class="panel"/>
+<text x="970.0" y="102.0" class="th" text-anchor="start" >p-XOR</text>
+<text x="970.0" y="120.0" class="ts" text-anchor="start" >needs 1 auxiliary p-bit X</text>
+<line x1="1014.0" y1="161.0" x2="1014.0" y2="241.0" class="lc dash"/>
+<rect x="999.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1014.0" y="205.0" class="tms" text-anchor="middle" >-1</text>
+<line x1="1014.0" y1="161.0" x2="1194.0" y2="161.0" class="lc dash"/>
+<rect x="1089.0" y="152.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1104.0" y="165.0" class="tms" text-anchor="middle" >-1</text>
+<line x1="1014.0" y1="241.0" x2="1194.0" y2="161.0" class="lc dash"/>
+<rect x="1089.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1104.0" y="205.0" class="tms" text-anchor="middle" >-1</text>
+<line x1="1014.0" y1="161.0" x2="1194.0" y2="241.0" class="lc dash"/>
+<rect x="1089.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1104.0" y="205.0" class="tms" text-anchor="middle" >-2</text>
+<line x1="1014.0" y1="241.0" x2="1194.0" y2="241.0" class="lc dash"/>
+<rect x="1089.0" y="232.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1104.0" y="245.0" class="tms" text-anchor="middle" >-2</text>
+<line x1="1194.0" y1="161.0" x2="1194.0" y2="241.0" class="lc dash"/>
+<rect x="1179.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1194.0" y="205.0" class="tms" text-anchor="middle" >-2</text>
+<circle cx="1014.0" cy="161.0" r="17" class="cool"/>
+<text x="1014.0" y="165.0" class="tb" text-anchor="middle" >A</text>
+<text x="990.0" y="165.0" class="tms" text-anchor="end" >h=-1</text>
+<circle cx="1014.0" cy="241.0" r="17" class="cool"/>
+<text x="1014.0" y="245.0" class="tb" text-anchor="middle" >B</text>
+<text x="990.0" y="245.0" class="tms" text-anchor="end" >h=-1</text>
+<circle cx="1194.0" cy="161.0" r="17" class="warm"/>
+<text x="1194.0" y="165.0" class="tb" text-anchor="middle" >Y</text>
+<text x="1218.0" y="165.0" class="tms" text-anchor="start" >h=-1</text>
+<circle cx="1194.0" cy="241.0" r="17" class="plain"/>
+<text x="1194.0" y="245.0" class="tb" text-anchor="middle" >X</text>
+<text x="1218.0" y="245.0" class="tms" text-anchor="start" >h=-2</text>
+<text x="970.0" y="282.0" class="tms" text-anchor="start" >A B → Y</text>
+<text x="1238.0" y="282.0" class="tms" text-anchor="end" >P at β=1.5</text>
+<rect x="966.0" y="294.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="976.0" y="306.0" class="tm" text-anchor="start" >0 0  →  0</text>
+<rect x="1074.0" y="297.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="1238.0" y="306.0" class="tm" text-anchor="end" >0.230</text>
+<rect x="966.0" y="313.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="976.0" y="325.0" class="tm" text-anchor="start" >0 1  →  1</text>
+<rect x="1074.0" y="316.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="1238.0" y="325.0" class="tm" text-anchor="end" >0.230</text>
+<rect x="966.0" y="332.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="976.0" y="344.0" class="tm" text-anchor="start" >1 0  →  1</text>
+<rect x="1074.0" y="335.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="1238.0" y="344.0" class="tm" text-anchor="end" >0.230</text>
+<rect x="966.0" y="351.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="976.0" y="363.0" class="tm" text-anchor="start" >1 1  →  0</text>
+<rect x="1074.0" y="354.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="1238.0" y="363.0" class="tm" text-anchor="end" >0.230</text>
+<rect x="966.0" y="370.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="976.0" y="382.0" class="tm" text-anchor="start" >0 0  →  1</text>
+<rect x="1074.0" y="373.0" width="11.0" height="10.0" rx="2" class="bad"/>
+<text x="1238.0" y="382.0" class="tm" text-anchor="end" >0.023</text>
+<rect x="966.0" y="389.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="976.0" y="401.0" class="tm" text-anchor="start" >0 1  →  0</text>
+<rect x="1074.0" y="392.0" width="11.0" height="10.0" rx="2" class="bad"/>
+<text x="1238.0" y="401.0" class="tm" text-anchor="end" >0.023</text>
+<text x="970.0" y="420.0" class="ts" text-anchor="start" >P(valid row) = 0.920</text>
+<text x="1238.0" y="420.0" class="ts" text-anchor="end" >grey: 2 likeliest invalid rows</text>
+<text x="24.0" y="464.0" class="ts" text-anchor="start" >E(s) = −Σ J_ij s_i s_j − Σ h_i s_i, logic 1 = spin +1. Probabilities: exact Boltzmann law from model/pgates.py; the RTL reproduces them (docs/05).</text>
+<text x="24.0" y="482.0" class="ts" text-anchor="start" >Coefficients: standard Ising gadgets [NOT IN SOURCES]. The papers only say gates can be built by composing energies [BP p.3].</text>
+</svg>

@@ -1,0 +1,2604 @@
+                                                   An eﬃcient probabilistic hardware architecture for diﬀusion-like models
+
+                                                                 Andraž Jelinčič,1, ∗ Owen Lockwood,1 Akhil Garlapati,1 Peter Schillinger,1
+                                                                     Isaac L. Chuang,2 Guillaume Verdon,1 and Trevor McCourt ∗, 1, †
+                                                                                                 1
+                                                                                                   Extropic Corp.
+                                                     2
+                                                         Department of Electrical Engineering and Computer Science, Massachusetts Institute of Technology
+                                                                                           (Dated: December 12, 2025)
+                                                           The proliferation of probabilistic AI has prompted proposals for specialized stochastic computers.
+                                                         Despite promising eciency gains, these proposals have failed to gain traction because they rely
+                                                         on fundamentally limited modeling techniques and exotic, unscalable hardware. In this work, we
+                                                         address these shortcomings by proposing an all-transistor probabilistic computer that implements
+                                                         powerful denoising models at the hardware level. A system-level analysis indicates that devices based
+                                                         on our architecture could achieve performance parity with GPUs on a simple image benchmark using
+                                                         approximately 10,000 times less energy.
+arXiv:2510.23972v2 [cs.LG] 10 Dec 2025
+
+
+
+
+                                            The unprecedented recent investment in large-scale AI
+                                         systems will soon put a strain on the world’s energy in-                              GPU
+                                                                                                                              Prob. Computer
+                                         frastructure. Every year, U.S. rms spend an amount
+                                         larger than the ination-adjusted cost of the Apollo pro-
+                                                                                                                                               VAE
+                                         gram on AI-focused data centers [1, 2]. By 2030, these
+                                                                                                                         Ours [DTM]
+                                         data centers could consume around 10% of all of the en-
+                                         ergy produced in the U.S. [3]. At the same time, model
+                                         sizes, dataset sizes, and deployment footprints continue                                                                DDPM
+                                                                                                                                                  GAN
+                                         to grow rapidly.
+                                            Existing AI systems based on autoregressive large lan-
+                                         guage models (LLMs) are valuable tools in white-collar
+                                         elds [4–9], and are being adopted by consumers faster                                           MEBM
+                                         than the internet [10]. However, LLMs were architected
+                                         specically for GPUs [11], hardware originally intended
+                                         for graphics, whose suitability for machine learning was
+                                         discovered accidentally decades later [12, 13]. Had a dif-
+                                         ferent style of hardware been popular in the last few
+                                         decades, AI algorithms would likely have evolved in a dif-
+                                                                                                             FIG. 1. Leveraging CMOS probabilistic hardware in
+                                         ferent direction, and possibly a more energy-ecient one.
+                                                                                                             ultra-eﬃcient AI systems. The central result of this
+                                         This interplay between algorithm research and hardware              article: an all-transistor probabilistic computer running a
+                                         availability is known as the “hardware lottery” [14], and           denoising thermodynamic model (DTM) could match GPU
+                                         it entrenches hardware–algorithm pairings that may be               performance on a simple modeling benchmark while using
+                                         far from optimal.                                                   about 10,000× less energy. All models are trained on bi-
+                                            Therefore, prudent planning calls for systematic explo-          narized Fashion-MNIST [22] and evaluated with Fréchet In-
+                                         ration of other types of AI systems in search of energy-            ception Distance (FID) [23]. DTM variants are of increasing
+                                         ecient alternatives. Active eorts include mixed-signal            depth, chaining 2–8 sequential Energy-Based Models (EBMs).
+                                         compute-in-memory accelerators [15], photonic neural                GPU baselines cover single-step VAE [24] and GAN [25], plus
+                                         networks [16], and neuromorphic processors that emulate             DDPM [26] at varying numbers of steps. We also compare
+                                         biological spiking [17, 18]. These approaches explicitly            DTM to a monolithic EBM across multiple mixing-time lim-
+                                                                                                             its. The horizontal axis shows the energy needed for generat-
+                                         confront the fact that computation is a physical process
+                                                                                                             ing a single new image using the trained model (inference).
+                                         and that respecting physical constraints can lead to qual-
+                                         itatively dierent designs.
+                                            Probabilistic computing is an attractive approach be-
+                                         cause it can connect directly to AI at the system level             ning [19, 20]. Using probabilistic hardware to acceler-
+                                         via Energy-Based Models (EBMs). EBMs are a well-                    ate EBMs falls under the broad umbrella of thermody-
+                                         established model class in contemporary deep learning               namic computing [21], in which computation is expressed
+                                         and have been competitive with the state of the art                 in terms of stochastic dynamics on energy landscapes.
+                                         in tasks like image generation and robotic path plan-                  Hardware implementations of EBMs work with special
+                                                                                                             model families that adhere to physical constraints such as
+                                                                                                             locality, sparsity, and limited connection density. Thanks
+                                                                                                             to these constraints, probabilistic computers can utilize
+                                         ∗ These authors contributed equally to this work.
+                                                                                                             specialized stochastic circuitry to eciently and quickly
+                                         † Corresponding author: trevor@extropic.ai
+                                                                                                             produce samples from a Boltzmann distribution [27]. De-
+                                                                                                                     2
+
+pending on the precise kind of hardware being used, this     of parameters and FLOPs) and thus consuming roughly
+sampling may occur as part of the natural dynamics of        an order of magnitude less energy in total.
+the device [28–32] or may be orchestrated using an algo-
+rithm like Gibbs sampling [33–36].
+   Past attempts at EBM accelerators have suered from              I.   THE CHALLENGE WITH EBMS
+issues at both the architectural and hardware levels. All
+previous proposals used EBMs as monolithic models of            The fundamental problem of machine learning is in-
+data distributions, which is known to be challenging to      ferring the probability distribution that underlies some
+scale [37]. Additionally, existing devices have relied on    data [43, 44]. An early approach [45] to this was to use
+exotic components such as magnetic tunnel junctions as       a monolithic EBM (MEBM) to t a data distribution
+sources of intense thermal noise for random-number gen-      directly by shaping a parameterized energy function E:
+eration (RNG) [35, 38, 39]. These exotic components
+have not yet been tightly integrated with transistors in                        P (x; θ) ∝ e−E(x,θ) ,              (1)
+commercial CMOS processes and do not currently con-
+stitute a scalable solution [40–42].                         where x is a random variable representing the data and
+   In this work, we address these issues and propose a       θ represents the parameters of the EBM.
+commercially viable probabilistic computing system that         Fitting an MEBM corresponds to assigning low en-
+is designed for thermodynamic hardware from the out-         ergies to values of x where data are abundant and high
+set. At the modeling level, we introduce Denoising Ther-     energies to values of x that are far from data. Real-world
+modynamic Models (DTMs), which repurpose hardware            data are often clustered into distinct modes [46, 47],
+EBMs as denoising steps rather than monolithic mod-          meaning that an MEBM that ts data well will have a
+els of the data distribution, thereby mitigating the mix-    complex, rugged energy landscape with many deep val-
+ing–expressivity tradeo that plagues monolithic EBMs.       leys surrounded by tall mountains. This complexity is
+At the architectural level, we propose the Denoising         illustrated by the cartoon in Fig. 2 (a).
+Thermodynamic Computer Architecture (DTCA), which               Unlike the systems we propose, existing probabilis-
+tightly integrates DTMs into probabilistic hardware built    tic computers based on MEBMs struggle with the mul-
+from sparse, locally connected Boltzmann machines and        timodality of real-world data, which hinders their e-
+an all-transistor RNG. Finally, we perform a system-         ciency. Namely, the amount of energy the computer must
+level energy analysis, using measurements from an exper-     expend to draw a sample from the MEBM’s distribution
+imental thermodynamic RNG chip together with physical        can be tremendous if its energy landscape is very rough.
+models and simulations, and show that a device based on         Specically, sampling algorithms that operate in high
+this architecture could match the performance of GPU-        dimensions (such as Gibbs sampling [48]) are locally in-
+based generative models on binarized Fashion-MNIST (as       formed iterative procedures, meaning that they sample a
+measured by Fréchet Inception Distance) while using ap-      landscape by randomly making small movements in the
+proximately 10,000 times less energy per generated sam-      space based on low-dimensional information. When using
+ple.                                                         such a procedure to sample from Eq. (1), the probability
+   The remainder of this article will substantiate the re-   that the iteration will move up in energy to some state
+sults presented in Fig. 1, which are based on a combina-     X[k + 1] is exponentially small in the energy increase
+tion of measurements from real circuits, physical models,    compared to the current state X[k], i.e.,
+and simulations. To begin, we introduce a fundamental                                                   ′
+compromise inherent in using EBMs as standalone mod-               P(X[k + 1] = x′ X[k] = x) ∝ e−(E(x )−E(x))    (2)
+els of data, which we refer to as the mixing–expressivity
+tradeoﬀ. We then discuss how this compromise can be          For large dierences in energy, like those encountered
+avoided by wielding EBMs as part of a denoising pro-         when trying to move between two valleys separated by
+cess rather than monolithically. Next, we outline how to     a signicant barrier, this probability can be very close
+build a hardware system using DTMs to implement this         to zero. In standard Markov-chain analyses, such barri-
+denoising process at a very low level. Then, we study sim-   ers lead to exponentially large expected transition times
+ulations of this hardware system, further justifying the     between modes, which is reected in a rapidly growing
+results shown in Fig. 1 and highlighting some of the prac-   mixing time.
+tical merits of DTMs compared to existing approaches.           The mixing–expressivity tradeo (MET) summarizes
+Finally, we conclude by discussing how the capabilities      this issue with existing probabilistic computer architec-
+of probabilistic accelerators for machine learning may be    tures, reecting the fact that modeling performance and
+scaled by merging them with traditional neural networks      sampling hardness are coupled for MEBMs. Speci-
+(NNs). We demonstrate that such a hybrid model com-          cally, as the expressivity (modeling performance) of an
+posed of a DTM and a neural network can achieve per-         MEBM increases, its mixing time (the amount of com-
+formance parity with a purely NN-based model on the          putational eort needed to draw independent samples
+CIFAR-10 benchmark while using a ten times smaller           from the MEBM’s distribution) becomes progressively
+neural network component (both in terms of the number        longer, resulting in expensive inference and unstable
+                                                                                                                                3
+
+                           Data dim                             II.   DENOISING THERMODYNAMIC MODELS
+                                      ension 1
+          a
+                                                                  The MET makes it clear that MEBMs have a aw that
+
+
+
+
+                                                 Data dim
+                                                                makes them challenging and energetically costly to scale.
+                                                                However, this aw is avoidable, and many types of prob-
+                                                                abilistic machine learning models have been developed
+
+
+
+
+                                                   ension 2
+                                                                to solve the distribution modeling problem while circum-
+                                                                venting the MET.
+                                                                   Denoising diusion models were explicitly designed
+        Energy
+
+
+
+
+                                         ΔE
+                                                                to sidestep the MET by gradually building complexity
+                                                                through a series of simple, easy-to-sample probabilistic
+                                                                transformations [26]. By doing so, they allowed for much
+                                                                more complex distributions to be expressed given a xed
+                                                                compute budget and substantially expanded the capabil-
+                                                                ities of generative models [51–53].
+             b                                                     DTMs merge EBMs with diusion models, oering an
+                                                                alternative path for probabilistic computing that mit-
+                   DTM                                          igates the MET. DTMs are a slight generalization of
+                           MEBM                                 recent work from deep learning practitioners that has
+                                                                pushed the frontier of EBM performance [54–57].
+                                                                   Instead of trying to use a single EBM to model the
+                                                                data, DTMs chain many EBMs to gradually build up to
+                                                                the complexity of the data distribution. This gradual
+FIG. 2. The mixing–expressivity tradeo. (a) A car-             buildup of complexity allows the landscape of each EBM
+toon illustrating the mixing–expressivity tradeo in EBMs.      in the chain to remain relatively simple (and easy to sam-
+It shows a projection of an energy landscape t to a simple     ple) without limiting the complexity of the distribution
+dataset. The “airplane” mode is well separated from the “dog”   modeled by the chain as a whole; see Fig. 2 (b).
+mode, with very little data in between. Progressively better
+ts of the EBM to the data tend to feature larger energy bar-     Denoising models attempt to reverse a process that
+riers ∆E between the modes, making the EBM increasingly         gradually transforms the data distribution Q(x0 ) into
+dicult to sample from. (b) An example of the eect of the      simple noise. This forward process is given by the Markov
+mixing–expressivity tradeo on model performance as mea-        chain
+sured using the Fashion-MNIST dataset. The blue curve in
+the plot shows the results of experiments on MEBMs with lim-                                             T
+                                                                                                         
+ited allowed mixing time. Performance and mixing time are                 Q(x0 ,    , xT ) = Q(x0 )         Q(xt xt−1 )   (3)
+strongly correlated. Mixing times were computed by tting                                                t=1
+an exponential function to the large-lag behavior of the au-
+tocorrelation function; see Appendix L. In contrast, a DTM      The forward process is typically chosen such that it has
+(orange cross) has higher performance despite substantially     a unique stationary distribution Q(xT ), which takes a
+lower sampling requirements.                                    simple form (e.g., Gaussian or uniform).
+                                                                   Reversal of the forward process is achieved by learning
+                                                                a set of distributions Pθ (xt−1 xt ) that approximate the
+                                                                reversal of each conditional in Eq. (3). In doing so, we
+                                                                learn a map from simple noise to the data distribution,
+training [49, 50]; see Appendix G for a denition of mix-       which can then be used to generate new data.
+ing time.
+                                                                  In traditional diusion models, the forward process is
+                                                                made to be suciently ne-grained (using a large num-
+   The empirical eect of the MET on the eciency of            ber of steps T ) such that the conditional distribution of
+MEBM-based probabilistic computing systems is illus-            each step in the reverse process takes some simple form
+trated in Fig. 2 (b). Mixing time increases very rapidly        (such as Gaussian or categorical). This simple distri-
+with performance, inating the amount of energy re-             bution is parameterized by a neural network, which is
+quired to sample from the model. The eect of this in-          then trained to minimize the Kullback–Leibler (KL) di-
+creased mixing time is reected in Fig. 1: despite the          vergence between the joint distributions Q and Pθ ,
+MEBM-based solution using the same EBMs and under-                                                                     
+lying hardware as the DTM-based solution, its energy                LDN (θ) = D Q(x0 ,    , xT )Pθ (x0 ,    , xT ) , (4)
+consumption is several orders of magnitude larger due to
+the glacially slow mixing.                                      where the joint distribution of the model is the product
+                                                                                                                                                                  4
+
+of the learned conditionals:                                                               a t=0         Trad. Diﬀusion Model                          t=T
+
+                                               T
+                                               
+        Pθ (x0 ,    , xT ) = Q(xT )               Pθ (xt−1 xt )           (5)
+                                               t=1                                                             DTM, Pθ(xt-1| x t)
+
+See Appendix B.2 for more details.                                                         b
+   EBM-based denoising models approach the problem
+                                                                                                  x0
+from a dierent angle [54]. In many cases, it is straight-                                                     x1             x2
+forward to re-cast the forward process in an exponential
+form,
+                                           f         t−1
+                                                           ,xt )
+               Q(xt xt−1 ) ∝ e−Et−1 (x                                        (6)                                                       f
+                                                                                                                                              x
+                                                                                                                                         t-1( t-1,         xt)
+                                                                   ,
+                                                                                                  c
+        f
+where Et−1  is the energy function associated with the
+forward process step that adds noise to xt−1 . We then
+use an EBM with a particular energy function to model
+the conditional, i.e.,
+                                  f       t−1
+                                                ,xt )+Et−1
+                                                       θ
+                                                           (xt−1 ,θ))
+      Pθ (xt−1 xt ) ∝ e−(Et−1 (x                                             (7)
+
+In this parameterization, the dependence on xt enters
+                                                                                                                          θ
+                                       f
+entirely through the forward energy Et−1  (xt−1 , xt ), which                                                                 z      x
+                                                                                                                          t-1( t-1, t-1)
+constrains x t−1
+                 to stay close to the noisy input xt , while
+ θ
+Et−1   shapes the local structure of the distribution over                           FIG. 3. The denoising thermodynamic computer ar-
+xt−1 .                                                                               chitecture. (a) Traditional diusion models have simple
+                                                                                     conditionals and must take small steps when approximating
+   Equation (7) allows for a compromise between the                                  the reverse process. Since EBMs can express more complex
+number of steps in the approximation to the reverse pro-                             distributions, DTMs can take potentially much larger steps.
+cess and the diculty of sampling at each step. As the                               (b) A sketch of how a chip based on the DTCA chains hard-
+number of steps in the forward process is increased, the                             ware EBMs to approximate the reverse process. Each EBM
+eect of each noising step becomes smaller, meaning that                             is implemented by distinct circuitry, parts of which are dedi-
+  f                                                                                  cated to receiving the inputs and conditionally sampling the
+Et−1  more tightly binds xt to xt−1 . This binding can
+simplify the distribution given in Eq. (7) by imposing                               outputs and latents. (c) An abstract diagram of a hard-
+an energy penalty that prevents it from being strongly                               ware EBM. The state variables xt and xt−1 map onto dis-
+multimodal; see Appendix B.4 for further discussion.                                 tinct physical degrees of freedom represented by the blue and
+                                                                                     green nodes, respectively. The coupling between these two
+   As illustrated in Fig. 3 (a), models of the form given                            sets of nodes implements the forward process energy function
+in Eq. (7) reshape simple noise into an approximation                                Etf xt−1 , xt . The set of orange nodes represents a set of la-
+of the data distribution. Increasing T while holding the                             tent variables z t−1 . The couplings between these
+                                                                                                                                         nodes and
+EBM architecture constant simultaneously increases the                               to the xt−1 nodes implements Et−1 θ
+                                                                                                                           z t−1 , xt−1 .
+expressive power of the chain and makes each step easier
+to sample from, entirely bypassing the MET.
+  To maximally leverage probabilistic hardware for EBM                               distribution at t − 1,
+sampling, DTMs generalize Eq. (7) by introducing latent                                                                  θ        t−1
+                                                                                                                                         ,z t−1 ,θ )
+variables z t :                                                                                 Q(xt−1 ) ∝           e−Et−1 (x                                (9)
+                                                                                                               z t−1
+                                f        t−1
+                                                ,xt )+Et−1
+                                                       θ
+                                                           (xt−1 ,z t−1 ,θ))
+  Pθ (xt−1 xt ) ∝           e−(Et−1 (x                                             See Appendix B.6 and Ref. [54] for further details and
+                     z t−1
+                                                                                     discussion of this property. Note that it relies on the
+                                                      (8)
+                                                                                     normalizing constant associated with the distribution in
+Introducing latent variables allows the size and complex-
+                                                                                     Eq. (6) being independent of xt−1 .
+ity of the probabilistic model to be increased indepen-
+dently of the data dimension. In this generalized form,
+  f
+Et−1 still enforces proximity between xt−1 and xt , while                                  III.   DENOISING THERMODYNAMIC
+  θ
+Et−1  uses the latent variables z t−1 to enrich the local                                              COMPUTERS
+conditional structure without directly depending on xt .
+  A convenient property of DTMs is that if the ap-                                     The Denoising Thermodynamic Computer Architec-
+proximation to the reverse-process conditional is exact                              ture (DTCA) tightly integrates DTMs into probabilistic
+(Pθ (xt−1 xt ) → Q(xt−1 xt )), one also learns the marginal                        hardware, allowing for the highly ecient implementa-
+                                                                                                                           5
+
+tion of EBM-aided diusion models.                              where each xi  −1, 1. The Gibbs sampling update
+   Practical implementations of the DTCA utilize                rule for sampling from the corresponding EBM is
+natural-to-implement EBMs that exhibit sparse and lo-                                                            
+cal connectivity, as is typical in the literature [33]. This    P (Xi [k + 1] = +1  X[k] = x) = σ 2     Jij xj +hi ,
+constraint allows sampling of the EBM to be performed                                                      j̸=i
+by massively parallel arrays of primitive circuitry that                                                                 (11)
+implement Gibbs sampling. Refer to Appendices C and             which can be evaluated simply using an appropriately
+D for further theoretical discussion of the hardware ar-        biased source of random bits.
+chitecture.                                                        Implementing our proposed hardware architecture us-
+                                           f
+   A key feature of the DTCA is that Et−1       can be imple-   ing Boltzmann machines is particularly simple. A device
+mented eciently using our constrained EBMs. Specif-            will consist of nodes connected into a regular grid. Each
+ically, for both continuous and discrete diusion, Et−1   f     node represents a single Bernoulli random variable xi ,
+can be implemented using a single pairwise interaction          implemented as a transistor-based sampling circuit (later
+between corresponding variables in xt and xt−1 ; see Ap-        referred to as RNG). The bias of a sampling circuit (the
+pendices B.1 and D.1 for details. This structure can be         probability that it produces 1 as opposed to −1) is con-
+reected in how the chip is laid out to implement these         strained to be a sigmoidal function of an input voltage,
+interactions without violating locality constraints.            allowing its update probability to be conditioned by the
+   Critically, Eq. (8) places no constraints on the form        values of its neighbors as given in Eq. (11). This can
+of Et−1
+     θ
+         . Therefore, we are free to use EBMs that our          be implemented using a simple circuit that adds currents
+hardware implements especially eciently. At the low-           such as a resistor network (see Appendix E.1).
+est level, this corresponds to high-dimensional, regularly         Specically, the EBMs employed in this work were
+structured latent-variable EBMs. If more powerful mod-          sparse, deep Boltzmann machines comprising L × L grids
+els are desired, these hardware latent-variable EBMs can        of binary variables, where L = 70 was used in most cases.
+be arbitrarily scaled by combining them into software-          Each variable was connected to several (in most cases, 12)
+dened graphical models.                                        of its neighbors following a simple pattern. At random,
+                                                                some of the variables were selected to represent the data
+   The modular nature of DTMs enables various hard-
+                                                                xt−1 , and the rest were assigned to the latent variables
+ware implementations. For example, each EBM in the
+                                                                zt−1 . Then, an extra node was connected to each data
+chain can be implemented using distinct physical cir-
+                                                                node to implement the coupling to xt . See Appendix D
+cuitry on the same chip, as shown in Fig. 3 (b). Alterna-
+                                                                for further details on the Boltzmann machine architec-
+tively, the various EBMs may be split across several com-
+                                                                ture.
+municating chips or implemented by the same hardware,
+                                                                   Due to our chosen connectivity patterns, our Boltz-
+reprogrammed with distinct sets of weights at dierent
+                                                                mann machines are bipartite (two-colorable), meaning
+times. For any given EBM in the chain, both the data
+                                                                that nodes can be separated into two blocks, such that no
+variables xt , xt−1 and the latent variables z t−1 are physi-
+                                                                two nodes within the same block are connected to each
+cally embodied in sampling circuits that are connected in
+                                                                other. Since each color block can be sampled in parallel,
+a simple way that reects the structure of Eq. (7). This
+                                                                a single iteration of Gibbs sampling corresponds to rst
+variable structure is shown schematically in Fig. 3 (c).
+                                                                sampling one color block conditioned on the other and
+   To understand the performance of a future hardware           then swapping their roles. Therefore, the total duration
+device, we developed a GPU simulator of the DTCA and            of one full Gibbs iteration (so updating all nodes) takes
+used it to train a DTM on the Fashion-MNIST dataset.            roughly 2τ0 in wall-clock time, where τ0 is the decorrela-
+We measure the performance of the DTM using FID and             tion time of an individual RNG, that is the time it takes
+utilize a physical model to estimate the energy required        for a sampling circuit inside a single node of the Boltz-
+to generate new images. These numbers can be compared           mann machine to equilibrate. It should be noted that
+to conventional algorithm/hardware pairings, such as a          τ0 is set by the intrinsic stochastic dynamics of the sub-
+VAE running on a GPU; these results are shown in Fig. 1.        threshold circuit and its operating point. It is not a freely
+   The DTM that produced the results shown in Fig. 1            tunable algorithmic parameter, but can only be modied
+used Boltzmann machine EBMs. Boltzmann machines,                indirectly through circuit redesign.
+also known as Ising models in physics, use binary random           Starting from some random initialization, this block-
+variables and are the simplest type of discrete-variable        sampling procedure can be repeated for K iterations
+EBM.                                                            (where K is longer than the mixing time of the sam-
+   Boltzmann machines are hardware ecient because              pler, typically K ≈ 1000) to draw samples from Eq. (7)
+the Gibbs sampling update rule required to sample from          for each step in the approximation to the reverse process.
+them is simple. Boltzmann machines implement energy             For a DTM running on a DTCA chip, the total time re-
+functions of the form                                           quired to draw a single sample is therefore proportional
+                                                            to T K τ0 , where T is the number of denoising steps (i.e.,
+            E(x) = −        xi Jij xj +    hi xi ,      (10)   EBMs that the DTM is comprised of). It is important
+                        i̸=j           i=1                      to distinguish τ0 from Kmix . The former is an entirely
+                                                                                                                                6
+
+a                                                        b                           c
+                                  0
+
+
+
+
+          Output Voltage [a.u]                                                                Slow NMOS, fast PMOS
+
+
+
+
+                                                                                                                Typical
+
+                                                                                                       Fast NMOS, slow PMOS
+
+
+
+                                 Control voltage [a.u]                   0                                  0   [ns]
+
+FIG. 4. A programmable source of random bits. (a) A laboratory measurement of the operating characteristic of our
+RNG. The probability of the output voltage signal being in the high state (x = 1) can be programmed by varying an input
+voltage. The relationship between P(x = 1) and the input voltage is well-approximated by a sigmoid function. The inset shows
+the output voltage signal as a function of time for dierent input voltages. (b) The autocorrelation function of the RNG at
+the unbiased point (P(x = 1) = 05). The decay is approximately exponential with the rate τ0 ≈ 100ns. (c) Estimating the
+eect of manufacturing variation on RNG performance. Each point in the plot represents the results of a simulation of an RNG
+circuit with transistor parameters sampled according to a procedure dened by the manufacturer’s PDK. Each color represents
+a dierent process corner, each for which ∼ 200 realizations of the RNG were simulated. The “typical” corner represents a
+balanced case, whereas the other two are asymmetric corners where the two types of transistors (NMOS and PMOS) are skewed
+in opposite directions. The slow NMOS and fast PMOS case is worst performing for us due to an asymmetry in our design.
+
+
+hardware-related parameter, while the latter is the num-        inter-wafer skews to the transistor parameters (process
+ber of Gibbs iterations that the abstract Boltzmann ma-         corners) and the expected variation within a single chip.
+chine (irrespective of hardware implementation) needs to        We nd that the RNG works reliably despite these non-
+approximately converge to its equilibrium distribution.         idealities, meaning it can be readily scaled to the massive
+   To enable a near-term, large-scale realization of the        grids required by the DTCA.
+DTCA, we leveraged the shot-noise dynamics of sub-                 The energy estimates given in Fig. 1 for the probabilis-
+threshold transistors [58] to build an RNG that is fast,        tic computer were constructed using a physical model of
+energy-ecient, and small. Our all-transistor RNG is            an all-transistor Boltzmann machine Gibbs sampler. The
+programmable and has the desired sigmoidal response to          dominant contributions to this model are captured by the
+a control voltage, as shown by experimental measure-            formula
+ments in Fig. 4 (a). The stochastic voltage signal output
+from the RNG has an approximately exponential auto-                                E = T Kmix L2 Ecell ,                      (12)
+correlation function that decays in approximately 100 ns,
+as illustrated in Fig. 4 (b). As shown in Ref. [58], this                Ecell = Erng + Ebias + Eclock + Ecomm ,              (13)
+time constant is much larger than the lower limit imposed
+by the correlation time of the noise in our transistors.        where Erng comes from the data in Fig. 4 (c). The term
+The RNG could, therefore, be made much faster via an            Ebias is estimated using a physical model of a possible
+improved design. Appendix K provides further details            biasing circuit, and Eclock and Ecomm are derived from
+about our RNG.                                                  physical reasoning about the costs of the clock and inter-
+   In practice, semiconductor manufacturing is never            cell communications, respectively. Kmix is the number
+perfectly precise.     Each fabrication step introduces         of sampling iterations required to satisfactorily mix the
+small uctuations in transistor characteristics, producing      chain for inference, which is generally less than the num-
+global shifts across wafers as well as random dierences        ber of iterations used during training. Kmix = 250 was
+between neighboring devices on the same chip. Because           used for the DTM (see Appendix E.4), while the mixing
+these variations can change how fast or eciently a cir-        time measured in Fig. 2 was used for the MEBM.
+cuit operates, it is important to verify that our approach         This model is approximate, but it captures the un-
+remains reliable under realistic fabrication conditions. A      derlying physics of a real device and provides a reason-
+practical advantage of our all-transistor RNG is that de-       able order-of-magnitude estimate of the actual energy
+tailed and proven foundry-provided models can be used           consumption. Generally, given the same transistor pro-
+to study the eect of manufacturing variations on our           cess we used for our RNG and some reasonable selections
+circuit design. In Fig. 4 (c), we use this process devel-       for other free parameters of the model, we can estimate
+opment kit (PDK) to study the speed and energy con-             Ecell ≈ 2 fJ. See Appendix E for an exhaustive derivation
+sumption of our RNG as a function of both systematic            of this model.
+                                                                                                                                 7
+
+  We use a simple model for the energy consumption                      non-equilibrium samples do not necessarily point in a
+of the GPU that underestimates the actual values. We                    meaningful direction, which can halt or, in some cases,
+compute the total number of oating-point operations                    even reverse the training process.
+(FLOPs) required to generate a sample from the trained                     This instability in MEBMs leads to unpredictable
+model and divide that by the FLOP/joule specication                    training dynamics that can be sensitive to implementa-
+given by the manufacturer. See Appendix F for further                   tion details. An example of the training dynamics for
+discussion.                                                             several dierent types of models is shown in Fig. 5 (b).
+                                                                        The top plot displays the quality of images generated dur-
+                                                                        ing training, while the bottom plot shows a measure of
+                IV.      TRAINING DTMS                                  the sampler’s mixing. Image quality is measured using
+                                                                        the FID metric, and mixing quality is measured using
+  The EBMs used in the experiments presented in Fig. 1                  normalized autocorrelation ryy (see Appendix G). The
+were trained by applying the standard Monte Carlo es-                   lower plot in Fig. 5 (b) shows the autocorrelation at a
+timator for the gradients of EBMs [59] to Eq. (4), which                delay equal to the total number of sampling iterations
+yields                                                                  used to estimate the gradients during training. Gener-
+                                                                        ally, if ryy is close to 1, gradients were estimated using
+               T
+                                                                      far-from-equilibrium samples and were likely of low qual-
+                                                            m
+                                                                 
+θ LDN (θ) =         EQ(xt−1 ,xt ) EPθ (zt−1 |xt−1 ,xt ) θ Et−1        ity. If it is close to zero, the samples should be close to
+               t=1
+                                                                       equilibrium and produce high-quality gradient estimates.
+                                                           m
+                                                                       See Appendix G for further discussion.
+                                 −EPθ (xt−1 ,zt−1 |xt ) θ Et−1     
+                                                                          The destabilizing eect of non-equilibrium sampling is
+                                                                (14)    apparent from the blue curves in Fig. 5 (b). At the begin-
+                                                                        ning of training, both quality and ryy increase, indicating
+Notably, each term in the sum over t can be computed                    that the multimodality of the data is being imprinted on
+independently. To estimate either term in Eq. (14),                     the model. As training progresses and the energy land-
+rst, sample tuples (xt−1 , xt ) from the forward process               scape becomes more rugged, ryy becomes so large that
+Q(xt−1 , xt ). Then, for each of these tuples, clamp the re-            the quality of the gradient starts to decline, resulting in
+verse process EBM to the sampled values appropriately                   a plateau and, ultimately, a degradation of the model’s
+and use a time average over K iterations of Gibbs sam-                  quality.
+pling to estimate the inner expectation value. Averaging
+the result over the tuples yields the desired gradient es-                 Denoising alone signicantly stabilizes training. Be-
+timate.                                                                 cause the transformation carried out by each layer is
+   It should be noted that the DTCA allows our EBMs                     simpler, the distribution that the model must learn is
+to have nite and short mixing times, which enables suf-                less complex and, therefore, easier to sample from. The
+cient sampling iterations to be used to achieve nearly                 orange curve in Fig. 5 (b) shows the training dynam-
+unbiased estimates of the gradient. Unbiased gradient                   ics for a typical denoising model. The autocorrelation
+estimates are not possible for MEBMs in most cases due                  and performance remain good for much longer than the
+to their long mixing times [60].                                        MEBM.
+   A well-trained denoising model generates new exam-                      As training progresses, the DTM eventually becomes
+ples that resemble the training data by incrementally                   unstable, which can be attributed to the development of
+pulling them out of noise; the outputs of an 8-step de-                 a complex energy landscape among the latent variables.
+noising model trained on the Fashion-MNIST dataset are                  To combat this, we modify the training procedure to pe-
+shown in Fig. 5 (a). At the nal time T , the images are                nalize models that mix poorly. We add a term to the loss
+random bits. Structure begins to emerge as the chain                    function that nudges the optimization towards a distri-
+progresses, ultimately resulting in clean images at time                bution that is easy to sample from, i.e.,
+t = 0.                                                                                     M                             
+   DTMs alleviate the training instability that is funda-                                                     
+                                                                             TC                          t−1 t      t−1 t
+mental to MEBMs. The parameters of MEBMs are usu-                          Lt = EQ(xt ) D           Pθ (si x )Pθ (s x )      ,
+                                                                                                               
+ally initialized using a strategy that results in an easy-                                      i=1
+
+to-sample-from energy landscape [61]. For this reason,                                                                         (15)
+in the early stages of training, sampling from Eq. (1)                  where st−1 = (xt−1 , z t−1 ) and xt−1
+                                                                                                            i  indicates the ith of
+is possible, and the gradient estimates produced using                  the M variables in xt−1 . This term penalizes the distance
+Eq. (14) are unbiased. However, as these gradients are                  between the learned conditional distribution and a factor-
+followed, the MEBM is reshaped according to the data                    ized distribution with identical marginals and is a form of
+distribution and begins to become complex and multi-                    total correlation penalty [62]. See Appendices H.2 and M
+modal. This induced multimodality greatly increases the                 for further discussion of this penalty and its relationship
+sampling complexity of the distribution, causing samples                to mixing time and sampling eort.
+to deviate from equilibrium. Gradients computed using                     The total loss function is the sum of Eq. (4) and this
+                                                                                                                                  8
+
+ a                                                     b                                    c
+ t=T                                                                                                               G20
+                                                                         DTM + ACP
+t=T-1                                                                                                   G12
+ ...
+
+                                                                                     DTM
+                                                                        MEBM                              G8                     G16
+
+
+                                                                                                              K=1200
+
+                                                                                                         K=400           K=800
+
+
+ t=0
+
+
+
+FIG. 5. Detailed results on the Fashion-MNIST dataset. (a) Images generated by a denoising model. Here, to achieve
+better-looking images, several binary variables were combined to represent a single grayscale pixel. The noisiness of the grayscale
+levels is an artifact of our embedding method; see Appendix I. (b) An experiment showing how DTMs are more stable to train
+than MEBMs. Complementing DTMs with the ACP completely stabilizes training. For the DTMs, the maximum ryy [K] value
+over all the layers is shown. (c) The eect of scaling EBM complexity on DTM performance. The grid size L was modied
+to change the number of latent variables compared to the (xed) number of data variables. Generally, EBM layers with more
+connectivity and longer allowed mixing times can utilize more latent variables and, therefore, achieve higher performance.
+
+
+total correlation penalty:                                         ables (with xed allowed mixing time) only improves per-
+                                                                   formance if the connectivity of the graph is also scaled;
+                                T
+                                                                  otherwise, performance can decrease. This dependence
+                  L = LDN +           λt LTt C            (16)    makes sense, as increasing the number of latent variables
+                                t=1                                in this way increases the depth of the Boltzmann ma-
+The parameters λt control the relative strength of the             chine, which is known to make sampling more dicult.
+total correlation penalty for each step in the reverse pro-        Beyond a certain point, increasing the model’s ability
+cess.                                                              to express complex energy landscapes may render it un-
+   We use an Adaptive Correlation Penalty (ACP) to set             able to learn, given the allowed mixing time of K ≈ 1000.
+the λt as large as necessary to keep sampling tractable for        This same eect is shown in the bottom plot of Fig. 5 (c),
+each layer. During training, we periodically measure the           which demonstrates that larger values of K are required
+autocorrelations of each learned conditional at a delay            to support wider models while holding connectivity con-
+equal to the number of sampling iterations used during             stant. Further study of how performance scales with
+gradient estimation. If the autocorrelation for the j th           sampling time K and the number of denoising steps T
+layer is close to zero, λj is decreased, and vice versa.           is provided in Appendix M.
+   Our closed-loop control of the correlation penalty                 In general, it would be naive to expect that a hardware-
+strengths is crucial, allowing us to maximize the ex-              ecient EBM topology can be scaled in isolation to
+pressivity of the EBMs while maintaining stable train-             model arbitrarily complex datasets. For example, there is
+ing. The green curves in Fig. 5 (b) show an example of             no good reason why a connectivity pattern that is conve-
+training dynamics under this closed-loop control policy.           nient from a wire-routing perspective would also be well
+Model quality increases monotonically, and the autocor-            suited to represent the correlation structure of a complex
+relation stays small throughout training. This closed-             real-world dataset.
+loop control of the correlation penalty was employed dur-
+ing the training of most models used to produce the re-
+sults in this article, including those shown in Fig. 1. Fur-                      V. HYBRID
+ther analysis of the ACP and its eect on mixing is given                 THERMODYNAMIC-DETERMINISTIC
+in Appendices H.2 and M.                                                       MACHINE LEARNING
+   Generally, the performance of DTMs improves as their
+size increases. As shown in Fig. 1, increasing the depth of           The core doctrine of modern machine learning is the
+the DTM from 2 to 8 substantially improves the quality             relentless scaling of models as a means of solving ever-
+of generated images. As shown in Fig. 5 (c), increasing            harder problems. Models that utilize probabilistic com-
+the width, degree, and allowed mixing time of the EBMs             puters may be similarly scaled to enhance their capabil-
+in the chain also generally improves performance.                  ities beyond the relatively simple dataset considered in
+   However, some subtleties prevent this specic EBM               this work so far.
+topology from being scaled indenitely. The top plot in               However, we hypothesize that the correct way to
+Fig. 5 (c) shows that scaling the number of latent vari-           scale probabilistic machine learning hardware systems is
+                                                                                                                       9
+
+not in isolation but rather as a component in a larger
+hybrid thermodynamic-deterministic machine learning
+(HTDML) system. Such a hybrid system integrates
+probabilistic hardware with more traditional machine
+learning accelerators. This hybrid approach is particu-
+larly important for moving beyond binarized grayscale
+datasets such as Fashion-MNIST toward richer, higher-
+dimensional data.
+   A hybrid approach is sensible because there is no a
+priori reason to believe that a probabilistic computer
+should handle every part of a machine learning problem,
+and sometimes a deterministic processor is likely a better    FIG. 6. Embedding data into a DTM using a neu-
+tool for the job.                                             ral network. Here, we show the results of using a simple
+                                                              embedding model in combination with a DTM. The DTM
+   The goal of HTDML is to design practical ma-               is trained to generate CIFAR-10 images and achieves perfor-
+chine learning systems that minimize the energy used          mance parity with a traditional GAN using a ∼ 10× smaller
+to achieve desired modeling delity on a particular           deterministic neural network in terms of parameter count.
+task. This eciency will be achieved through a cross-
+disciplinary eort that eschews the software/hardware
+abstraction barrier to design computers that respect          attempt at a hybrid model, and we believe that further
+physical constraints and leverage each type of hardware       research into hybrid thermodynamic–deterministic mod-
+where it is most eective.                                    els can lead to even more signicant eciency gains and
+   For example, more rigorous methods of embedding            scale this approach to larger tasks. For example, one ma-
+data into hardware EBMs will need to be developed to go       jor aw of the embedding procedure employed in Fig. 6
+beyond the relatively simple datasets considered here. In-    is that the autoencoder and DTM are not jointly trained,
+deed, binarization is not viable in general, and embedding    which means that the embedding learned by the autoen-
+into richer types of variables (such as categorical) at the   coder may not be well-suited to the way information can
+probabilistic hardware level is not particularly ecient      ow in the DTM, given its limited connectivity. Finding
+or principled. Instead, one may try a hybrid (HTDML)          a good way to jointly train them seems like a promising
+approach where a small neural network (the determinis-        future research direction.
+tic part) learns to embed the data into a binary latent
+space and a DTM (the thermodynamic part) can then be
+trained inside this binary space. A similar approach has                       VI.   CONCLUSION
+been very benecial in the context of diusion models
+[55], to the point that now many state-of-the-art diu-          In this paper, we have given an early view of how one
+sion models operate in the latent space of a pre-trained      might design generative machine learning algorithms and
+VAE.                                                          hardware jointly for thermodynamic probabilistic com-
+   We show the results of a quick initial attempt at such     puters. At the modeling level, we introduced Denois-
+hybrid models in Fig. 6. Here, we train a small neural        ing Thermodynamic Models (DTMs), which repurpose
+network to embed the CIFAR-10 dataset [63] into a bi-         hardware EBMs as denoising steps rather than mono-
+nary DTM. The embedding network was trained using             lithic models of the data distribution and thereby avoid
+an autoencoder loss to binarize the data, which was then      the mixing–expressivity tradeo that limits monolithic
+used to train a DTM. The decoder of the embedding net-        EBMs. At the hardware level, we proposed the Denoising
+work was then trained further using a GAN objective to        Thermodynamic Computer Architecture (DTCA), which
+increase the quality of the generated images. This train-     implements DTMs using sparse, locally connected Boltz-
+ing procedure is described in further detail in Appendix J.   mann machines driven by an all-transistor RNG with a
+Example CIFAR-10 images generated by our model can            tunable bias and short autocorrelation time. By com-
+be found in Appendix N.                                       bining these ingredients with an adaptive correlation-
+   Despite the overhead of the embedding neural net-          penalty training procedure, we estimate that a DTCA
+work, this primitive hybrid model is ecient. As shown        device could match the performance of GPU-based gen-
+in the gure, to achieve equivalent performance with a        erative models on binarized Fashion-MNIST while using
+purely NN-based GAN, the deterministic part of that           roughly four orders of magnitude less energy per gener-
+GAN would need to have roughly ten times more param-          ated sample.
+eters than the deterministic part of our hybrid model.           It is important to note that the experiments presented
+Informally, one might say that therefore the DTM holds        in this paper were done using simulations of thermody-
+about 90% of the expressivity of our model while the          namic hardware, running on a classical computer, which
+neural network accounts for only about 10% of the pa-         substantially limited the maximum size of the thermody-
+rameters.                                                     namic model we could represent. Specically, the largest
+   We should again stress that this is just a naive rst      DTM shown in Fig. 1 uses only around 50,000 nodes in
+                                                                                                                         10
+
+total, which is much smaller than what we expect the           that wraps this library to implement the specic exper-
+capacity of early DTCA chips will be. In fact, based           iments presented in this article [72]. By making these
+on the size of our RNG, it can be estimated that ∼ 106         tools available, we aim to lower the barrier for others
+sampling cells could be t into a 6 × 6 µm chip (see Ap-       to explore alternative thermodynamic algorithms, hard-
+pendix K). Furthermore, measurements of our RNG sug-           ware topologies, and hybrid architectures, and to stress-
+gest that early DTCA chips will be about two to three          test and rene the DTCA design in a broader range of
+orders of magnitude faster than the simulations used in        applications.
+this article. As shown in g. 17, using more Gibbs steps         In short, DTMs and the DTCA provide a concrete
+during training and inference as well as using more de-        path toward generative models and hardware that are co-
+noising steps both increase model performance (albeit          designed for thermodynamic probabilistic computation,
+with diminishing returns). Furthermore, as shown in            rather than retrotted to existing digital accelerators.
+g. 5 (c, bottom), as the model gets larger, increasing
+the number of Gibbs steps has a larger impact on per-                          VII.    DECLARATIONS
+formance. Realizing large-scale probabilistic computers
+using advanced transistor processes [64–66] will therefore          A.   Data Availability and Code Availabilty
+both increase the capabilities of the DTM algorithm pre-
+sented here and substantially speed up future research
+into other thermodynamic algorithms. The present work            The code which reproduces our results and data is
+should thus be viewed as establishing a qualitative scaling    available at github.com/pschilliOrange/dtm-replication.
+picture and design template rather than as an optimized
+end-point.
+                                                                               B.     Acknowledgements
+   Given the gap between the size of our models and
+the capabilities of a potential hardware device, a nat-
+ural question to study is how these probabilistic models         This research was funded by Extropic Corp.
+can be scaled beyond the obvious approaches considered
+here. This scaling likely corresponds to developing archi-
+tectures that fuse multiple EBMs to implement each step                       C.    Author Contributions
+in the reverse process. One possible approach is to con-
+struct software-dened graphical models of EBMs that              AJ and TM contributed equally, with TM doing most
+enable non-local information routing, which could allevi-      of the writing and energy estimation work, whereas AJ
+ate some of the issues associated with a xed and local        contributed most to the algorithms for training and eval-
+interaction structure. Such research would go hand-in-         uating the models presented. OL evaluated the perfor-
+hand with HTDML, since classical neural networks could         mance of competitive models that we were comparing
+be used to learn an embedding that hierarchically dis-         against. AG helped design some of the mentioned inte-
+tributes the generative task between several EBMs in a         grated circuits. PS helped with some experiments, and
+way similar to nVAE [67] or StyleGAN [68]. Our prelim-         formatted the research code (which was published on
+inary CIFAR-10 experiments already show that pairing           GitHub) to be easy to understand and use. IC advised
+a relatively small deterministic front-end with a DTM          TM at the outset of this project. GV provided sugges-
+back-end can ooad most of the generative burden onto          tions at the idea stage.
+the thermodynamic component.
+   To address the current unavailability of probabilistic
+hardware, we have open-sourced a software library [69]                        D.      Competing Interests
+that enables XLA-accelerated [70] simulation of hardware
+EBMs. This library is written in JAX [71] and auto-              All authors are part of Extropic corp., which produces
+mates the complex slicing operations that enable hard-         and aims to sell products using some of the technologies
+ware EBM sampling. We also provide additional code             described in the paper.
+
+
+
+
+ [1] A. A. Chien, GenAI: Giga$$$, TeraWatt-Hours, and Gi-           (2024).
+     gaTons of CO2, Commun. ACM 66, 5 (2023).                   [4] Y. Li, D. Choi, J. Chung, N. Kushman, J. Schrittwieser,
+ [2] D. D. Stine, The Manhattan Project, the Apollo Program,        R. Leblond, T. Eccles, J. Keeling, F. Gimeno, A. D.
+     and Federal Energy Technology R&D Programs: A Com-             Lago, T. Hubert, P. Choy, C. de Masson d’Autume,
+     parative Analysis, Report RL34645 (Congressional Re-           I. Babuschkin, X. Chen, P.-S. Huang, J. Welbl, S. Gowal,
+     search Service, Washington, D.C., 2009).                       A. Cherepanov, J. Molloy, D. J. Mankowitz, E. S. Rob-
+ [3] J. Aljbour, T. Wilson, and P. Patel, Powering Intelli-         son, P. Kohli, N. de Freitas, K. Kavukcuoglu, and
+     gence: Analyzing Articial Intelligence and Data Center        O. Vinyals, Competition-level code generation with Al-
+     Energy Consumption, EPRI White Paper no. 3002028905            phaCode, Science 378, 1092 (2022).
+                                                                                                                              11
+
+ [5] D. M. Katz, M. J. Bommarito, S. Gao, and P. Arredondo,             International Conference on Machine Learning (PMLR,
+     GPT-4 passes the bar exam, Philos. Trans. R. Soc. A 382,           2022) pp. 9902–9915.
+     20230254 (2024).                                              [21] T. Conte, E. DeBenedictis, N. Ganesh, T. Hylton,
+ [6] H. Nori, N. King, S. M. McKinney, D. Carignan, and                 J. P. Strachan, R. S. Williams, A. Alemi, L. Altenberg,
+     E. Horvitz, Capabilities of gpt-4 on medical challenge             G. Crooks, J. Crutcheld, et al., Thermodynamic com-
+     problems, arXiv [cs.CL] (2023).                                    puting, arXiv [cs.CY] (2019).
+ [7] S. Noy and W. Zhang, Experimental evidence on the pro-        [22] H. Xiao, K. Rasul, and R. Vollgraf, Fashion-MNIST: a
+     ductivity eects of generative articial intelligence, Sci-        novel image dataset for benchmarking machine learning
+     ence 381, 187 (2023).                                              algorithms, arXiv [cs.LG] (2017).
+ [8] E. Brynjolfsson, D. Li, and L. Raymond, Generative AI         [23] M. Heusel, H. Ramsauer, T. Unterthiner, B. Nessler, and
+     at work, Q. J. Econ. 10.1093/qje/qjae044 (2025).                   S. Hochreiter, GANs trained by a two time-scale update
+ [9] S. Peng, E. Kalliamvakou, P. Cihon, and M. Demirer,                rule converge to a local Nash equilibrium, in Advances in
+     The impact of AI on developer productivity: Evidence               Neural Information Processing Systems, Vol. 30, edited
+     from GitHub Copilot, arXiv [cs.SE] (2023).                         by I. Guyon, U. V. Luxburg, S. Bengio, H. Wallach,
+[10] A. Bick, A. Blandin, and D. J. Deming, The rapid adop-             R. Fergus, S. Vishwanathan, and R. Garnett (Curran As-
+     tion of generative ai, Tech. Rep. (National Bureau of Eco-         sociates, Inc., 2017).
+     nomic Research, 2024).                                        [24] D. P. Kingma and M. Welling, Auto-Encoding Variational
+[11] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit,                   Bayes (2022).
+     L. Jones, A. N. Gomez, L. u. Kaiser, and I. Polosukhin,       [25] I. J. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu,
+     Attention is all you need, in Advances in Neural Infor-            D. Warde-Farley, S. Ozair, A. Courville, and Y. Bengio,
+     mation Processing Systems, Vol. 30, edited by I. Guyon,            Generative adversarial nets, in Advances in Neural Infor-
+     U. V. Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vish-          mation Processing Systems, Vol. 27, edited by Z. Ghahra-
+     wanathan, and R. Garnett (Curran Associates, Inc.,                 mani, M. Welling, C. Cortes, N. Lawrence, and K. Wein-
+     2017).                                                             berger (Curran Associates, Inc., 2014).
+[12] A. Coates, B. Huval, T. Wang, D. J. Wu, A. Y. Ng,             [26] J. Sohl-Dickstein, E. Weiss, N. Maheswaranathan, and
+     and B. Catanzaro, Deep learning with cots hpc systems,             S. Ganguli, Deep Unsupervised Learning using Nonequi-
+     in Proceedings of the 30th International Conference on             librium Thermodynamics, in Proceedings of the 32nd In-
+     International Conference on Machine Learning - Volume              ternational Conference on Machine Learning, Proceed-
+     28 , ICML’13 (JMLR.org, 2013) p. III–1337–III–1345.                ings of Machine Learning Research, Vol. 37, edited by
+[13] K. Chellapilla, S. Puri, and P. Simard, High Performance           F. Bach and D. Blei (PMLR, Lille, France, 2015) pp.
+     Convolutional Neural Networks for Document Process-                2256–2265.
+     ing, in Tenth International Workshop on Frontiers in          [27] N. S. Singh, K. Kobayashi, Q. Cao, K. Selcuk, T. Hu,
+     Handwriting Recognition, edited by G. Lorette, Univer-             S. Niazi, N. A. Aadit, S. Kanai, H. Ohno, S. Fukami,
+     sité de Rennes 1 (Suvisoft, La Baule (France), 2006).              et al., CMOS plus stochastic nanomagnets enabling
+[14] S. Hooker, The hardware lottery, Commun. ACM 64,                   heterogeneous computers for probabilistic inference and
+     58–65 (2021).                                                      learning, Nat. Commun. 15, 2685 (2024).
+[15] S. Ambrogio, P. Narayanan, A. Okazaki, A. Fasoli,             [28] C. Pratt, K. Ray, and J. Crutcheld, Dynamical Com-
+     C. Mackin, K. Hosokawa, A. Nomura, T. Yasuda,                      puting on the Nanoscale: Superconducting Circuits for
+     A. Chen, A. Friz, et al., An analog-AI chip for energy-            Thermodynamically-Ecient Classical Information Pro-
+     ecient speech recognition and transcription, Nature               cessing (2023).
+     620, 768 (2023).                                              [29] G. Wimsatt, O.-P. Saira, A. B. Boyd, M. H. Matheny,
+[16] S. Bandyopadhyay, A. Sludds, S. Krastanov, R. Hamerly,             S. Han, M. L. Roukes, and J. P. Crutcheld, Harness-
+     N. Harris, D. Bunandar, M. Streshinsky, M. Hochberg,               ing uctuations in thermodynamic computing via time-
+     and D. Englund, Single-chip photonic deep neural net-              reversal symmetries, Phys. Rev. Res. 3, 033115 (2021).
+     work with forward-only training, Nat. Photon. 18, 1335        [30] S. H. Adachi and M. P. Henderson, Application of Quan-
+     (2024).                                                            tum Annealing to Training of Deep Neural Networks
+[17] H. A. Gonzalez, J. Huang, F. Kelber, K. K. Nazeer,                 (2015).
+     T. Langer, C. Liu, M. Lohrmann, A. Rostami, M. Schone,        [31] B. Sutton, K. Y. Camsari, B. Behin-Aein, and S. Datta,
+     B. Vogginger, et al., SpiNNaker2: A large-scale neuro-             Intrinsic optimization using stochastic nanomagnets, Sci.
+     morphic system for event-based and asynchronous ma-                Rep. 7, 44370 (2017).
+     chine learning, arXiv [cs.ET] (2024).                         [32] R. Faria, K. Y. Camsari, and S. Datta, Low-Barrier
+[18] S. B. Shrestha, J. Timcheck, P. Frady, L. Campos-                  Nanomagnets as p-Bits for Spin Logic, IEEE Magn. Lett.
+     Macias, and M. Davies, Ecient Video and Audio Pro-                8, 1 (2017).
+     cessing with Loihi 2, in ICASSP 2024 - 2024 IEEE In-          [33] S. Niazi, S. Chowdhury, N. A. Aadit, M. Mohseni, Y. Qin,
+     ternational Conference on Acoustics, Speech and Signal             and K. Y. Camsari, Training deep Boltzmann networks
+     Processing (ICASSP) (2024) pp. 13481–13485.                        with sparse Ising machines, Nat. Electron. 7, 610 (2024).
+[19] Y. Song and S. Ermon, Generative modeling by estimat-         [34] W. A. Borders, A. Z. Pervaiz, S. Fukami, K. Y. Cam-
+     ing gradients of the data distribution, in Advances in             sari, H. Ohno, and S. Datta, Integer factorization using
+     Neural Information Processing Systems, Vol. 32, edited             stochastic magnetic tunnel junctions, Nature 573, 390
+     by H. Wallach, H. Larochelle, A. Beygelzimer, F. d'Alché-          (2019).
+     Buc, E. Fox, and R. Garnett (Curran Associates, Inc.,         [35] N. S. Singh, K. Kobayashi, Q. Cao, K. Selcuk, T. Hu,
+     2019).                                                             S. Niazi, N. A. Aadit, S. Kanai, H. Ohno, S. Fukami,
+[20] M. Janner, Y. Du, J. Tenenbaum, and S. Levine, Plan-               et al., CMOS plus stochastic nanomagnets enabling
+     ning with Diusion for Flexible Behavior Synthesis, in             heterogeneous computers for probabilistic inference and
+                                                                                                                               12
+
+     learning, Nat. Commun. 15, 2685 (2024).                        [53] C. Saharia, W. Chan, S. Saxena, L. Li, J. Whang,
+[36] M. M. H. Sajeeb, N. A. Aadit, S. Chowdhury, T. Wu,                  E. L. Denton, K. Ghasemipour, R. Gontijo Lopes,
+     C. Smith, D. Chinmay, A. Raut, K. Y. Camsari, C. Dela-              B. Karagol Ayan, T. Salimans, J. Ho, D. J. Fleet, and
+     cour, and T. Srimani, Scalable connectivity for Ising ma-           M. Norouzi, Photorealistic text-to-image diusion mod-
+     chines: Dense to sparse, Phys. Rev. Appl. 24, 014005                els with deep language understanding, in Advances in
+     (2025).                                                             Neural Information Processing Systems, Vol. 35, edited
+[37] Y. Du and I. Mordatch, Implicit generation and mod-                 by S. Koyejo, S. Mohamed, A. Agarwal, D. Belgrave,
+     eling with energy based models, in Advances in Neu-                 K. Cho, and A. Oh (Curran Associates, Inc., 2022) pp.
+     ral Information Processing Systems, Vol. 32, edited by              36479–36494.
+     H. Wallach, H. Larochelle, A. Beygelzimer, F. d'Alché-         [54] R. Gao, Y. Song, B. Poole, Y. N. Wu, and D. P.
+     Buc, E. Fox, and R. Garnett (Curran Associates, Inc.,               Kingma, Learning Energy-Based Models by Diusion Re-
+     2019).                                                              covery Likelihood, arXiv [cs.LG] (2021).
+[38] W. Lee, H. Kim, H. Jung, Y. Choi, J. Jeon, and C. Kim,         [55] P. Yu, S. Xie, X. Ma, B. Jia, B. Pang, R. Gao, Y. Zhu,
+     Correlation free large-scale probabilistic computing using          S.-C. Zhu, and Y. N. Wu, Latent Diusion Energy-
+     a true-random chaotic oscillator p-bit, Sci. Rep. 15, 8018          Based Model for Interpretable Text Modelling, in Inter-
+     (2025).                                                             national Conference on Machine Learning (PMLR, 2022)
+[39] M. Horodynski, C. Roques-Carmes, Y. Salamin, S. Choi,               pp. 25702–25720.
+     J. Sloan, D. Luo, and M. Soljačić, Stochastic logic in bi-     [56] M. Xu, T. Gener, K. Kreis, W. Nie, Y. Xu, J. Leskovec,
+     ased coupled photonic probabilistic bits, Commun. Phys.             S. Ermon, and A. Vahdat, Energy-based diusion lan-
+     8, 31 (2025).                                                       guage models for text generation, arXiv [cs.CL] (2024).
+[40] M. A. Abeed and S. Bandyopadhyay, Low Energy Barrier           [57] Y. Zhu, J. Xie, Y. N. Wu, and R. Gao, Learning Energy-
+     Nanomagnet Design for Binary Stochastic Neurons: De-                Based Models by Cooperative Diusion Recovery Likeli-
+     sign Challenges for Real Nanomagnets With Fabrication               hood, in The Twelfth International Conference on Learn-
+     Defects, IEEE Magn. Lett. 10, 1 (2019).                             ing Representations (2021).
+[41] M. A. Abeed and S. Bandyopadhyay, Sensitivity of the           [58] N. Freitas, G. Massarelli, J. Rothschild, D. Keane,
+     Power Spectra of Thermal Magnetization Fluctuations in              E. Dawe, S. Hwang, A. Garlapati, and T. McCourt, Tam-
+     Low Barrier Nanomagnets Proposed for Stochastic Com-                ing non-equilibrium thermal uctuations in subthreshold
+     puting to In-Plane Barrier Height Variations and Struc-             CMOS circuits, Phys. Rev. Lett. (2025), Submitted.
+     tural Defects, SPIN 10, 2050001 (2020).                        [59] Y. Song and D. P. Kingma, How to train your energy-
+[42] J. L. Drobitch and S. Bandyopadhyay, Reliability and                based models, arXiv [cs.LG] (2021).
+     Scalability of p-Bits Implemented With Low Energy Bar-         [60] M. A. Carreira-Perpinan and G. Hinton, On contrastive
+     rier Nanomagnets, IEEE Magn. Lett. 10, 1 (2019).                    divergence learning, in International workshop on arti-
+[43] M. I. Jordan and T. M. Mitchell, Machine learning:                  cial intelligence and statistics (PMLR, 2005) pp. 33–40.
+     Trends, perspectives, and prospects, Science 349, 255          [61] G. E. Hinton, A practical guide to training restricted
+     (2015).                                                             Boltzmann machines, in Neural Networks: Tricks of the
+[44] Z. Ghahramani, Probabilistic machine learning and arti-             Trade: Second Edition (Springer, 2012) pp. 599–619.
+     cial intelligence, Nature 521, 452 (2015).                    [62] R. T. Chen, X. Li, R. B. Grosse, and D. K. Duvenaud,
+[45] G. Hinton, Boltzmann Machines: Constraint Satisfac-                 Isolating sources of disentanglement in variational au-
+     tion Networks that Learn, Carnegie-Mellon University.               toencoders, Adv. Neural Inf. Process. Syst. 31 (2018).
+     Department of Computer Science (Carnegie-Mellon Uni-           [63] A. Krizhevsky and G. Hinton, Learning multiple layers
+     versity, Department of Computer Science, 1984).                     of features from tiny images, Tech. Rep. 0 (University of
+[46] A. P. Dempster, N. M. Laird, and D. B. Rubin, Maximum               Toronto, Toronto, Ontario, 2009).
+     likelihood from incomplete data via the EM algorithm, J.       [64] T. Sekigawa and Y. Hayashi, Calculated threshold-voltage
+     R. Stat. Soc. Ser. B (Methodol.) 39, 1 (1977).                      characteristics of an XMOS transistor having an addi-
+[47] C. M. Bishop, Mixture density networks (1994).                      tional bottom gate, Solid-State Electron. 27, 827 (1984).
+[48] K. P. Murphy, Probabilistic Machine Learning: Ad-              [65] S.-Y. Wu, C.-H. Chang, M. Chiang, C. Lin, J. Liaw,
+     vanced Topics (MIT Press, 2023) p. 499.                             J. Cheng, J. Yeh, H. Chen, S. Chang, K. Lai, et al., A
+[49] D. Carbone, M. Hua, S. Coste, and E. Vanden-Eijnden,                3nm CMOS FinFlex™ platform technology with enhanced
+     Ecient training of energy-based models using Jarzynski             power eciency and performance for mobile SoC and
+     equality, Adv. Neural Inf. Process. Syst. 36, 52583 (2023).         high performance computing applications, in 2022 Inter-
+[50] G. Desjardins, A. Courville, Y. Bengio, P. Vincent,                 national Electron Devices Meeting (IEDM) (IEEE, 2022)
+     O. Delalleau, et al., Parallel tempering for training of re-        pp. 27–5.
+     stricted Boltzmann machines, in Proceedings of the thir-       [66] J. Liu, S. Mukhopadhyay, A. Kundu, S. Chen, H. Wang,
+     teenth international conference on articial intelligence           D. Huang, J. Lee, M. Wang, R. Lu, S. Lin, Y. Chen,
+     and statistics (MIT Press Cambridge, MA, 2010) pp.                  H. Shang, P. Wang, H. Lin, G. Yeap, and J. He, A Re-
+     145–152.                                                            liability Enhanced 5nm CMOS Technology Featuring 5th
+[51] J. Ho, C. Saharia, W. Chan, D. J. Fleet, M. Norouzi, and            Generation FinFET with Fully-Developed EUV and High
+     T. Salimans, Cascaded diusion models for high delity              Mobility Channel for Mobile SoC and High Performance
+     image generation, J. Mach. Learn. Res. 23, 1 (2022).                Computing Application, in 2020 IEEE International Elec-
+[52] R. Rombach, A. Blattmann, D. Lorenz, P. Esser, and                  tron Devices Meeting (IEDM) (2020) pp. 9.2.1–9.2.4.
+     B. Ommer, High-resolution image synthesis with latent          [67] A. Vahdat and J. Kautz, NVAE: A deep hierarchical vari-
+     diusion models, in Proceedings of the IEEE/CVF con-                ational autoencoder (2021), arXiv:2007.03898 [stat.ML].
+     ference on computer vision and pattern recognition (2022)      [68] T. Karras, S. Laine, and T. Aila, A style-based generator
+     pp. 10684–10695.                                                    architecture for generative adversarial networks (2019),
+                                                             13
+
+     arXiv:1812.04948 [cs.NE].
+[69] Extropic, thrml: Thermodynamic Hypergraphical Model
+     Library (2025).
+[70] A. Sabne, XLA : Compiling Machine Learning for Peak
+     Performance (2020).
+[71] J. Bradbury, R. Frostig, P. Hawkins, M. J. Johnson,
+     C. Leary, D. Maclaurin, G. Necula, A. Paszke, J. Van-
+     derPlas, S. Wanderman-Milne, and Q. Zhang, JAX:
+     composable transformations of Python+NumPy programs
+     (2018).
+[72] github.com/pschilliOrange/dtm-replication.
+                                                                                                                  14
+
+                                           Appendix A: List of Acronyms
+
+
+
+                         Acronym Meaning
+                         AI      Articial Intelligence
+                         ACP     Adaptive Correlation Penalty
+                         DTM     Denoising Thermodynamic Model
+                         DTCA Denoising Thermodynamic Computer Architecture
+                         EBM     Energy-Based Model
+                         MEBM Monolithic Energy-Based Model
+                         FID     Fréchet Inception Distance
+                         FLOP    Floating-Point Operation
+                         GAN     Generative Adversarial Network
+                         GPU     Graphics Processing Unit
+                         HTDML Hybrid Thermodynamic–Deterministic Machine Learning
+                         LLM     Large Language Model
+                         NN      Neural Network
+                         PDK     Process Development Kit
+                         RNG     Random-Number Generator
+                         VAE     Variational Autoencoder
+                         DDPM Denoising Diusion Probabilistic Model
+
+                                     TABLE I. Acronyms used throughout this work.
+
+
+
+
+                                     Appendix B: Denoising Diusion Models
+
+  Denoising diusion models try to learn to time-reverse a random process that converts data into simple noise. Here,
+we will review some details on how these models work to support the analysis in the main text.
+
+
+                                                1.   Forward Processes
+
+   The forward process is a random process that is used to convert the data distribution into noise. This conversion
+into noise is achieved through a stochastic dierential equation in the continuous-variable case and a Markov jump
+process in the discrete case.
+
+
+                                                a.   Continuous Variables
+
+  In the continuous case, the typical choice of forward process is the Itô diusion,
+                                                                  √
+                                             dX(t) = −X(t)dt + 2σdW                                             (B1)
+
+where X(t) is a length N vector representing the state variable at time t, σ is a constant, and dW is a length N
+vector of independent Wiener processes.
+  The transition kernel for a random process denes how the probability distribution evolves in time,
+
+                                         Qt|0 (x′ x) = P(X(t) = x′ X(0) = x)                                  (B2)
+
+For the case of Eq. (B1) the transition kernel is,
+                                                                 ′         −1
+                                                             1       T
+                                                                                (x′ −µ)
+                                          Qt+s|s (x′ x) ∝ e− 2 (x −µ) Σ                                        (B3)
+
+
+                                                        µ = e−t x                                               (B4)
+                                                                                                                     15
+                                                                    
+                                                  Σ = σ 2 I 1 − e−2t                                               (B5)
+
+this solution can be veried by direct substitution into the corresponding Fokker-Planck equation. In the limit of
+innite time, µ → 0 and Σ → σ 2 I. Therefore, the stationary distribution of this process is zero-mean Gaussian noise
+with a standard deviation of σ.
+
+
+                                                 b.    Discrete Variables
+
+  The stochastic dynamics of some discrete variable X may be described by the Markov jump process,
+
+
+                                                        dQt
+                                                            = LQt                                                  (B6)
+                                                         dt
+where L is the generator of the dynamics, which is an M × M matrix that stores the transition rates between the
+various states. Qt is a length M vector that assigns a probability to each possible state X may take at time t.
+  The transition rate from the ith state to the j th state is given by the matrix element L [j, i], which here takes the
+particular form,
+
+                                        L [j, i] =  (−(M − 1)j,i + (1 − j,i ))                                  (B7)
+
+where  is used to indicate the Kronecker delta function. Eq. (B7) describes a random process where the probability
+per unit time to jump between any two states is .
+  Since Eq. (B6) is linear, the dynamics of Qt can be understood entirely via the eigenvalues and eigenvectors of L,
+
+                                                        Lvk = λk vk                                                (B8)
+
+Note that by symmetry of L, we do not distinguish between right and left eigenvectors.
+   One eigenvector-eigenvalue pair (v0 , λ0 = 0) corresponds to the unique stationary state of L, with all entries of v0
+being equal to some constant (if normalized, then v0 [j] = M 1
+                                                               for all j). The long-time dynamics of this MJP transform
+any initial distribution to a uniform distribution over all states.
+   The remaining eigenvectors are decaying modes associated with negative eigenvalues. These additional M − 1
+eigenvectors take the form,
+
+                                                  vj [i] = −i,0 + i,j                                            (B9)
+
+
+                                                        λj = −M                                                  (B10)
+
+where Eq. (B9) and Eq. (B10) are valid for j  [1, M − 1]. Therefore, all solutions to this MJP decay exponentially
+to the uniform distribution with rate M .
+  The time-evolution of Q is given by the matrix exponential,
+
+                                                       Qt = eLt Q0                                               (B11)
+
+  This matrix exponential is evaluated by diagonalizing L,
+
+                                                      eLt = P eDt P −1                                            (B12)
+
+where the columns of P are the M eigenvectors vk and D is a diagonal matrix of the eigenvalues λk .
+  Using the solution for the eigenvalues and eigenvectors found above, we can solve for the matrix elements of eLt ,
+                                                                                         
+                            Lt               1 + (M − 1)e−γM t                   1 − e−γM t
+                           e [j, i] = i,j                       + (1 − i,j )                                 (B13)
+                                                    M                                M
+
+  Using this solution, we can deduce an exponential form for the matrix elements of eLt ,
+                                                                1 Γ(t)δi,j
+                                                eLt [j, i] =        e                                             (B14)
+                                                               Z(t)
+                                                                                                                    16
+                                                                                      
+                                                            1 + (M − 1)e−γt
+                                            Γ(t) = ln                                                            (B15)
+                                                                1 − e−γt
+
+
+                                                                  M
+                                                     Z(t) =                                                      (B16)
+                                                               1 − e−γt
+  Now consider a process in which each element of the vector of N discrete variables X undergoes the dynamics
+described by Eq. (B6) independently. In that case, the dierential equation describing the dynamics of the joint
+distribution Qt is,
+
+                                                N
+                                        dQt
+                                            =   (I1 ⊗ · · · ⊗ Lk ⊗    IN ) Qt                                 (B17)
+                                         dt
+                                                k=1
+
+where Ij indicates the identity operator and Lj the operator from Eq. (B7) acting on the subspace of the j th discrete
+variable.
+  The Kronecker product of the matrix exponentials gives the time-evolution of the joint distribution,
+                                                              N
+                                                              
+                                                      eLt =          eLk t                                       (B18)
+                                                               k=1
+
+with the matrix elements,
+                                                              N
+                                                              
+                                               eLt [j, i] =         eLk t [jk , ik ]                             (B19)
+                                                              k=1
+
+where j and i are now vectors with N elements, indexed as ik or jk respectively.
+  Using Eqs. (B14) - (B16), we can nd an exponential form for the joint process transition kernel (as dened in
+Eq. (B2)),
+                                                           N                    
+                                                   1        
+                                   Qt|0 (x′ x) =      exp    Γk (t)x′ [k],x[k]                           (B20)
+                                                  Z(t)
+                                                                    k=1
+
+
+                                                               N
+                                                               
+                                                     Z(t) =          Zk (t)                                      (B21)
+                                                               k=1
+
+Γk (t) and Zk (t) are as given in Eqs. (B15) and (B16), with each dimension potentially having it’s own transition rate
+k and number of categories Mk .
+
+
+                                               2.     Reverse Processes
+
+  In general, a random process for some variable X can be reversed using Bayes’ rule,
+
+                                                              Qt+∆t|t (xx′ )Qt (x′ )
+                                         Qt|t+∆t (x′ x) =                                                       (B22)
+                                                                  Qt+∆t (x)
+
+where the conditionals are as dened in Eq. (B2), and the marginals are,
+
+                                                 Qt (x) = P (X(t) = x)                                           (B23)
+
+   A dierential equation that describes the reverse process can be found by analyzing Eq. (B22) in the innitesimal
+time limit. Specically, dening a reversed time t = T − s given some arbitrary endpoint T and expanding Eq. (B22)
+in ∆s,
+
+                                    QT −s|T −(s−∆s) (x′ x) ≈ x,x′ + ∆s Lrev (x′ , x)                           (B24)
+                                                                                                                    17
+
+where Lrev is the generator of the reverse process,
+                                                                                                     
+                      ′       QT −s (x′ )       d                     ′               1      dQT −s (x)
+               Lrev (x , x) =             lim     QT −(s−∆s)|T −s (xx ) + x,x′                                 (B25)
+                              QT −s (x) ∆s→0 d∆s                                   QT −s (x)    ds
+
+here, x,x′ is used to indicate the Dirac delta function in the continuous case and the Kronecker delta in the discrete
+case.
+  If the dynamics of Q are linear and generated by L like Eq. (B6), we can simplify,
+                                                                        
+                                               d
+                                       lim        QT −(s−∆s)|T −s (xx′ ) = L(x, x′ )                            (B26)
+                                      ∆s→0 d∆s
+
+
+In this case, we can re-write Eq. (B25) in the operator form,
+
+                                                                              dQ
+                                                Lrev = QL† Q−1 + Q−1                                             (B27)
+                                                                              ds
+where L† is the adjoint operator to L. For continuous variables, the adjoint operator is dened as,
+                                                          
+                                               ψ2 Lψ1 dx = ψ1 L† ψ2 dx                                           (B28)
+
+for any test functions ψ1 and ψ2 . For discrete variables, L† = LT .
+
+
+                                                  a.    Continuous variables
+
+  In the case that the forward process is an Itô diusion, L is the generator for the corresponding Fokker-Planck
+equation,
+                                              ∂               1 ∂ ∂
+                                     L=−           fi (x, t) +               Dij (t)                             (B29)
+                                             i
+                                               ∂xi             2 i,j ∂xi ∂xj
+
+where D is a symmetric matrix, Dij = Dji that does not depend on x.
+  Using Eq. (B28) and integration by parts, it can be shown that the adjoint operator is,
+                                                             ∂    1         ∂ ∂
+                                          L† =          fi       +       Dij                                     (B30)
+                                                   i
+                                                             ∂xi   2 i,j     ∂xi ∂xi
+
+By directly substituting Eq. (B30) into Eq. (B27) and simplifying, Lrev can be reduced to,
+                                                   ∂        1 ∂ ∂
+                                         Lrev =         gi +               Dij                                   (B31)
+                                                  i
+                                                    ∂xi      2 i,j ∂xi ∂xj
+
+with the drift vector g,
+                                                               1  ∂
+                                  gi (x, t) = fi (x, t) −                 [Dij (x, t)Qt (x)]                     (B32)
+                                                             Qt (x) j ∂xj
+
+  If ∆t is chosen to be suciently small, Eq. (B32) can be linearized and the transition kernel is Gaussian,
+                                                                               
+                                             ′            1        T −1
+                                   Qt|t+∆t (x x) ∝ exp − (x − µ) Σ (x − µ)                                      (B33)
+                                                          2
+
+
+                                                       µ = x + ∆t gi (x, t)                                      (B34)
+
+
+                                                             Σ = ∆t D(t)                                         (B35)
+                                                                                                                  18
+
+Therefore, one can build a continuous diusion model with arbitrary approximation power by working in the small ∆t
+limit and approximating the reverse process using a Gaussian distribution with a neural network dening the mean
+vector [1, 2].
+
+
+
+                                                     b.    Discrete variables
+
+
+  In a discrete diusion model, L is given by Eq. (B17). This tensor product form for L guarantees that L(x′ , x) = 0
+for any vectors x′ and x that have a Hamming distance greater than one (which means they have at least N − 1
+matching elements). As such, in discrete diusion models, neural networks trained to approximate ratios of the data
+                    (x′ )
+distribution QQTT−s
+                 −s (x)
+                          for neighboring x′ and x can be used to implement an arbitrarily good approximation to the
+actual reverse process [3].
+
+
+
+                                                3.        The Diusion Loss
+
+
+   As discussed in the main text, a diusion model is trained by minimizing the distributional distance between the
+joint distributions of the forward process Q0,,T and our learned approximation to the reverse process P0,,T
+                                                                                                          θ
+                                                                                                                  ,
+                                                                    θ
+                                                                                 
+                                          LDN (θ) = D Q0,,T (·)P0,,T (·)                               (B36)
+
+the Markovian nature of Q can be taken advantage of to simplify Eq. (B36) into a layerwise form,
+                                                          T
+                                                          
+                                   LDN (θ) + C = −              EQ(xt−1 ,xt ) [log (Pθ (xt−1 xt )]            (B37)
+                                                          t=1
+
+where C does not depend on θ. For denoising algorithms that operate in the innitesimal limit, the simple form of
+Pθ allows for LDN and its gradients to be computed exactly.
+
+
+
+                                          a.   A Monte-Carlo gradient estimator
+
+                               
+  In the case where Pθ xt−1 xt is an EBM, there exists no simple closed-form expression for θ LDN (θ). In that
+case, one must employ a Monte Carlo estimator to approximate the gradient. This estimator can be derived directly
+by taking the gradient of Eq. (B37),
+                                                  T
+                                                                                           
+                                 θ LDN (θ) = −           EQ(xt−1 ,xt ) θ log Pθ (xt−1 xt )                  (B38)
+                                                  t=1
+                                                         
+If we have an EBM parameterization for Pθ xt−1 xt this may be simplied further. Specically, given the latent
+variable from Eq. 8 in the main text, the gradient of log-likelihood may be simplied to,
+                                                                                                         
+                    θ log Pθ (xt−1 xt ) = EPθ (xt−1 ,z t−1 |xt ) θ Et−1
+                                                                       m                                  m
+                                                                             − EPθ (z t−1 |xt−1 ,xt ) θ Et−1   (B39)
+
+Inserting this into Eq. (B38) yields the nal result given in Eq. 14 in the article.
+
+
+
+                                    4.   Simplication of the Energy Landscape
+
+
+  As the forward process timestep is made smaller, the energy landscape of the EBM-based approximation to the
+reverse process becomes simpler. A simple 1D example serves as a good demonstration of this concept. Consider the
+marginal energy function,
+                                                 θ
+                                                                        2
+                                                Et−1 (xt−1 ) = x2t−1 − 1                                       (B40)
+                                                                                                                          19
+
+
+
+
+                                                        λ=1          λ=0.5
+
+                                                                     λ=0.2
+
+
+
+                                                                               λ=0.1
+
+
+
+
+                                                                                        λ=0
+
+
+
+
+FIG. 7. Conditioning of the energy landscape As λ is increased, the energy landscape is reshaped from a strongly bimodal
+distribution towards a simple Gaussian centered at xt = −05. The latter is much easier to sample from.
+
+
+and a forward process energy function that corresponds to Gaussian diusion (Eq. (B1)),
+                                                                                  2
+                                              f                          xt−1
+                                             Et−1 (xt−1 , xt ) = λ            −1                                      (B41)
+                                                                          xt
+
+The parameter λ scales inversely with the size of the forward process timestep; that is, lim λ = ∞.
+                                                                                              ∆t→0
+                                                                     f
+   The reverse process conditional energy landscape is then Et−1
+                                                             θ
+                                                                 + Et−1 . The eect of λ on this is shown in Fig. 7.
+   The energy landscape is bimodal at λ = 0 and gradually becomes distorted towards an unimodal distribution
+centered at xt as λ increases. This reshaping is intuitive, as shortening the forward process timestep should more
+strongly constrain xt−1 to xt .
+
+
+                                              5.   Conditional Generation
+
+  The denoising framework can be adapted for conditional generation tasks, such as generating MNIST digits given a
+specic class label. In principle, this is very simple: we concatenate the target (in our case, the images) and a one-hot
+encoding of the labels into a contiguous binary vector and treat that whole thing as our training data on which we
+train the denoising model as described above.
+  In this case, the visible nodes of the Boltzmann machine are partitioned into "pixel nodes" VX and "label nodes"
+VL . All visible nodes come in pairs of input and output nodes (drawn in blue and green resp. in Fig. 3 in the main
+paper body and Fig. 9 below), so the set of visible nodes now consists of VXin , VXout , VLin , and VLout .
+  The training procedure works the same way as before, just using this label-augmented data. We obtain the noised
+training images Xn and labels Ln by noising each entry of X0 and L0 resp.      independently using the forward process  
+described in subsection B 1 b. Then we train the nth step model Pθn VXout = x, VLout = l  VXin = x′ , VLin =      l ′
+                                                                                                                           to
+approximate (in terms Kullback-Leibler divergence) the distribution P Xn = x, Ln = l  Xn+1 = x , Ln+1 = l .
+                                                                                                          ′      ′
+
+  At inference time, we have two cases:
+
+   • Unconditional inference proceeds as with regular denoising. We pass the pixel and label values backward through
+     all the step models, and at the end, we record the pixel values.
+                                                                                                          n ∼
+   • For conditional generation we clamp all label output nodes VLout in all step models to l0 and sample X
+          out                                 
+                      in        out    in                                         
+     Pθn VX = ·  VX = Xn+1 , VL = VL = l0 , where l0 is an unnoised label and Xn+1 is the output of Pθn+1 (or
+     uniform noise if n = N ).
+                                                                                                                       20
+
+  Note that all step models except θ0 will be trained on somewhat noised labels, so they might never have seen a
+pristine unnoised label during training (if there are 10 classes and ve label repetitions, a strongly noised label has an
+approximately 10 × 2−50 chance of being a valid unnoised label). However, during conditional inference, the models
+will have their label nodes clamped to an unnoised label l0 , and they may not know how this should inuence the
+generated image (and this problem would only be exacerbated if we clamped to a noised label instead).
+  This issue can be mitigated by using a rate X when noising image entries in the training data and a dierent rate
+L for noising label entries. Recall that the higher the , the noisier the data will become as n increases.
+  We consider two extremes:
+
+   • If L ≥ X , then we have the exact same problem as before.
+
+   • If L = 0, then the labels in the training data are a zero-temperature distribution. This low temperature can
+     lead to freezing, potentially negating the benets denoising could otherwise bring.
+
+  Experimentally, we observed that settings in the ranges L  [01, 03] and X  [07, 15] (for models with four to
+12 steps) yielded good conditional generation performance while avoiding the freezing problem.
+
+
+                                              6.    Learning the marginal
+
+  If a DTM is trained to match the conditional distribution of the reverse process perfectly, the learned energy
+function Et−1
+           θ
+               is the energy function of the true marginal distribution, that is, Et−1
+                                                                                   θ
+                                                                                       (x) ∝ log Q(xt−1 ). To show this,
+we start by applying the Bayes’ rule to the learned reverse process conditional in the limit that it perfectly matches
+the true reverse process,
+
+                              Q(xt xt−1 )Q(xt−1 )      1          f     t−1 t  θ     t−1
+                                                   =           e−(Et−1 (x ,x )+Et−1 (x ,θ))                         (B42)
+                                     Q(xt )          Z(θ, xt )
+
+dening the distribution,
+                                                       1  −Et−1 θ
+                                                                   (xt−1 ,z t−1 ,θ)
+                                        H(xt−1 ) =             e                                                    (B43)
+                                                      Z(θ) t−1
+                                                             z
+
+
+                                                                    θ        t−1
+                                                                                    ,z t−1 ,θ )
+                                           Z(θ) =                 e−Et−1 (x                                         (B44)
+                                                    xt−1 ,z t−1
+
+extracting the forward process from the RHS of Eq. (B42) and using Eq. (B43),
+
+                                              Q(xt−1 )   Z(θ)Z
+                                                       =           H(xt−1 )                                         (B45)
+                                               Q(xt )    Z(θ, xt )
+
+ Eq. (B45) can easily be re-arranged into a form where the LHS depends only on xt , and the RHS depends only on
+x . From this, we can deduce,
+ t−1
+
+
+                                                        Q(xt−1 )
+                                                                 =c                                                 (B46)
+                                                        H(xt−1 )
+
+from the fact that Q and H are both normalized, we can nd that c = 1, which establishes the desired equivalence.
+
+
+                                   Appendix C: Hardware accelerators for EBMs
+
+  In this work, we focus on a hardware architecture for EBMs that are naturally expressed as Probabilistic Graphical
+Models (PGMs). In a PGM-EBM, the random variables involved in the model map to the nodes of a graph, which
+are connected by edges that indicate dependence between variables.
+  PGMs form a natural basis for a hardware architecture because they can be sampled using a modular procedure
+that respects the graph’s structure. Specically, the state of a PGM can be updated by iteratively stepping through
+each node of the graph and resampling one variable at a time, using only information about the current node and
+                                                                                                                             21
+
+
+
+
+                                         x1                     x2                    x3
+
+
+
+
+                                         x4                     x5                    x6
+
+
+
+
+                                         x7                     x8                    x9
+
+
+
+FIG. 8. Chromatic Gibbs Sampling A schematic view of an abstract hardware accelerator for a simple EBM. Each of the
+model’s variables is assigned to a node. Each node is capable of receiving information from its neighbors and updating its state
+according to the appropriate conditional distribution. Since each node’s update distribution only depends on the state of its
+neighbors and because nodes of the same color do not neighbor each other, they can all be updated in parallel.
+
+
+
+
+its immediate neighbors. Therefore, if a PGM is local, sparse, and somewhat heterogeneous, a piece of hardware can
+be built to eciently sample from it that involves spatially arraying probabilistic sampling circuits that interact with
+each other cheaply via short wires.
+   This local PGM sampler represents a type of compute-in-memory approach, where the state of the sampling program
+is spatially distributed throughout the array of sampling circuitry. Since the sampling circuits only communicate
+locally, this type of computer will spend signicantly less energy on communication than one built on a Von-Neumann-
+like architecture, which constantly shuttles data between compute and memory.
+  Formally, the algorithm that denes this modular sampling procedure for PGMs is called Gibbs sampling. In Gibbs
+sampling, samples are drawn from the joint distribution p(x1 , x2 ,    , xN ) by iteratively updating the state of each
+node conditioned on the current state of its neighbors. For the ith node, this means sampling from the distribution,
+
+                                                 xi [t + 1] ∼ p(xi nb(xi )[t])                                          (C1)
+
+This procedure denes a Markov chain whose stationary distribution can be easily controlled by adjusting the con-
+ditional update distributions of each node (see the next section for an example). Starting from some random ini-
+tialization, this iterative update must be applied potentially many times to all graph nodes before the Markov chain
+converges to the desired stationary distribution, allowing us to draw samples from it.
+  Gibbs sampling allows for any two nodes that are not neighbors to be updated in parallel, meaning that the state
+can be updated in batches corresponding to dierent color groups of the graph. For a more thorough explanation of
+how Gibbs sampling works, see [4].
+  Fig. 8 shows a simple example of a PGM with two color groups that would be amenable to Gibbs sampling. Since
+x1 is only connected to x2 and x4 , the update rule from Eq. (C1) would take the form,
+
+                                                 x1 [t + 1] ∼ p(x1 x4 [t], x2 [t])                                       (C2)
+
+If the joint distribution had sucient structure such that the conditional for each node had the same form, a piece of
+hardware could be built to sample from this PGM by building a 3x3 grid of sampling circuits that communicate only
+with their immediate neighbors.
+                                                                                                                     22
+
+                                                 1.    Quadratic EBMs
+
+
+  The primary constraint around building a hardware device that implements Gibbs sampling is that the conditional
+update given in Eq. (C1) must be eciently implementable. Generally, this means that one wants it to take a form
+that is "natural" to the hardware substrate being used to build the computer.
+  To satisfy this constraint, it is generally necessary to limit the types of joint distributions that a hardware device
+can sample from. An example of such a restricted family of distributions is quadratic EBMs.
+  Quadratic EBMs have energy functions that are quadratic in the model’s variables, which generally leads to con-
+ditional updates computed by biasing a simple sampling circuit (Bernoulli, categorical, Gaussian, etc.) with the
+output of a linear function of the neighbor states and the model parameters. These simple interactions are ecient
+to implement in various types of hardware. As such, Quadratic EBMs have been the focus of most work on hardware
+accelerators for Gibbs sampling to date.
+   In the main text, we discuss Boltzmann machines, which involve only binary random variables and are the most
+basic form of quadratic EBM. The Conditional Update for Boltzmann Machines requires biasing a Bernoulli random
+variable according to a sigmoid function of a linear combination of the model parameters and the binary neighbor
+states, as shown in the main text, Eq. 11. This conditional update is eciently implementable using an RNG with a
+sigmoidal bias and resistors, as discussed in section K.
+  Here, we will touch on a few other types of quadratic EBM that are more general. Although the experiments
+in this paper focused on Boltzmann machines, they could be trivially extended to these more expressive classes of
+distributions.
+
+
+
+
+                                                      a.    Potts models
+
+
+  Potts models generalize the concept of Boltzmann machines to k-state variables. They have the energy function,
+                                              N
+                                               M
+                                                                           N 
+                                                                             M
+                                     E(x) =                 xim Jmn
+                                                                 ij
+                                                                    xjn +             him xim                      (C3)
+                                              i,j=1 m,n=1                   i=1 m=1
+
+
+
+                                                             ii
+                                                            Jmn =0                                                 (C4)
+
+xim is a one-hot encoding of the state of variable xi ,
+
+                                                           xim  0, 1                                            (C5)
+
+                                                           
+                                                                xim = 1                                            (C6)
+                                                            m
+
+which implies that xim = 1 for a single value of m, and is zero otherwise. The distribution of any individual variable
+conditioned on it’s Markov blanket is,
+                                                                                               
+                                        1                                  
+                  p(xim = 1mb(xi )) = exp −                  ij
+                                                                Jmn xjn +          xjn Jnm
+                                                                                        ji
+                                                                                           + him               (C7)
+                                        Z                   i                  i
+                                                           j∈mb(x ),n             j∈mb(x ),n
+
+In the case that J has the symmetry,
+                                                            ij    ji
+                                                           Jmn = Jnm                                               (C8)
+
+this reduces to,
+                                                                          1 −θm
+                                                                              i
+                                              p(xim = 1mb(xi )) ∝          e                                      (C9)
+                                                                          Z
+                                                                                                                        23
+
+
+                                                                                    
+                                                              
+                                           i
+                                          θm =  2                      ij
+                                                                        Jmn xjn + him                              (C10)
+                                                         j∈mb(xi ),n
+
+
+The parameters θ are dened to make it clear that this is a softmax distribution.
+  Therefore, to build a hardware device that samples from Potts models using Gibbs sampling, one would have to
+build a softmax sampling circuit parameterized by a linear function of the model weights and neighbor states. Potts
+model sampling is slightly more complicated than Boltzmann machine sampling, but it is likely possible.
+
+
+                                               b.    Gaussian-Bernoulli EBMs
+
+  Gaussian-Bernoulli EBMs extend Boltzmann machines to continuous, binary mixtures. In general, this type of model
+can have continuous-continuous, binary-binary, and binary-continuous interactions. For simplicity, if we consider only
+binary-continuous interactions, the energy function may be written as,
+                                             Nv
+                                                                    Nh
+                                                                  Nv 
+                                                                                         Nh
+                                                                                          
+                                                (vi − bi )2             vi Wij hj
+                                 E(v, h) =                    −                      −          cj hj ,             (C11)
+                                             i=1
+                                                     2σi2         i=1 j=1
+                                                                               σi2        j=1
+
+
+where vi  R are continuous variables with biases bi and variances σi2 , hj  −1, 1 are binary variables with biases cj ,
+and Wij are interaction weights.
+  Due to the structure of the energy function, the update rule for the continuous variables corresponds to drawing a
+sample from a Gaussian distribution with a mean that is a linear function of the neighbor states,
+                                                                              
+                            p(vi  mb(vi )) = N µi , σi2  ,  µi = bi + σi2          Wij hj                      (C12)
+                                                                                     j∈mb(vi )
+
+
+  The binary update rule is similar to the rule for Boltzmann machines,
+                                                                             
+                                                                vi Wij
+                               p(hj = 1  mb(hj )) = σ 2               + cj                                    (C13)
+                                                                      σi2
+                                                                        i∈mb(hj )
+
+
+   Hardware implementations of Gaussian-Bernoulli EBMs are more dicult than the strictly discrete models because
+the signals being passed during conditional sampling of the binary variables are continuous. To pass these continuous
+values, they must either be embedded into several discrete variables or an analog signaling system must be used. Both
+of these solutions would incur signicant overhead compared to the purely discrete models.
+
+
+                                 Appendix D: A hardware architecture for denoising
+
+   The denoising models used in this work exclusively modeled distributions of binary variables. The reverse process
+energy function (Eq. 7 in the main text) was implemented using a Boltzmann machine. The forward process energy
+           f
+function Et−1 was implemented using a simple set of pairwise couplings between xt (blue nodes) and xt−1 (green
+nodes). The marginal energy function Et−1 θ
+                                             was implemented using a latent variable model (latent nodes are drawn
+in orange) with a sparse, local coupling structure.
+
+
+                            1.   Implementation of the forward process energy function
+
+   From the exponential form of the discrete-variable forward process transition kernel given in Eq. (B20), it is
+straightforward to derive a Boltzmann machine-style energy function that implements the forward process,
+
+                                                     f
+                                                              Γi (t)
+                                                    Et−1 =               xti xt−1
+                                                                              i                                       (D1)
+                                                              i
+                                                                    2
+                                                                                                                                24
+
+
+
+  a                                                                      b                               Γ(t)
+
+                                                                                                     J
+
+
+
+
+                                   (0, 1)         (1, 2)
+                                                                                                                          xt
+                                                                                       z t-1
+                                                                                                                          xt-1
+FIG. 9. Our hardware denoising architecture (a) An example of a possible connectivity pattern as specied in Table. II.
+For clarity, the pattern is illustrated as applied to a single cell; however, in reality, the pattern is repeated for every cell in
+the grid. (b) A graph for hardware denoising. The grid is subdivided at random into visible (green) nodes, representing the
+variables xt−1 , and latent (orange) nodes, representing z t−1 . Each visible node xt−1
+                                                                                     j    is coupled to a (blue) node carrying the
+value from the previous step of denoising xtj (note that these blue nodes stay xed throughout the Gibbs sampling).
+
+
+                                       Pattern                  Connectivity
+                                        G8                        (0, 1), (4, 1)
+                                        G12                  (0, 1), (4, 1), (9, 10)
+                                        G16              (0, 1), (4, 1), (8, 7), (14, 9)
+                                        G20          (0, 1), (4, 1), (3, 6), (8, 7), (14, 9)
+                                        G24      (0, 1), (1, 2), (4, 1), (3, 6), (8, 7), (14, 9)
+
+                          TABLE II. Edges (ordered pairs) associated with graphs of various degrees.
+
+
+
+where xt [i]  −1, 1 indicates the ith element of the vector of random variables xt as usual.
+
+
+
+
+                                  2.   Implementation of the marginal energy function
+
+
+  We use a Boltzmann machine based on a grid graph to implement the marginal energy function. Our grids have both
+nearest-neighbor and long-range skip connections. A simple example of this is shown in Fig. 9 (a). This connectivity
+pattern is tiled such that every node in the bulk of the grid has the same connectivity to its neighbors. At the
+boundaries, connections that extend beyond the grid’s edges are not formed.
+  Within the grid, we randomly choose some subset of the nodes to represent the data variables xt−1 . The remaining
+nodes then implement the latent variable zt−1 . The grid is, therefore, a deep Boltzmann machine with a sparse
+connectivity structure and multiple hidden layers.
+   We use a particular set of connectivity patterns in the experiments in this article, which are specied in Table. II.
+We say that node (x, y) has a connection rule of the form (a, b) if it is connected to nodes at positions (x + a, y +
+b), (x − b, y + a), (x − a, y − b), (x + b, y − a), so each connection rule adds up to 4 edges from this node.
+  As explicitly stated in Eq. 7 of the article, our variational approximation to the reverse process conditional has an
+energy function that is the sum of the forward process energy function and the marginal energy function. Physically,
+this corresponds to adding nodes to our grid that implement xt , which are connected pairwise to the data nodes
+implementing xt−1 via the coupling dened in Eq. (D1). This connectivity is shown in Fig. 9 (b).
+                                                                                                                         25
+
+
+                                                                 to neighbours:     1         n
+                                         G1
+                          y1 Vdd                                                        ...
+
+
+
+
+                                         ...
+                                                           Vb
+                                         GN
+                          yn Vdd
+                                                            C
+
+
+                                                                set state            get state
+                                                                            clock
+
+
+FIG. 10. A schematic of a possible Boltzmann machine sampling cell A linear resistor network computes a biasing
+voltage given the sign-corrected neighbor states yn = xn ⊕ sn . The output of this circuit biases an RNG that responds in a
+sigmoidal manner. This RNG processes freely when the clock is low and latches to a state when the clock is high. Upon the
+clock going high, the sampled state is broadcasted to the neighbors of the cell over wires.
+
+
+
+
+                           Appendix E: Energetic analysis of the hardware architecture
+
+
+
+   Our RNG design uses only transistors and can integrate tightly with other traditional circuit components on a chip
+to implement a large-scale sampling system. Since there are no exotic components involved that introduce unknown
+integration barriers, it is straightforward to build a simple physical model to predict how this device utilizes energy.
+
+  The performance of the device can be understood by analyzing the unit sampling cell that lives on each node of the
+PGM implemented by the hardware. The function of this cell is to implement the Boltzmann machine conditional
+update, as given in Eq. 11 in the main text.
+
+  There are many possible designs for the sampling cell. The design considered here utilizes a linear analog circuit to
+combine the neighboring states and model weights, producing a control voltage for an RNG. This RNG then produces
+a random bit that is biased by a sigmoidal function of the control voltage. This updated state is then broadcast back
+to the neighbors. The cell must also support initialization and readout (get/set state operations). A schematic of a
+unit cell is shown in Fig. 8.
+
+   We provide experimental measurements of our novel RNG circuitry in the main text, which establish that random
+bits can be produced at a rate of τrng
+                                    −1
+                                         ≈ 10 MHz using ∼ 350aJ of energy per bit. Fig. 15 (a) shows an output voltage
+waveform from the RNG circuit. It wanders randomly between high and low states. Critically, the bias of the RNG
+circuit (the probability of nding it in the high or low state) is a sigmoidal function of its control voltage, which allows
+for a straightforward implementation of the conditional update using linear circuitry.
+
+  The size of the RNG circuit can be used to anchor the dimensions of a future large-scale Gibbs sampling device.
+As shown in Fig. 15 (b), the RNG itself involves around 10 transistors and takes up ∼ 3µm × 3µm on the die. It is
+reasonable to imagine that the whole sampling cell could t in 4× this area and have a side length of 6µm. Given
+this area, a 1000 × 1000 grid of sampling cells would t within a 6mm × 6mm chip.
+
+  Building on the measured characteristics of our RNG, we will now develop simple physical models for the remaining
+components of the sampling system. These models can then be combined to estimate the energy consumption of the
+diusion models developed in this article running on our hardware.
+                                                                                                                 26
+
+                                                 1.   Biasing circuit
+
+
+  The multiply-accumulation of the model weights and neighbor states can be performed using a resistor network, as
+shown in Fig. 10. The dynamics of this resistor network are described by the dierential equation,
+                                           n+2
+                                                                           dVb
+                                                 Gj (Vdd yj − Vb ) = C                                         (E1)
+                                           j=1
+                                                                             dt
+
+where yi = xi ⊕ si is the XOR of the neighbor state xi with a sign bit si . There are n variable neighbor states and
+two xed inputs (yn+1 = 1, yn+2 = 0), which are important for implementing the xed bias term in the conditional
+update. Vdd is the supply voltage and Vb is the output voltage that biases the RNG. Gi represents the conductance
+of the resistor corresponding to the ith input. The capacitance C represents the parasitic capacitance to ground
+associated with any real implementation of this circuit and is critical to forming realistic estimates of speed and
+energy consumption. Realistic values for an implementation of this circuit in our transistor process are shown in
+Fig. 11 (a).
+  Since this equation is rst order, the dynamics exponentially relax to some xed point Vb∞ ,
+
+                                             Vb (t) = c e−tτbias + Vb∞                                        (E2)
+
+the time constant τbias is,
+                                                                 C
+                                                      τbias =                                                  (E3)
+                                                                 GΣ
+and the xed point is,
+                                                           n+2
+                                                              Gj
+                                                 Vb∞ =             Vdd yj                                      (E4)
+                                                           j=1
+                                                               G Σ
+
+
+where the total conductance GΣ is,
+                                                               n+2
+                                                               
+                                                      GΣ =           Gj                                        (E5)
+                                                               j=1
+
+
+  The RNG has a bias curve which takes the form,
+                                                                            
+                                                                     Vb
+                                             P (xi = 1) = σ             −ϕ                                     (E6)
+                                                                     Vs
+
+inserting Eq. (E4) and expanding the term inside the sigmoid,
+
+                                        n                                   
+                                 Vb         Gj Vdd                Gn+1 Vdd
+                                    −ϕ=            (xj ⊕ sj ) +            −ϕ                                  (E7)
+                                 Vs     j=1
+                                            GΣ Vs                  GΣ Vs
+
+by comparison to the Boltzmann machine conditional, we can see that the rst term implements the model weights
+(which can be positive or negative given an appropriate setting of the sign bit sj ), and the second term implements
+a bias.
+  The static power drawn by this circuit can be written in the form,
+                                                         C
+                                              P∞ =               2
+                                                               Vdd (1 − )                                    (E8)
+                                                       τbias
+where 0 ≤  ≤ 1 is the input-dependent constant,
+                                                           n+2
+                                                              Gj
+                                                      =           yj                                          (E9)
+                                                           j=1
+                                                               G Σ
+                                                                                                                              27
+
+
+a                                                                     c
+
+
+b
+
+
+
+FIG. 11. Parameters for the energy model (a) The parasitic capacitance associated with the output node of the biasing
+circuit for various numbers of neighbors. These capacitances were estimated using the PDK and a layout for a real transistor
+implementation of the biasing circuit. (b) The capacitance associated with routing wires of various lengths and geometry in our
+process, extracted using the PDK. (c) The energy required for a cell to signal to all of its neighbors as a function of signaling
+voltage for various connectivity patterns. This energy was calculated using the routing capacitance data from (b).
+
+
+   This xed point must be held while the noise generator relaxes, which means that the energetic cost of the biasing
+circuit is approximately,
+
+                                                 Ebias ≈P ∞ τrng
+                                                           τrng 2                                                         (E10)
+                                                       =C       V (1 − )
+                                                          τbias dd
+
+This is maximized for  = 12 .
+                                                 τrng
+  To avoid slowing down the sampling machine, τbias   ≫ 1. As such, ignoring the energy spent charging the capacitor
+∼ 2 CVb will not signicantly aect the results, and the approximation made in Eq. (E10) should be accurate. The
+  1     2
+
+energy consumed by the bias circuit is primarily due to static power dissipation.
+
+
+                                                 2.   Local communication
+
+  Another signicant source of energy consumption is the communication of state information between neighboring
+cells. In most electronic devices, signals are communicated by charging and discharging wires. Charging a wire
+requires the energy input,
+                                                                  1         2
+                                                      Echarge =     Cwire Vsig                                            (E11)
+                                                                  2
+where Cwire is the capacitance associated with the wire, which grows with its length, and Vsig is the signaling voltage
+level.
+   Given the connectivity patterns shown in table II, it is possible to estimate the total capacitance Cn associated
+with the wire connecting a node to all of its neighbors,
+                                                         
+                                                Cn = 4ηℓ       a2i + b2i                                         (E12)
+                                                                  i
+
+where ℓ ≈ 6µm is the sampling cell side length, and η ≈ 350aFµm is the wire capacitance per unit length in our
+process, see Fig. 11 (b). ai and bi are the x and y components of the ith connection rule, as described in section D.2.
+                                                                                                                    28
+
+  The charging energy Eq. (E11) is plotted as a function of signaling voltage for various connectivity patterns in
+Fig. 11 (b).
+
+
+                                              3.     Global communication
+
+  Several systems on the chip require signals to be transmitted from some central location out to the individual
+sampling cells. This communication involves sending signals over long wires with a large capacitance, which is
+energetically expensive. Here, the cost of this global communication will be taken into consideration.
+
+
+                                                         a.   Clocking
+
+   Although it is possible in principle to implement Gibbs sampling completely asynchronously, in practice, it is more
+ecient to implement standard chromatic Gibbs sampling with a global clock. A global clock requires a signal to
+be distributed from a central clock circuit to every sampling cell on the chip. This signal distribution is typically
+accomplished using a clock tree, a branching circuit designed to minimize timing inconsistencies between disparate
+circuit elements.
+   To simplify the analysis, we will consider a simple clock distribution scheme in which the clock is distributed by
+lines that run the entire length of each row in the grid. The total length of the wires used for clock distribution in
+this scheme is,
+
+                                                        Lclock = N L                                             (E13)
+
+where N is the number of rows in the grid, and L is the length of a row. Given this length, the energetic cost of a
+clock pulse can be calculated using Eq. (E11).
+
+
+                                               b.    Initialization and readout
+
+   A sampling program begins by initializing every sampling cell to a specic state and ends by reading out the state
+of a subset of the cells for use o-chip. Both of these operations require bits to be sent over a long wire of length L
+from the chip’s boundaries to a sampling cell in the bulk.
+
+
+                                   4.    Analysis of a complete sampling program
+
+  Given the above analysis of the various subsystems, it is straightforward to construct a model of the energy
+consumption of a complete denoising model. Running each layer of the denoising model requires initialization of all
+N nodes, chromatic Gibbs sampling for K iterations, and nally, readout of the Ndata data nodes,
+
+                                              E = T (Esamp + Einit + Eread )                                     (E14)
+
+  Esamp is the cost associated with the sampling iterations for each layer,
+
+                                        Esamp = KN (Erng + Ebias + Eclock + Enb )                                (E15)
+
+where Eclock and Enb are the per-cell costs associated with clock distribution and neighbor communication, respec-
+tively.
+   Einit is the cost of initializing all the cells at the beginning of the program,
+                                                              1    2
+                                                     Einit = N ηLVsig                                            (E16)
+                                                              2
+and Eread is the cost of reading out the data cells at the end,
+                                                                 1    2
+                                                    Eread = Ndata ηLVsig                                         (E17)
+                                                                 2
+                                                                                                                           29
+
+
+ a                                                                 b
+
+
+
+
+FIG. 12. (a) Autocorrelation curve of a denoising model composed of Boltzmann machines. Each line represents
+the autocorrelation of one of the Boltzmann machines that make up a fully trained denoising model.
+(b) Breakdown of the energetic cost of running a sampling cell. Here, we take τrng τbias = 15 and γ = 12. We also
+assume that signaling to neighbors is conducted at a voltage of 4VT (where VT is the thermal voltage kB T e) and the clocking
+and read/write operations are conducted at a signal level of 5VT .
+
+
+                                                      FID vs Chain Length
+                                 300
+
+                                 250
+
+                                 200
+                           FID
+
+
+
+
+                                 150
+
+                                 100
+
+                                  50
+                                       2
+
+                                           4
+
+                                                8
+
+
+
+
+                                                                       8
+
+                                                                             6
+
+                                                                                   2
+                                                     16
+
+                                                           32
+
+                                                                64
+
+
+
+
+                                                                                        24
+
+                                                                                              48
+                                                                     12
+
+                                                                           25
+
+                                                                                 51
+
+                                                                                       10
+
+                                                                                             20
+
+
+
+
+                                                      Sampling Chain Length
+
+
+FIG. 13. The quality of output images generated by our denoising models stops improving when we sample for more than
+K ≈ 250 steps.
+
+
+   This model was used to estimate the energy consumption of the denoising model depicted in Fig. 1 of the article.
+The mixing behavior for each layer in this denoising model is shown in Fig. 12 (a). All of the layers mix in tens of
+iterations, with the rst layer decaying the most slowly. For the sake of energy calculations, we used K = 250 for all
+layers to be conservative. Fig. 13 shows that for our trained denoising models, sampling for more than K ≈ 250 steps
+brings almost no additional benet, which supports our use of this number for energy calculation. This grid used for
+each EBM in this model consisted of N = 4900 nodes that were connected using a G12 pattern. Ndata = 834 of the
+nodes were assigned to data, and the rest were latent.
+   Given realistic choices for the rest of the free parameters of the model, the energetic cost of this denoising model
+is estimated to be around 16 T nJ. This is almost entirely dominated by Esamp , with Einit + Eread ≈ 001 T nJ. A
+breakdown of the various contributions to Esamp , along with more details about the used model parameters, is given
+in Fig. 12 (b).
+   This exact procedure was used to estimate the energy consumption of the MEBMs in Fig. 1 in the article. In this
+case, T = 1 and K were estimated from the autocorrelation data for each layer; see section L.
+                                                                                                                    30
+
+                                                   5.     Level of realism
+
+
+   The model presented here captures all of the central functional units of a hardware Boltzmann machine sampler.
+However, the analysis was performed at a high level, and the model almost certainly underestimates the actual energy
+consumption of a complete device. In practice, when comparing the results of this type of calculation to a detailed
+analysis of a complete device design, we generally nd agreement within an order of magnitude. Given that the gap
+between conventional methods and our novel hardware architecture is at least several orders of magnitude, this low-
+resolution analysis is useful, as it supports the claims made in this article without getting into every implementation
+detail.
+   Some of the discrepancies between the high-level and detailed model can be attributed to overheads associated
+with real circuits. A real implementation of the biasing circuit discussed in section E.1 is more complicated than
+the theoretical model because tunable resistors do not exist. Communications with neighboring cells over long wires
+require driver circuits, which consume additional energy beyond what is spent charging the line. Despite this, real
+circuits are bound by the same fundamental physics as the simplied models presented here. As such, the simplied
+models tend to estimate energy consumption within a factor of two or three of real-life values.
+   A real device also has additional supporting circuitry compared to our stripped-down model. In the remainder of
+this section, we will discuss some examples of such supporting circuitry and argue that their contributions to energy
+consumption at the system level ought not to be signicant.
+
+
+
+                                        a.   Programming the weights and biases
+
+
+   Section E.1 discusses a simple circuit that uses resistors to implement the multiply-accumulate required by the
+conditional update rule. Key to this is being able to tune the conductance of the resistors to implement specic sets
+of weights and biases (see Eq. (E7)).
+   Practically, implementing this tunability requires that the model parameters be stored in memory somewhere on
+the chip. Writing to and maintaining these memories costs energy.
+   Writing to the memories uses much more energy than maintaining the state. However, if writes are infrequent
+(program the device once and then run many sampling programs on it before writing again), then the overall cost of
+the memory is dominated by maintenance. Luckily, most conventional memories are specically designed to consume
+as little energy as possible when not being accessed. As such, in practice, the cost of memory maintenance is small
+compared to the other costs associated with the sampling cells and does not signicantly change the outcome shown
+in Fig. 12.
+
+
+
+                                              b.        O-chip communication
+
+
+   External devices have to communicate with our chip for it to be useful. The cost of this communication depends
+strongly on the tightness of integration between the two systems and is impossible to reason about at an abstract
+level. As such, the analysis of communication here (as in Section E 3 b) was limited to the cost of getting bits out to
+the edge of our chip, which is a lower bound on the actual cost.
+   However, we have found that a more detailed analysis, which includes the cost of communication between two chips
+mediated by a PCB, does not signicantly change the results at the system level. The fundamental reason for this
+is that sampling programs for complex models run for many iterations before mixing and sending the results back to
+the outside world. This is reected in the discrepancy between Esamp and Einit + Eread found in section E.4.
+
+
+
+                                                   c.    Supporting circuitry
+
+
+  Any real chip has digital and analog supporting circuitry that provides basic functionality, such as clocking and
+communication, allowing the rest of the chip to function correctly. The fraction of the energy budget spent on this
+supporting circuitry generally depends on its size compared to the core computer. Due to the heterogeneity of our
+architecture, it is possible to share most of the supporting circuitry among many sampling cells, which dramatically
+reduces the per-cell cost. As such, the energy cost of the supporting circuitry is not signicant at the system level.
+                                                                                                                    31
+
+                                        Appendix F: Energy analysis of GPUs
+
+  All experiments shown in Fig. 1 in the article were conducted on NVIDIA A100 GPUs. The empirical estimates of
+energy were conducted by drawing a batch of samples from the model and measuring the GPU energy consumption
+and time via Zeus [5]. The theoretical energy estimates were derived by taking the number of model FLOPS (via
+JAX and PyTorch’s internal estimators) and plugging them into the NVIDIA GPU specications (19.5 TFLOPS for
+Float32 and 400W). The empirical measurements are compared to theoretical estimates for the VAE in Table III, and
+the empirical measurements show good alignment with the theoretical.
+
+                                    FID Empirical Eciency Theoretical Eciency
+                                    30.5      61 × 10−5                 23 × 10−5
+                                    27.4      15 × 10−4                 04 × 10−4
+                                    17.9      25 × 10−3                 17 × 10−3
+
+TABLE III. Comparing theoretical vs empirical energy consumption for a VAE on a GPU. Energy eciencies are reported in
+units of joules per sample.
+
+   The models were derived from available implementations and are based on small versions of ResNet [6] and UNet [7]
+style architectures. Their FID performance is consistent with published literature values [8–10]. The goal is not to
+achieve state of the art performance, but to represent the relative scales of energy consumption of the algorithms.
+For a direct simulation of the Ising models on a GPU, theoretical eciency on the order of 10−4 joules per sample
+comparable in performance and eciency to the small VAE.
+   The reader may be surprised to see that the diusion model is substantially less energy-ecient than the VAE
+given the relative dominance in image generation. However, two points should be kept in mind. First, while VAE
+remains a semi-competitive model for these smaller datasets, this quickly breaks down. On larger datasets, a FID
+performance gap usually exists between diusion models and VAEs. Second, these diusion models (based on the
+original DDPM [2]) have performance that can depend on the number of diusion time steps. So, not only is the UNet
+model often larger than a VAE decoder, but it also must be run dozens to thousands of times in order to generate a
+single sample (thus resulting in multiple orders of magnitude more energy required). Modern improvements, such as
+distillation [11], may move the diusion model energy eciency closer to the VAE’s.
+
+
+                                   Appendix G: Autocorrelation and mixing time
+
+  We monitor the mixing of our Gibbs samplers via the autocorrelation of a low-dimensional projection of the Markov
+chain state.
+  Let x[j]j≥0 be a discrete-time Markov chain on a nite state space 1,    , d, with time-homogeneous transition
+kernel P = (pxy )1≤x,y≤d given by
+
+                                            pxy = P(x[j + 1] = y  x[j] = x)
+
+In our setting, x[j] is the state of the Boltzmann machine at Gibbs iteration j.
+  We x a function (projection) f : 1,    , d → R and dene the scalar observable
+
+                                                      y[j] = f (x[j])
+
+We then dene the mean
+                                                                 
+                                                       µ ≡ E y[j]                                                 (G1)
+
+and the (normalized) autocorrelation function
+                                                                       
+                                            E (y[j] − µ) (y[j + k] − µ)
+                                  ryy [k] =                             ,       k  N                          (G2)
+                                                  E (y[j] − µ)2
+
+Here E[·] denotes expectation with respect to the joint law of the Markov chain. In practice, we approximate this
+expectation by averaging over time and across multiple independent Gibbs sampling chains.
+  For all experiments in this article, we take f to be the encoder network used in the FID computation, applied to the
+                                                                                                                           32
+
+visible states of the Boltzmann machine. This choice is largely arbitrary: we found that much simpler embeddings,
+such as random linear projections y[j] = Ax[j], behave similarly well for the purposes of autocorrelation-based mixing
+diagnostics.
+
+
+
+
+                                Spectral decomposition and decay of autocorrelation
+
+
+   We now briey recall how the decay rate of autocorrelation is tied to the spectral properties of the transition kernel
+P , and hence to the mixing time of the Markov chain. Proofs of the statements below can be found in standard
+references such as [12].
+  Assume the Markov chain x[j]j≥0 is
+
+
+   • irreducible, i.e. any state can be reached from any other in a nite number of steps, and
+
+
+   • aperiodic, i.e. for any x  1,    , d there exists T  N such that for all t ≥ T , P(x[t] = x  x[0] = x) > 0.
+
+
+Since the chain is nite and irreducible, there exists a unique stationary distribution π satisfying
+
+                                                             π = πP
+
+Furthermore, aperiodicity implies that, for any initial distribution ψ0 of x[0], the law ψt of x[t] converges to π as
+t → ∞:
+
+                                            ψt = ψ0 P t −→ π                as t → ∞
+
+  Assume further that P is diagonalizable with real eigenvalues (which is always true if the chain is reversible, like in
+the case of Gibbs sampling), and write its eigendecomposition as
+
+                                                        P = U −1 Σ U,
+
+where Σ is diagonal, and its entries are ordered
+
+                                                1 = σ1 > σ2 ≥ · · · ≥ σd ≥ 0
+
+We denote by U (i, x) the entry in the ith row and xth column of U (and similarly for U −1 ). The rst left eigenvector
+of P (the rst row of U ) is the stationary distribution,
+
+                                                     π = πP = U (1, ·),
+
+and the rst right eigenvector is a column of ones,
+
+                                                        U −1 (·, 1) = 1
+
+  Let f : 1,    , d → R be the same function as above, and write
+                                                                                                
+                      µf0 ≡ EY ∼ψ0 f (Y ) = E f (x[0]) ,            µf∞ ≡ EY ∼π f (Y ) = lim E f (x[t]) ,              (G3)
+                                                                                                t→∞
+
+where ψ0 is the initial distribution of x[0].
+  Let k denote the column vector with a 1 in position k and 0 elsewhere. Using the eigendecomposition of P , the
+transition probabilities can be written as
+                                                            d
+                                                            
+                                         (xT0 P t )(x) =         U −1 (x0 , j) σjt U (j, x)
+                                                            j=1
+                                                                                                                              33
+
+Thus,
+                                            d
+                                            
+                                                                                    
+                       E f (x[0])f (x[t]) =   f (x0 ) P x[0] = x0 E f (x[t])  x[0] = x0
+                                             x0 =1
+                                             d 
+                                              d
+                                         =                   f (x0 )f (x) ψ0 (x0 ) (xT0 P t )(x)
+                                             x0 =1 x=1
+
+                                              d
+                                             d                                      d
+                                                                                     
+                                         =                   f (x0 )f (x) ψ0 (x0 )         U −1 (x0 , j) σjt U (j, x)       (G4)
+                                             x0 =1 x=1                               j=1
+                                                d 
+                                                   d
+                                                                                                                        
+                                                 
+                                                                                           −1
+                                         =                     f (x0 )f (x) ψ0 (x0 ) U          (x0 , 1) σ1t U (1, x)
+                                                 x0 =1 x=1
+                                                 d
+                                                            d 
+                                                              d
+                                             +         σjt               f (x0 )f (x) ψ0 (x0 ) U −1 (x0 , j) U (j, x)
+                                                 j=2         x0 =1 x=1
+
+
+Using U −1 (·, 1) = 1 and U (1, ·) = π, the rst term simplies to
+                                        d 
+                                         d
+                                                     f (x0 )f (x) ψ0 (x0 ) π(x) = µf0 µf∞ 
+                                        x0 =1 x=1
+
+We can therefore write
+                                                                        d
+                                                                        
+                                                          
+                                         E f (x[0])f (x[t]) = µf0 µf∞ +   σjt cj ,                                          (G5)
+                                                                                     j=2
+
+where the coecients cj are constants (depending on f and ψ0 but not on t). For large t, the terms with smaller
+eigenvalues become negligible compared to the contribution from σ2 , so the covariance
+                                                             
+                                            E f (x[0])f (x[t]) − µf0 µf∞
+
+decays asymptotically like σ2t . In particular, under stationarity (ψ0 = π so that µf0 = µf∞ = µ), the autocorrelation
+ryy [t] dened in (G2) decays approximately as
+
+                                                               ryy [t] ≈ C σ2t
+
+for some constant C depending on f .
+
+
+
+
+                                          From eigenvalues to mixing time
+
+
+  The spectral quantity σ2 is directly related to the mixing time of the Markov chain. Recall that the mixing time is
+dened by
+                                                                             
+                                    τ () = min t ≥ 0 : max ∥ψ0 P t − π∥TV ≤  ,
+                                                                    ψ0
+
+where
+                                                                         d
+                                                                    1
+                                             ∥µ − ν∥TV =                  µ(x) − ν(x)
+                                                                    2 x=1
+
+denotes the total variation distance and  > 0 is a prescribed tolerance.
+                                                                                                                     34
+
+  Using the eigendecomposition P = U −1 ΣU , we can write
+                                                       d
+                                                                               
+                                        ψ0 P t (x) =             ψ0 · U −1 (·, j) σjt U (j, x),
+                                                       j=1
+
+
+where ψ0 is treated as a row vector and ψ0 · U −1 (·, j) denotes the scalar product with the jth column of U −1 . Using
+ψ0 · U −1 (·, 1) = 1 and U (1, ·) = π, we obtain
+                                                                                                     
+                                                d         d                                        
+                                              1                                                    
+                           ∥ψ0 P t − π∥TV =         π(x) −       ψ   · U −1
+                                                                             (·,  j)   σ t
+                                                                                           U  (j, x)  
+                                                    
+                                              2 x=1 
+                                                                    0                    j            
+                                                            j=1                                       
+                                                                                                               
+                                                d                    d                                       
+                                              1                                                              
+                                           =        π(x) − π(x) +          ψ   · U  −1
+                                                                                         (·, j)   σ t
+                                                                                                       U (j, x) 
+                                                    
+                                              2 x=1 
+                                                                              0                     j           
+                                                                      j=2                                       
+                                                d   d
+                                             1                     
+                                         ≤             ψ0 · U −1 (·, j) σjt  U (j, x)
+                                             2 x=1 j=2
+                                             d
+                                                                    d
+                                                                     
+                                         =         σjt aj ≤ σ2t            aj ,
+                                             j=2                     j=2
+
+where aj ≥ 0 are constants that depend on ψ0 and on the eigenvectors of P . Therefore, the total variation distance
+decays at least as fast as σ2t , and we obtain the upper bound
+                                                                            
+                                                                      d
+                                                     log() − log     j=2 a j
+                                             τ () ≤                            
+                                                             log(σ2 )
+
+Since 0 ≤ σ2 < 1, the denominator log(σ2 ) is negative, and the right-hand side is positive. The smaller the value of
+σ2 , the faster the Markov chain mixes, and the more rapidly the autocorrelation ryy [k] decays.
+   In summary, by empirically estimating the long-lag decay of the autocorrelation function ryy [k] for some informative
+observable f (x), we eectively probe the second-largest eigenvalue σ2 of the transition kernel and thus obtain a proxy
+for the mixing time of the Gibbs sampler underlying our DTM.
+
+
+                                        Appendix H: Total correlation penalty
+
+  In the main text (see Eq. 17), we explain how we utilize a total correlation penalty to encourage the latent variable
+EBMs employed in our model to mix rapidly. Here, we will discuss a few details of this regularizer and the method
+we use to control its strength adaptively.
+
+
+                                   1.   Gradients of the total correlation penalty
+
+  The total correlation penalty is a convenient choice in this context because its gradients can be computed using the
+same samples used to estimate the gradient of the usual loss used in training, θ LDN . Namely, treating the factorized
+distribution as a constant with respect to the gradient,
+                                                                                               
+                           θ LTt C = EQ(xt−1 ) Ed(st−1 |xt ) θ Et−1
+                                                                  θ                            θ
+                                                                        − EPθ (st−1 |xt )) θ Et−1                (H1)
+
+where,
+                                                                     M
+                                                                     
+                                               d(s   t−1     t
+                                                           x ) =          Pθ (st−1
+                                                                                i   xt )                          (H2)
+                                                                     i=1
+
+
+  The second term in Eq. (H1) also appears in the estimator for θ LDN . The rst term can be simplied when Et−1
+                                                                                                              θ
+                                                                                                                        35
+
+has particular symmetries. For example, if Et−1
+                                            θ
+                                                  is a Boltzmann machine energy function (see main text Eq. 10),
+                                                           
+                                                     d θ
+                                    Ed(st−1 |xt )       Et−1 = − EPθ (si |xt ) [si ]                          (H3)
+                                                    dhi
+
+                                                              
+                                                       d θ
+                                  Ed(st−1 |xt )            Et−1 = − EPθ (si |xt ) [si ] EPθ (sj |xt ) [sj ]          (H4)
+                                                      dJij
+
+Each of these terms is easy to compute given the samples used to estimate θ LDN .
+
+
+                                              2.        Adaptive Correlation Penalty
+
+   The optimal strength of the correlation penalty λt may vary depending on the specic denoising step t (models for
+less noisy data near t = 0 may require stronger regularization) and may even change during training for a single-step
+model. Manually tuning λt for each of the step-models would be prohibitively expensive.
+   To address this, we employ an Adaptive Correlation Penalty (ACP) scheme that dynamically adjusts λt based on
+an estimate of the model’s current mixing time. We use the autocorrelation of the Gibbs sampling chain, ryy   t
+                                                                                                                , as a
+proxy for mixing, as described in Section G and the main text, Eq. 18.
+   Our ACP algorithm monitors the autocorrelation at a lag K equal to the number of Gibbs steps used in the
+estimation of θ LDN . The goal is to adjust CP to keep this autocorrelation below a predened target threshold
+ACP .
+   A simple layerwise procedure is used for this control. The inputs to the algorithm are the initial values of λt ,
+a target autocorrelation threshold ACP (e.g., 003), an update factor ACP (e.g., 02) and a lower limit λmin
+                                                                                                            t    (e.g.,
+00001).
+   At the end of each training epoch m:
+   1. Estimate the current autocorrelation atm = ryy
+                                                   t
+                                                     [K]. This estimate can be done by running a longer Gibbs chain
+      periodically and calculating the empirical autocorrelation from the samples.
+                            (m)
+   2. Set λ′t = max(λmin
+                     t   , λt     ) to avoid getting stuck at 0.
+   3. Update λt for the next epoch (m + 1) based on atm and the previous value atm−1 (if m > 0):
+         • If atm < ACP : The chain mixes suciently fast; reduce the penalty slightly.
+                                                            (m+1)
+                                                          λt          ← (1 − ACP )λ′t
+
+         • Else if atm ≥ ACP and atm ≤ atm−1 (or m = 0): Mixing is slow but not worsening (or baseline); keep the
+           penalty strength.
+                                                                   (m+1)
+                                                                 λt         ← λ′t
+
+         • Else (atm > ACP and atm > atm−1 ): Mixing is slow and worsening; increase the penalty.
+                                                            (m+1)
+                                                          λt          ← (1 + ACP )λ′t
+
+                                (m+1)                               (m+1)
+   4. If the proposed value λt          < λmin
+                                           t   , then set λt                ← 0.
+   Our experiments indicate that this simple feedback mechanism works eectively. While λt and the autocorrelation
+atm might exhibit some damped oscillations for several epochs before stabilizing this automated procedure is vastly
+more ecient than performing manual hyperparameter searches for λt for each of the T models.
+   Training is relatively insensitive to the exact choice of ACP within a reasonable range (e.g., [002, 01]) and ACP
+(e.g., [01, 03]). Assuming that over the course of training the λt parameter settles around some value λ∗t , one
+should aim for the lower bound parameter λmin   t   to be smaller than 12 λ∗t , while making sure that the ramp-up time
+              min
+log(λ∗
+     t )−log(λt   )
+   log(1+δACP )     remains small. Settings of λmin
+                                                t   in the range [0001, 000001] all produced largely the same result, the
+only dierence being that values on the lower end of that range led to a larger amplitude in oscillations of λt and atm ,
+but training eventually settled for all values. An example of some ACP dynamics is shown in Fig. 14:
+                                                                                                                            36
+
+
+
+
+FIG. 14. The adaptive correlation penalty The dynamics of ryy        t
+                                                                        and λt over a training run. Large values of ryy
+                                                                                                                     t
+                                                                                                                        lead to
+increasingly large values of λt , which cause ryy to decrease. The system reaches a stable conguration by the end of training.
+                                               t
+
+
+
+
+   Training on Fashion-MNIST with the typical experimental setup, we observed nearly the same performance (a FID
+of 28 ± 1) for all choices of ACP , ACP and λmin
+                                               t   in the ranges written above, so long as we trained for at least 100
+epochs (with specic settings the training took longer to converge).
+
+
+                             Appendix I: Embedding integers into Boltzmann machines
+
+  In some of our experiments, we needed to embed continuous data into binary variables. We chose to do this by
+representing a k-state categorical variable Xi using the sum k binary variables Zik ,
+                                                                  Ki
+                                                                        (k)
+                                                          Xi =          Zi                                                (I1)
+                                                                  k=1
+
+         (k)
+where Zi  0, 1. These binary variables can be trivially converted into spin variables that are −1, 1 valued
+using a linear change of variables.
+  Energy functions that involve quadratic interactions between these categorical variables can be reduced to Boltz-
+mann machines with local patches of all-to-all connectivity. For example, consider the energy function,
+
+                                                                               d
+                                                                                
+                                            E(x; θ) = −           wij Xi Xj −         bi X i                              (I2)
+                                                           i̸=j                 i=1
+
+                                                                                                                 (k)
+inserting Eq. (I1), we can rewrite this in terms of quadratic interactions between the underlying spins Zi ,
+                                                K          Kj                K        
+                                                  i
+                                                       (k) 
+                                                                  (l) 
+                                                                                  i
+                                                                                       (k)
+                           E(z; θ) = −      wij       Zi          Zj     −    bi      Zi                                  (I3)
+                                          i̸=j      k=1              l=1                i      k=1
+                                                                                                                  37
+
+which is a standard Boltzmann machine energy function that can be run on our hardware, just like any other.
+
+
+                               Appendix J: Deterministic embeddings for DTMs
+
+  In section V of the paper, we mention hybrid thermodynamic models, the purpose of which is to combine the
+exibility of conventional neural networks (NNs) with the eciency of probabilistic computers. For example, in the
+context of image generation, a small convolutional neural network can be used to map color images into a format
+compatible with a binary DTM. To properly take advantage of the DTM’s energy eciency, the conventional model
+should be at least 2 or 3 orders of magnitude smaller (e.g., in terms of parameter count or number of operations per
+sample) than the DTM.
+  There are various options for the type of conventional model one can use for the embedding, e.g., invertible models
+such as GLOW [13] or Normalizing Flows [14], as well as simpler solutions, such as an Autoencoder.
+  For our proof-of-concept for hybrid models, we used a combination of an Autoencoder and a GAN [15].
+   • First, we train a convolutional Autoencoder (encoder plus decoder) that maps images into a binary latent
+     space (achieved through a combination of a sigmoid activation, a binarization penalty, and a straight-through
+     gradient).
+
+   • Second, we train a DTM on latent embeddings of the training images. At inference time, the samples generated
+     by the DTM are passed through the decoder to produce images.
+
+   • Thirdly, we use a GAN-like approach to ne-tune the decoder to utilize the outputs of the Boltzmann machine
+     maximally. Specically, the Boltzmann machine outputs are used as the noise source, which is fed into the
+     decoder (now taking the role of the generator in the GAN architecture), and nally, a critic is trained to guide
+     the decoder towards generating higher-quality images.
+  Our hybrid model achieved a FID score of ∼ 60 on CIFAR10. Our DTM had 8 million parameters, the decoder had
+65k, and the encoder and critic were both below 500k parameters. At inference time, only the DTM and the decoder
+are used. To achieve a similar performance with a conventional GAN, the decoder/generator requires about 500000
+parameters.
+
+
+                                     Appendix K: Some details on our RNG
+
+   Our RNG is a digitizing comparator fed by a source of Gaussian noise. The noise source is implemented using
+the circuitry and principles described in [16]. The comparator is a standard design that operates in subthreshold to
+minimize energy consumption. The mean of the Gaussian noise is shifted before it is sent into the comparator to
+implement the bias control. A schematic of our RNG is shown in Fig. 15 (a).
+   Another example of an output voltage signal from our RNG is shown in Fig. 15 (b). The signal randomly wanders
+between high and low-voltage states. Suppose this signal is repeatedly observed, waiting for at least the correla-
+tion time of the circuit between observations. In that case, one will approximately draw samples from a Bernoulli
+distribution with a bias parameter that depends on the circuit’s control voltage.
+   Our RNG was part of the same test chip used to carry out the experiments in [16]. The output of the RNG was
+fed into an amplication chain that buered it and allowed its signal to be observed using an external oscilloscope.
+Fig. 15 (c) shows an image of our packaged test chip, along with a view of our RNG through a 100× microscope
+objective.
+
+
+                                        Appendix L: MEBM experiments
+
+   Our experiments on MEBMs were conducted in the typical way [17]. We employed the same Boltzmann machine
+architecture as we typically use for the DTM layers, specically L = 70 with G12 connectivity. Random nodes were
+chosen to represent the data, and the rest were left as latent variables (as discussed in section D).
+   Generating the data presented in Figs. 1 and 2 in the main text required controlling the mixing time of a trained
+Boltzmann machine. To achieve this, we added a xed correlation penalty (Eq. 17 in the main text) and varied the
+strength to control the allowed complexity of the energy landscape.
+   Fig. 16 (a) shows an example of the raw autocorrelation curves produced by sampling from Boltzmann machines
+trained with dierent correlation penalty strengths. The slowest exponential decay rate (σ2 ) could be estimated for
+                                                                                                                           38
+
+
+
+ a                        +
+                                             Output
+                                             Voltage
+                                                       c
+                        Control
+                        Voltage
+
+
+  b
+       Output Voltage
+
+
+
+
+                            Time
+
+
+FIG. 15. Our RNG. (a) A high-level schematic of our RNG design. (b) Stochastic voltage signal from our RNG. The high
+level represents one, and the low level represents 0. The signal wanders randomly between high and low levels, with the amount
+of time it spends in each level controlled by the bias voltage. (c) An image of our packaged test chip (with the top of the
+package removed) assembled onto a PCB. We also show an optical microscope image of several RNG circuits on our test chip.
+Each circuit occupies an approximately 3 × 3µm area on the chip.
+
+
+most of the curves by tting a line to the natural log of the autocorrelation curve at long times, see Fig. 16 (b) The
+two curves with the smallest correlation penalty did not reduce to simple exponential decay during the measured lag
+values, which means the decay rate was too long to be extracted from our data.
+  The exponential decay rates extracted from Fig. 16 were used as the mixing times in Fig. 2 in the article. Calling
+this a "mixing time" is a slight abuse of nomenclature. However, we did not think it made enough of a dierence to
+the article’s message to disambiguate (since it is an upper bound on the mixing time, as discussed in Section G).
+
+
+a                                                                b
+                                   λ=0
+
+
+
+
+                           λ = λ max
+
+
+
+FIG. 16. Boltzmann machine autocorrelation curves (a) The raw autocorrelation data associated with Boltzmann
+machines trained using dierent values of the parameter λ. (b) The log of the long-time autocorrelation for some of the curves
+shown in (a). All curves, except for the blue and orange ones, eventually became linear.
+
+
+
+                                    Appendix M: Sampling time vs Performance Tradeo
+
+ The total time it takes to sample from a DTM is O(KT ), where T is the number of denoising steps comprising the
+DTM and K. While one might use a dierent number of Gibbs steps at training time and inference time, it should
+                                                                                                                         39
+
+be noted that for DTMs trained with adaptive correlation penalty (ACP), Kinference should be similar or only slightly
+higher to Ktrain . This is substantially dierent from the usual good practice for un-penalised EBMs. The main reason
+for this distinction is ACP. In particular, when training an EBM (or DTM) with ACP, the closed-loop control used
+in ACP will make sure that the mixing time Kmix of the EBM is approximately equal to Ktrain . It is always the case
+that using Kinference >> Kmix brings no benets compared to Kinference ≈ Kmix and therefore when sampling from
+an ACP-regularised model, using Kinference ≈ Ktrain . On the other hand, for usual EBMs trained without ACP (or
+a similar penalty), the mixing time of the EBM can greatly exceed Ktrain . Due to the mixing-expressivity tradeo,
+this at rst means that the performance of this un-penalised EBM can exceed that of an ACP EBM, as long as
+Kinference ≥ Kmix >> Ktrain . However, if we then keep training with Ktrain << Kmix , the performance of the EBM
+starts to degrade substantially, as shown in g. 18. One may attempt to circumvent this by treating the EBM as a
+non-equilibrium model as explored in [18], but that introduces signicant new complexity and is mathematically not
+well understood.
+
+
+  That being said, why does increasing Ktrain improve the performance of an ACP-regularised DTM or MEBM? ACP
+works by periodically checking whether Kmix > Ktrain . If yes, then it penalizes the model more, reducing Kmix , but
+potentially hurting the expressivity of the model. If not, then it reduces the penalty coecient, allowing both Kmix
+and model expressivity to increase. Therefore, using a larger Ktrain lets ACP be more lenient, resulting in a more
+expressive model.
+
+
+
+
+FIG. 17. The FID scores of dierent DTMs trained on binarised FashionMNIST. On the horizontal axis we vary the number of
+denoising steps T and on the vertical axis we vary the number of Gibbs steps during training Ktrain . Each diagonal (running
+from top-left to bottom-right) represents a constant amount of energy expenditure. For this plot, the number of Gibbs steps
+at inference was twice the number used during training. The reported FID values were averaged over three runs with dierent
+random seeds.
+                                                                                                                         40
+
+
+
+
+FIG. 18. FID and mixing time of an MEBM (same topology as most other experiments in this article) throughout training.
+As the MEBM trains and becomes more expressive (FID goes down) the mixing time increases. Around epoch 20 the model
+starts freezing (the mixing time becomes too long), which causes the CD gradients to become inaccurate and soon after the
+performance of the model starts to degrade. The mixing time subsequently also decreases somewhat, although this is likely an
+artefact of mode collapse rather than a sign of relaxation of the energy barriers in the model.
+                                                                                                                        41
+
+                                           Appendix N: CIFAR-10 Images
+
+
+
+
+FIG. 19. Images generated by the hybrid model trained on CIFAR-10 as described in section V and Appendix J. Images come
+in groups of 8, where each group shows the progression of the image throughout the denoising process. The denoising process
+operates inside a binary latent space, which is then converted into images by a small neural-network-based decoder.
+                                                                                                                           42
+
+
+
+
+ [1] J. Sohl-Dickstein, E. Weiss, N. Maheswaranathan, and S. Ganguli, Deep unsupervised learning using nonequilibrium
+     thermodynamics, in International conference on machine learning (pmlr, 2015) pp. 2256–2265.
+ [2] J. Ho, A. Jain, and P. Abbeel, Denoising diusion probabilistic models, Advances in neural information processing systems
+     33, 6840 (2020).
+ [3] A. Lou, C. Meng, and S. Ermon, Discrete diusion modeling by estimating the ratios of the data distribution (2024),
+     arXiv:2310.16834 [stat.ML].
+ [4] K. P. Murphy, Probabilistic Machine Learning: Advanced Topics (MIT Press, 2023) p. 499.
+ [5] J. You, J.-W. Chung, and M. Chowdhury, Zeus: Understanding and optimizing {GPU} energy consumption of {DNN}
+     training, in 20th USENIX Symposium on Networked Systems Design and Implementation (NSDI 23) (2023) pp. 119–139.
+ [6] K. He, X. Zhang, S. Ren, and J. Sun, Deep residual learning for image recognition, in Proceedings of the IEEE conference
+     on computer vision and pattern recognition (2016) pp. 770–778.
+ [7] O. Ronneberger, P. Fischer, and T. Brox, U-net: Convolutional networks for biomedical image segmentation, in Medical
+     image computing and computer-assisted intervention–MICCAI 2015: 18th international conference, Munich, Germany,
+     October 5-9, 2015, proceedings, part III 18 (Springer, 2015) pp. 234–241.
+ [8] B. Dai and D. Wipf, Diagnosing and enhancing VAE models, in International Conference on Learning Representations
+     (2019).
+ [9] C. Chadebec, L. Vincent, and S. Allassonniere, Pythae: Unifying generative autoencoders in python-a benchmarking use
+     case, Advances in Neural Information Processing Systems 35, 21575 (2022).
+[10] P. Ostheimer, M. Nagda, M. Kloft, and S. Fellenz, Sparse data generation using diusion models, arXiv preprint
+     arXiv:2502.02448 (2025).
+[11] X. Liu, X. Zhang, J. Ma, J. Peng, et al., Instaow: One step is enough for high-quality diusion-based text-to-image
+     generation, in The Twelfth International Conference on Learning Representations (2023).
+[12] D. Levin, Y. Peres, and E. Wilmer, Markov Chains and Mixing Times (American Mathematical Soc., 2009).
+[13] D. P. Kingma and P. Dhariwal, Glow: Generative ow with invertible 1x1 convolutions, in Advances in Neural Information
+     Processing Systems, Vol. 31, edited by S. Bengio, H. Wallach, H. Larochelle, K. Grauman, N. Cesa-Bianchi, and R. Garnett
+     (Curran Associates, Inc., 2018).
+[14] G. Papamakarios, E. Nalisnick, D. J. Rezende, S. Mohamed, and B. Lakshminarayanan, Normalizing ows for probabilistic
+     modeling and inference, Journal of Machine Learning Research 22, 1 (2021).
+[15] I. J. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair, A. Courville, and Y. Bengio, Generative
+     adversarial nets, in Advances in Neural Information Processing Systems, Vol. 27, edited by Z. Ghahramani, M. Welling,
+     C. Cortes, N. Lawrence, and K. Weinberger (Curran Associates, Inc., 2014).
+[16] N. Freitas, G. Massarelli, J. Rothschild, D. Keane, E. Dawe, S. Hwang, A. Garlapati, and T. McCourt, Taming non-
+     equilibrium thermal uctuations in subthreshold CMOS circuits, Phys. Rev. Lett. (2025), Submitted.
+[17] M. Sajeeb, N. A. Aadit, T. Wu, C. Smith, D. Chinmay, A. Raut, K. Y. Camsari, C. Delacour, and T. Srimani, Scalable
+     connectivity for ising machines: Dense to sparse, arXiv preprint arXiv:2503.01177 (2025).
+[18] A. Decelle, C. Furtlehner, and B. Seoane, Equilibrium and non-equilibrium regimes in the learning of restricted boltzmann
+     machines*, Journal of Statistical Mechanics: Theory and Experiment 2022, 114009 (2022).
+

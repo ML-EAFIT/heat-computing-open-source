@@ -1,0 +1,20 @@
+{
+  "type": "circuit",
+  "comment": "2x2-bit multiplier p = a*b run backwards: clamp p = 6 (0110), the chip finds a, b",
+  "inputs": ["a0", "a1", "b0", "b1"],
+  "outputs": ["p0", "p1", "p2", "p3"],
+  "gates": [
+    ["AND", "a0", "b0", "p0"],
+    ["AND", "a0", "b1", "q01"],
+    ["AND", "a1", "b0", "q10"],
+    ["AND", "a1", "b1", "q11"],
+    ["XOR", "q01", "q10", "p1"],
+    ["AND", "q01", "q10", "c1"],
+    ["XOR", "q11", "c1", "p2"],
+    ["AND", "q11", "c1", "p3"]
+  ],
+  "clamp": {"p0": 0, "p1": 1, "p2": 1, "p3": 0},
+  "show": {"a": ["a0", "a1"], "b": ["b0", "b1"], "p": ["p0", "p1", "p2", "p3"]},
+  "beta": 2.0,
+  "schedule": {"beta_start": 0.5, "beta_end": 2.0, "sweeps_per_step": 8}
+}

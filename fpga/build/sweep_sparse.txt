@@ -1,0 +1,11 @@
+N=64   P=1 	 LUT4: 2273/ 8640 26% | 	 DFF: 1072/ 6480 16% | 	 BSRAM: 11/ 26 42% |  'top_inst.clk': 54.55 MHz (PASS at 27.00 MHz)
+N=64   P=2 	 LUT4: 2797/ 8640 32% | 	 DFF: 1201/ 6480 18% | 	 BSRAM: 13/ 26 50% |  'top_inst.clk': 50.44 MHz (PASS at 27.00 MHz)
+N=64   P=4 	 LUT4: 4817/ 8640 55% | 	 DFF: 1462/ 6480 22% | 	 BSRAM: 17/ 26 65% |  'top_inst.clk': 41.13 MHz (PASS at 27.00 MHz)
+N=128  P=1 	 LUT4: 2425/ 8640 28% | 	 DFF: 1164/ 6480 17% | 	 BSRAM: 13/ 26 50% |  'top_inst.clk': 44.17 MHz (PASS at 27.00 MHz)
+N=128  P=2 	 LUT4: 3398/ 8640 39% | 	 DFF: 1499/ 6480 23% | 	 BSRAM: 13/ 26 50% |  'top_inst.clk': 45.05 MHz (PASS at 27.00 MHz)
+N=128  P=4 	 LUT4: 4486/ 8640 51% | 	 DFF: 1762/ 6480 27% | 	 BSRAM: 17/ 26 65% |  'top_inst.clk': 45.46 MHz (PASS at 27.00 MHz)
+N=256  P=1 	 LUT4: 3188/ 8640 36% | 	 DFF: 1556/ 6480 24% | 	 BSRAM: 15/ 26 57% |  'top_inst.clk': 41.97 MHz (PASS at 27.00 MHz)
+N=256  P=2 	 LUT4: 4520/ 8640 52% | 	 DFF: 1672/ 6480 25% | 	 BSRAM: 17/ 26 65% |  'top_inst.clk': 40.67 MHz (PASS at 27.00 MHz)
+N=256  P=4 	 LUT4: 6321/ 8640 73% | 	 DFF: 2446/ 6480 37% | 	 BSRAM: 17/ 26 65% |  'top_inst.clk': 39.47 MHz (PASS at 27.00 MHz)
+
+[exited with code 0]

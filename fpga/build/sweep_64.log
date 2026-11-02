@@ -1,0 +1,377 @@
+Info: Using uarch 'gowin' for device 'GW1NR-LV9QN88PC6/I5'
+
+Info: Cell O_psram_ck[0] not found
+Info: Cell O_psram_ck[1] not found
+Info: Cell O_psram_ck_n[0] not found
+Info: Cell O_psram_ck_n[1] not found
+Info: Cell O_psram_cs_n[0] not found
+Info: Cell O_psram_cs_n[1] not found
+Info: Cell O_psram_reset_n[0] not found
+Info: Cell O_psram_reset_n[1] not found
+Info: Cell IO_psram_dq[0] not found
+Info: Cell IO_psram_dq[1] not found
+Info: Cell IO_psram_dq[2] not found
+Info: Cell IO_psram_dq[3] not found
+Info: Cell IO_psram_dq[4] not found
+Info: Cell IO_psram_dq[5] not found
+Info: Cell IO_psram_dq[6] not found
+Info: Cell IO_psram_dq[7] not found
+Info: Cell IO_psram_dq[8] not found
+Info: Cell IO_psram_dq[9] not found
+Info: Cell IO_psram_dq[10] not found
+Info: Cell IO_psram_dq[11] not found
+Info: Cell IO_psram_dq[12] not found
+Info: Cell IO_psram_dq[13] not found
+Info: Cell IO_psram_dq[14] not found
+Info: Cell IO_psram_dq[15] not found
+Info: Cell IO_psram_rwds[0] not found
+Info: Cell IO_psram_rwds[1] not found
+Info: Reading constraints...
+Info: Create constant nets...
+Info: Modify LUTs...
+Info: Pack IOBs...
+Info: Pack I3C IOs...
+Info: Pack MIPI IOs...
+Info: Pack diff IOBs...
+Info: Pack FFs into IO cells...
+Info: Pack IODELAY...
+Info: Pack Input Edge Monitors...
+Info: Pack IO logic...
+Info: Pack DESER16 logic...
+Info: Pack GSR...
+Info: Pack HCLK cells...
+Info: Pack DLLDLYs...
+Info: Pack wide LUTs...
+Info: Packed MUX2_LUT8:35, MUX2_LU7:79, MUX2_LUT6:100, MUX2_LUT5:459
+Info: Pack ALUs...
+Info: Pack SSRAMs...
+Info: Constrained 393 LUTFF pairs.
+Info: Pack PLL...
+Info: Pack ADC...
+Info: Pack GW JTAG...
+Info: Pack BSRAMs...
+Info: Pack DSP...
+Info: Pack INV...
+Info: Pack buffered nets...
+Info: Pack EMCU and UserFlash cells...
+Info: Pack UserFlash cells...
+Info: Pack DQCE cells...
+Info: Pack DCS cells...
+Info: Checksum: 0x62022125
+
+Info: Device utilisation:
+Info: 	                 VCC:       1/      1   100%
+Info: 	                 IOB:      11/    276     3%
+Info: 	                LUT4:    7191/   8640    83%
+Info: 	              OSER16:       0/     80     0%
+Info: 	              IDES16:       0/     80     0%
+Info: 	            IOLOGICI:       0/    276     0%
+Info: 	            IOLOGICO:       0/    276     0%
+Info: 	           MUX2_LUT5:    1255/   4320    29%
+Info: 	           MUX2_LUT6:     398/   2160    18%
+Info: 	           MUX2_LUT7:     149/   1080    13%
+Info: 	           MUX2_LUT8:      35/   1080     3%
+Info: 	                 ALU:    2650/   6480    40%
+Info: 	                 GND:       1/      1   100%
+Info: 	                 DFF:    3009/   6480    46%
+Info: 	           RAM16SDP4:      20/    270     7%
+Info: 	               BSRAM:      11/     26    42%
+Info: 	              ALU54D:       0/     10     0%
+Info: 	     MULTADDALU18X18:       0/     10     0%
+Info: 	        MULTALU18X18:       0/     10     0%
+Info: 	        MULTALU36X18:       0/     10     0%
+Info: 	           MULT36X36:       0/      5     0%
+Info: 	           MULT18X18:       0/     20     0%
+Info: 	             MULT9X9:       0/     40     0%
+Info: 	              PADD18:       0/     20     0%
+Info: 	               PADD9:       0/     40     0%
+Info: 	                 GSR:       1/      1   100%
+Info: 	                 OSC:       0/      1     0%
+Info: 	                rPLL:       0/      2     0%
+Info: 	           FLASH608K:       0/      1     0%
+Info: 	                BUFG:       0/     22     0%
+Info: 	                DQCE:       0/     24     0%
+Info: 	                 DCS:       0/      8     0%
+Info: 	               DHCEN:       0/     24     0%
+Info: 	              CLKDIV:       0/      8     0%
+Info: 	             CLKDIV2:       0/     16     0%
+Info: 	           MIPI_IBUF:       0/     22     0%
+Info: 	           MIPI_OBUF:       0/     20     0%
+
+Info: Running custom HCLK placer...
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 5164 cells, random placement wirelen = 233192.
+Info:     at initial placer iter 0, wirelen = 10213
+Info:     at initial placer iter 1, wirelen = 9111
+Info:     at initial placer iter 2, wirelen = 8824
+Info:     at initial placer iter 3, wirelen = 8818
+Info: Running main analytical placer, max placement attempts per cell = 27128978.
+Info:     at iteration #1, type ALL: wirelen solved = 8840, spread = 82517, legal = 139045; time = 7.31s
+Info:     at iteration #2, type ALL: wirelen solved = 4472, spread = 78682, legal = 141936; time = 6.85s
+Info:     at iteration #3, type ALL: wirelen solved = 6733, spread = 78665, legal = 151936; time = 8.05s
+Info:     at iteration #4, type ALL: wirelen solved = 8772, spread = 82592, legal = 155737; time = 10.10s
+Info:     at iteration #5, type ALL: wirelen solved = 10305, spread = 82911, legal = 136980; time = 6.79s
+Info:     at iteration #6, type ALL: wirelen solved = 14515, spread = 79451, legal = 132043; time = 6.31s
+Info:     at iteration #7, type ALL: wirelen solved = 14217, spread = 80350, legal = 129252; time = 4.03s
+Info:     at iteration #8, type ALL: wirelen solved = 18465, spread = 76343, legal = 128457; time = 4.05s
+Info:     at iteration #9, type ALL: wirelen solved = 18457, spread = 83062, legal = 130359; time = 6.11s
+Info:     at iteration #10, type ALL: wirelen solved = 20346, spread = 79037, legal = 126316; time = 5.12s
+Info:     at iteration #11, type ALL: wirelen solved = 23610, spread = 79731, legal = 127536; time = 4.81s
+Info:     at iteration #12, type ALL: wirelen solved = 23494, spread = 81057, legal = 121714; time = 4.84s
+Info:     at iteration #13, type ALL: wirelen solved = 28742, spread = 79256, legal = 118508; time = 2.66s
+Info:     at iteration #14, type ALL: wirelen solved = 30422, spread = 75888, legal = 113106; time = 2.08s
+Info:     at iteration #15, type ALL: wirelen solved = 33539, spread = 80986, legal = 112901; time = 3.11s
+Info:     at iteration #16, type ALL: wirelen solved = 33843, spread = 79796, legal = 111118; time = 1.83s
+Info:     at iteration #17, type ALL: wirelen solved = 35503, spread = 84365, legal = 109472; time = 1.59s
+Info:     at iteration #18, type ALL: wirelen solved = 37493, spread = 78457, legal = 109931; time = 5.91s
+Info:     at iteration #19, type ALL: wirelen solved = 42180, spread = 79426, legal = 104787; time = 1.79s
+Info:     at iteration #20, type ALL: wirelen solved = 41022, spread = 74897, legal = 98748; time = 1.79s
+Info:     at iteration #21, type ALL: wirelen solved = 41563, spread = 74049, legal = 95496; time = 1.23s
+Info:     at iteration #22, type ALL: wirelen solved = 44031, spread = 82880, legal = 106569; time = 3.54s
+Info:     at iteration #23, type ALL: wirelen solved = 46916, spread = 85781, legal = 106074; time = 2.72s
+Info:     at iteration #24, type ALL: wirelen solved = 50373, spread = 74625, legal = 98789; time = 0.98s
+Info:     at iteration #25, type ALL: wirelen solved = 47123, spread = 77754, legal = 99273; time = 2.31s
+Info:     at iteration #26, type ALL: wirelen solved = 49003, spread = 73701, legal = 94655; time = 2.31s
+Info:     at iteration #27, type ALL: wirelen solved = 49440, spread = 79775, legal = 100016; time = 4.00s
+Info:     at iteration #28, type ALL: wirelen solved = 50970, spread = 77690, legal = 99386; time = 2.31s
+Info:     at iteration #29, type ALL: wirelen solved = 53796, spread = 72565, legal = 90962; time = 3.02s
+Info:     at iteration #30, type ALL: wirelen solved = 51873, spread = 72497, legal = 89106; time = 2.24s
+Info:     at iteration #31, type ALL: wirelen solved = 51665, spread = 72323, legal = 92614; time = 3.49s
+Info:     at iteration #32, type ALL: wirelen solved = 51737, spread = 69277, legal = 89482; time = 1.78s
+Info:     at iteration #33, type ALL: wirelen solved = 51447, spread = 69125, legal = 88852; time = 1.52s
+Info:     at iteration #34, type ALL: wirelen solved = 50807, spread = 73537, legal = 92022; time = 2.85s
+Info:     at iteration #35, type ALL: wirelen solved = 54424, spread = 76907, legal = 95357; time = 3.93s
+Info:     at iteration #36, type ALL: wirelen solved = 55253, spread = 73812, legal = 91996; time = 2.01s
+Info:     at iteration #37, type ALL: wirelen solved = 56065, spread = 75442, legal = 94378; time = 1.18s
+Info:     at iteration #38, type ALL: wirelen solved = 56054, spread = 74219, legal = 91505; time = 2.31s
+Info: HeAP Placer Time: 142.09s
+Info:   of which solving equations: 9.57s
+Info:   of which spreading cells: 1.11s
+Info:   of which strict legalisation: 128.56s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 2218, wirelen = 88852
+Info:   at iteration #5: temp = 0.000000, timing cost = 1219, wirelen = 73014
+Info:   at iteration #10: temp = 0.000000, timing cost = 1637, wirelen = 68175
+Info:   at iteration #15: temp = 0.000000, timing cost = 2030, wirelen = 65883
+Info:   at iteration #20: temp = 0.000000, timing cost = 1962, wirelen = 64574
+Info:   at iteration #25: temp = 0.000000, timing cost = 1927, wirelen = 64119
+Info:   at iteration #30: temp = 0.000000, timing cost = 1912, wirelen = 63878
+Info:   at iteration #35: temp = 0.000000, timing cost = 1967, wirelen = 63807
+Info:   at iteration #39: temp = 0.000000, timing cost = 1945, wirelen = 63755 
+Info: SA placement time 53.78s
+
+Info: Max frequency for clock 'top_inst.clk': 49.36 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 26 endpoint(s)
+Info:          + represents [1,26) endpoint(s)
+Info: [ 16776,  17765) |+
+Info: [ 17765,  18754) |******+
+Info: [ 18754,  19743) |********+
+Info: [ 19743,  20732) |***********+
+Info: [ 20732,  21721) |************************+
+Info: [ 21721,  22710) |*******************************+
+Info: [ 22710,  23699) |******+
+Info: [ 23699,  24688) |*+
+Info: [ 24688,  25677) |*+
+Info: [ 25677,  26666) |**+
+Info: [ 26666,  27655) |*******+
+Info: [ 27655,  28644) |**************+
+Info: [ 28644,  29633) |*********************************************+
+Info: [ 29633,  30622) |************************************************************ 
+Info: [ 30622,  31611) |*******************************+
+Info: [ 31611,  32600) |***********************+
+Info: [ 32600,  33589) |************+
+Info: [ 33589,  34578) |******+
+Info: [ 34578,  35567) |********+
+Info: [ 35567,  36556) |****************+
+Info: Checksum: 0x005c30d0
+Info: Routing globals...
+Info:     'top_inst.clk' net was routed using global resources only.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_1_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_S0_MUX2_LUT6_O_1_S0[2]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_1_F_MUX2_LUT5_I1_O[2]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_MUX2_LUT5_S0_1_O_LUT4_I3_1_F_LUT3_I1_F_MUX2_LUT5_I0_O_MUX2_LUT6_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT5_O_1_S0_MUX2_LUT6_O_S0[3]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_MUX2_LUT6_S0_O_MUX2_LUT7_I1_O_MUX2_LUT7_S0_O_MUX2_LUT6_O_S0[3]' is routed using segments.
+Info:     'top_inst.cnt_reg[0]' is routed using segments.
+Info:     'top_inst.nby_reg_DFFRE_Q_1_D_LUT3_F_I2[1]' is routed using segments.
+Info:     'top_inst.n_samples_DFFRE_Q_10_D_LUT2_F_I0[1]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_MUX2_LUT5_S0_1_O_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_S0[2]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[8]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_LUT4_F_I3_LUT4_F_I3[3]' is routed using segments.
+Info:     'top_inst.ret_reg_DFFE_Q_4_D_LUT3_F_I1_LUT3_F_I2[2]' is routed using segments.
+Info:     'top_inst.pbit_array_inst.coupling_row_inst.field_DFFRE_Q_15_D_LUT3_F_I2[1]' is routed using segments.
+Info:     'top_inst.silent_reg_LUT4_I0_F_LUT2_F_1_I0_LUT2_I0_F_LUT4_I3_F_LUT4_F_1_I2_LUT3_I2_1_F[0]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_LUT4_F_I3_LUT4_F_I3_LUT4_I3_1_F_LUT4_I3_F_MUX2_LUT7_O_S0_MUX2_LUT5_O_1_I1_LUT4_F_I3[2]' is routed using segments.
+Info:     'top_inst.pbit_array_inst.coupling_row_inst.spins_DFFRE_Q_11_D_LUT4_F_I3_LUT3_F_I2[0]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_MUX2_LUT6_S0_1_O_MUX2_LUT7_I1_O[1]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[51]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_14_D_MUX2_LUT6_O_S0_LUT4_F_I3_LUT4_F_I3_LUT4_I2_F[3]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT3_I0_F_MUX2_LUT5_I1_O_MUX2_LUT6_I0_O_LUT3_I1_F_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT7_O_S0[3]' is routed using segments.
+Info:     'top_inst.run_prev_LUT2_I1_F_LUT3_F_I2_LUT2_I0_F' is routed using segments.
+Info:     'top_inst.nby_reg_DFFRE_Q_1_D_LUT3_F_I2_LUT4_F_I0[2]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.state_reg_LUT2_I1_F[2]' is routed using segments.
+Info:     'top_inst.nby_reg_DFFRE_Q_1_D_LUT3_F_I2_LUT4_F_I0[1]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_LUT4_F_I3_LUT4_F_I3_LUT4_I2_1_F_MUX2_LUT5_O_2_S0_MUX2_LUT5_O_1_S0[2]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT3_I2_F_MUX2_LUT5_I0_O_LUT4_I3_F_MUX2_LUT5_I1_O[1]' is routed using segments.
+Info:     'top_inst.ret_reg_DFFE_Q_4_D_LUT3_F_I1_LUT3_F_I1[0]' is routed using segments.
+Info:     'top_inst.args_reg[8]' is routed using segments.
+Info:     'top_inst.pbit_array_inst.pb_bit' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[27]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[22]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[41]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_LUT4_F_I3_LUT4_F_I3_LUT4_I2_1_F_MUX2_LUT5_O_2_S0[1]' is routed using segments.
+Info:     'top_inst.args_reg[9]' is routed using segments.
+Info:     'top_inst.args_reg[11]' is routed using segments.
+Info:     'top_inst.nby_reg_DFFE_Q_D_LUT4_F_I2_LUT3_I2_F[1]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[28]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[60]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[62]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.args_reg[6]' is routed using segments.
+Info:     'top_inst.args_reg[12]' is routed using segments.
+Info:     'top_inst.args_reg[1]' is routed using segments.
+Info:     'top_inst.args_reg[13]' is routed using segments.
+Info:     'top_inst.pbit_array_inst.coupling_row_inst.spins_DFFRE_Q_11_D_LUT4_F_I3[2]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[15]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.pbit_array_inst.coupling_row_inst.done_reg_DFFR_Q_D_LUT4_F_I3_LUT3_F_I2_LUT4_I3_F_LUT4_I3_F_MUX2_LUT5_O_S0_LUT4_F_I3_MUX2_LUT5_O_S0[3]' is routed using segments.
+Info:     'top_inst.pbit_array_inst.coupling_row_inst.done_reg_DFFR_Q_D_LUT4_F_I3_LUT3_F_I2_LUT4_I3_F_LUT4_I3_F_MUX2_LUT5_O_S0_LUT4_F_I3_MUX2_LUT5_O_S0[2]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_MUX2_LUT5_S0_1_O_LUT4_I3_1_F_LUT3_I1_F_MUX2_LUT5_I0_O_MUX2_LUT6_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_S0_MUX2_LUT5_O_S0[2]' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[14]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[36]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[45]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[19]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.pbit_array_inst.noise_bank_inst.gen_lane[0].lfsr_inst.state_reg_DFFRE_Q_8_D_LUT4_F_I2_LUT4_F_I2[0]' is routed using segments.
+Info:     'top_inst.pbit_array_inst.pbit_inst.take_reg_LUT2_I0_F' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[57]_DFFRE_Q_CE' is routed using segments.
+Info:     'top_inst.readout_counter_inst.up_reg[55]_DFFRE_Q_CE' is routed using segments.
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 29972 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |       43        956 |   43   956 |     29098|       1.47       1.47|
+Info:       2000 |      134       1865 |   91   909 |     28546|       0.85       2.33|
+Info:       3000 |      236       2763 |  102   898 |     27798|       1.72       4.05|
+Info:       4000 |      336       3663 |  100   900 |     26986|       0.84       4.89|
+Info:       5000 |      441       4558 |  105   895 |     26207|       0.95       5.84|
+Info:       6000 |      567       5432 |  126   874 |     25545|       0.93       6.77|
+Info:       7000 |      718       6281 |  151   849 |     24872|       1.88       8.65|
+Info:       8000 |      872       7127 |  154   846 |     24512|       1.12       9.77|
+Info:       9000 |     1022       7977 |  150   850 |     23912|       2.00      11.77|
+Info:      10000 |     1162       8837 |  140   860 |     23199|       1.13      12.90|
+Info:      11000 |     1348       9651 |  186   814 |     22586|       2.12      15.02|
+Info:      12000 |     1556      10443 |  208   792 |     21974|       1.47      16.49|
+Info:      13000 |     1748      11251 |  192   808 |     21447|       1.93      18.42|
+Info:      14000 |     1949      12050 |  201   799 |     20839|       2.12      20.55|
+Info:      15000 |     2186      12813 |  237   763 |     20231|       1.67      22.22|
+Info:      16000 |     2416      13583 |  230   770 |     19657|       1.70      23.92|
+Info:      17000 |     2614      14385 |  198   802 |     18989|       1.43      25.35|
+Info:      18000 |     2859      15140 |  245   755 |     18356|       2.51      27.86|
+Info:      19000 |     3064      15885 |  205   745 |     17672|       3.00      30.85|
+Info:      20000 |     3209      16335 |  145   450 |     16913|       1.17      32.02|
+Info:      21000 |     3333      16679 |  124   344 |     16120|       1.70      33.72|
+Info:      22000 |     3416      17059 |   83   380 |     15254|       0.68      34.40|
+Info:      23000 |     3613      17545 |  197   486 |     14569|       2.69      37.09|
+Info:      24000 |     3764      18130 |  151   585 |     13799|       1.15      38.24|
+Info:      25000 |     3930      18735 |  166   605 |     13121|       1.82      40.06|
+Info:      26000 |     4003      19214 |   73   479 |     12212|       0.56      40.62|
+Info:      27000 |     4102      19711 |   99   497 |     11356|       1.57      42.19|
+Info:      28000 |     4154      20162 |   52   451 |     10428|       0.46      42.65|
+Info:      29000 |     4197      20651 |   43   489 |      9523|       0.34      42.99|
+Info:      30000 |     4294      21225 |   97   574 |      8685|       0.50      43.50|
+Info:      31000 |     4364      21920 |   70   695 |      7787|       0.36      43.85|
+Info:      32000 |     4494      22742 |  130   822 |      7001|       1.89      45.74|
+Info:      33000 |     4582      23631 |   88   889 |      6120|       0.50      46.24|
+Info:      34000 |     4669      24532 |   87   901 |      5250|       0.56      46.80|
+Info:      35000 |     4762      25369 |   93   837 |      4387|       1.69      48.50|
+Info:      36000 |     4767      26062 |    5   693 |      3392|       0.27      48.77|
+Info:      37000 |     4775      26761 |    8   699 |      2401|       0.41      49.17|
+Info:      38000 |     4781      27473 |    6   712 |      1409|       0.42      49.60|
+Info:      39000 |     4785      28177 |    4   704 |       414|       0.44      50.04|
+Info:      39418 |     4789      28478 |    4   301 |         0|       0.65      50.68|
+Info: Routing complete.
+Info: Router1 time 50.68s
+Info: Checksum: 0x3da54817
+
+Info: Critical path report for clock 'top_inst.clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.46  0.46 Source top_inst.cnt_reg_DFFRE_Q_19.Q
+Info:    routing  4.01  4.47 Net top_inst.cnt_reg[5] (41,2) -> (19,14)
+Info:                          Sink top_inst.readout_counter_inst.up_q_DFF_Q_23_D_MUX2_LUT7_O_S0_LUT4_F_1_I3_LUT4_F_1_I3_LUT2_F_I1_LUT2_I1_F_LUT2_I1_F_LUT2_F.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.10  5.57 Source top_inst.readout_counter_inst.up_q_DFF_Q_23_D_MUX2_LUT7_O_S0_LUT4_F_1_I3_LUT4_F_1_I3_LUT2_F_I1_LUT2_I1_F_LUT2_I1_F_LUT2_F.F
+Info:    routing  2.01  7.58 Net top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_LUT4_F_I3_LUT4_F_I3[2] (19,14) -> (28,11)
+Info:                          Sink top_inst.readout_counter_inst.up_q_DFF_Q_3_D_MUX2_LUT7_O_S0_LUT4_F_I3_LUT4_F_2_I3_LUT2_F.I0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.03  8.61 Source top_inst.readout_counter_inst.up_q_DFF_Q_3_D_MUX2_LUT7_O_S0_LUT4_F_I3_LUT4_F_2_I3_LUT2_F.F
+Info:    routing  3.46  12.07 Net top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_LUT4_F_I3_LUT4_F_I3_LUT4_I3_1_F_LUT4_I3_F_MUX2_LUT6_O_S0_MUX2_LUT5_O_S0[3] (28,11) -> (11,25)
+Info:                          Sink top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0_MUX2_LUT7_O_S0_LUT2_F.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.10  13.17 Source top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0_MUX2_LUT7_O_S0_LUT2_F.F
+Info:    routing  0.81  13.98 Net top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0_MUX2_LUT7_O_S0[4] (11,25) -> (10,25)
+Info:                          Sink top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0_MUX2_LUT7_O_I1_MUX2_LUT6_O_I1_MUX2_LUT5_O.S0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.18  14.15 Source top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0_MUX2_LUT7_O_I1_MUX2_LUT6_O_I1_MUX2_LUT5_O.O
+Info:    routing  0.00  14.15 Net top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0_MUX2_LUT7_O_I1_MUX2_LUT6_O_I1 (10,25) -> (10,25)
+Info:                          Sink top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0_MUX2_LUT7_O_I1_MUX2_LUT6_O.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:165.42-165.67
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:157.13-157.15
+Info:      logic  0.50  14.65 Source top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0_MUX2_LUT7_O_I1_MUX2_LUT6_O.O
+Info:    routing  0.00  14.65 Net top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0_MUX2_LUT7_O_I1 (10,25) -> (10,25)
+Info:                          Sink top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0_MUX2_LUT7_O.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:163.13-163.15
+Info:      logic  0.50  15.15 Source top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0_MUX2_LUT7_O.O
+Info:    routing  2.27  17.43 Net top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1_S0[5] (10,25) -> (3,23)
+Info:                          Sink top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1.S0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.18  17.60 Source top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O_MUX2_LUT6_O_1.O
+Info:    routing  3.62  21.23 Net top_inst.readout_counter_inst.up_q_DFF_Q_13_D_MUX2_LUT5_O_S0_MUX2_LUT6_O_S0_MUX2_LUT6_O_I0_MUX2_LUT5_O_I1_LUT4_F_I3_LUT4_I3_F_MUX2_LUT5_I1_O_LUT4_I3_F_MUX2_LUT5_I1_O[7] (3,23) -> (23,19)
+Info:                          Sink top_inst.readout_counter_inst.up_q_DFF_Q_11_D_MUX2_LUT8_O.S0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.18  21.41 Source top_inst.readout_counter_inst.up_q_DFF_Q_11_D_MUX2_LUT8_O.O
+Info:    routing  0.81  22.21 Net top_inst.readout_counter_inst.up_q_DFF_Q_11_D (23,19) -> (25,19)
+Info:                          Sink top_inst.readout_counter_inst.up_q_DFF_Q_11_passthrough_lut$.I3
+Info:      logic  0.62  22.83 Source top_inst.readout_counter_inst.up_q_DFF_Q_11_passthrough_lut$.F
+Info:    routing  0.00  22.83 Net top_inst.readout_counter_inst.up_q_DFF_Q_11$conn$D (25,19) -> (25,19)
+Info:                          Sink top_inst.readout_counter_inst.up_q_DFF_Q_11.D
+Info:      setup  0.40  23.23 Source top_inst.readout_counter_inst.up_q_DFF_Q_11.D
+Info: 6.24 ns logic, 16.99 ns routing
+
+Info: Max frequency for clock 'top_inst.clk': 43.04 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 23 endpoint(s)
+Info:          + represents [1,23) endpoint(s)
+Info: [ 13803,  14920) |+
+Info: [ 14920,  16037) |+
+Info: [ 16037,  17154) |+
+Info: [ 17154,  18271) |+
+Info: [ 18271,  19388) |+
+Info: [ 19388,  20505) |******+
+Info: [ 20505,  21622) |****************************************************+
+Info: [ 21622,  22739) |************************************************************ 
+Info: [ 22739,  23856) |*********************************************+
+Info: [ 23856,  24973) |***************************+
+Info: [ 24973,  26090) |******************+
+Info: [ 26090,  27207) |********+
+Info: [ 27207,  28324) |***********+
+Info: [ 28324,  29441) |****************+
+Info: [ 29441,  30558) |***************+
+Info: [ 30558,  31675) |*********************************+
+Info: [ 31675,  32792) |*****************************+
+Info: [ 32792,  33909) |**************+
+Info: [ 33909,  35026) |****************+
+Info: [ 35026,  36143) |****+
+
+Info: Program finished normally.

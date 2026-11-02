@@ -1,0 +1,335 @@
+yosys -q -l build/yosys.log -p "read_verilog -defer ../rtl/top.v ../rtl/pbit_array.v ../rtl/coupling_row.v ../rtl/weight_mac.v ../rtl/pbit.v ../rtl/sigmoid_lut.v ../rtl/sigmoid_pwl.v ../rtl/noise_bank.v ../rtl/lfsr.v ../rtl/schedule_ctrl.v ../rtl/readout_counter.v ../rtl/uart_rx.v ../rtl/uart_tx.v; \
+  hierarchy -top top -chparam N 16 -chparam HIST_BITS 12; \
+  synth_gowin -top top -json build/top.json; tee -o build/yosys_stat.txt stat"
+Warning: Replacing memory \up_reg with list of registers. See ../rtl/readout_counter.v:146, ../rtl/readout_counter.v:84
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:215: Warning: Range [7:0] select out of bounds on signal `\PORT_A_WR_DATA': Setting 4 MSB bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:215: Warning: Range select [16:9] out of bounds on signal `\PORT_A_WR_DATA': Setting all 8 result bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:215: Warning: Range select [25:18] out of bounds on signal `\PORT_A_WR_DATA': Setting all 8 result bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:215: Warning: Range select [34:27] out of bounds on signal `\PORT_A_WR_DATA': Setting all 8 result bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:216: Warning: Range [7:0] select out of bounds on signal `\PORT_B_WR_DATA': Setting 4 MSB bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:216: Warning: Range select [16:9] out of bounds on signal `\PORT_B_WR_DATA': Setting all 8 result bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:216: Warning: Range select [25:18] out of bounds on signal `\PORT_B_WR_DATA': Setting all 8 result bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:216: Warning: Range select [34:27] out of bounds on signal `\PORT_B_WR_DATA': Setting all 8 result bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:220: Warning: Range select [23:16] out of bounds on signal `\genblk1.DOA': Setting all 8 result bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:220: Warning: Range select [31:24] out of bounds on signal `\genblk1.DOA': Setting all 8 result bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:221: Warning: Range select [23:16] out of bounds on signal `\genblk1.DOB': Setting all 8 result bits to undef.
+/home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/brams_map.v:221: Warning: Range select [31:24] out of bounds on signal `\genblk1.DOB': Setting all 8 result bits to undef.
+nextpnr-himbaechel --json build/top.json --write build/pnr.json --device GW1NR-LV9QN88PC6/I5 \
+  --vopt family=GW1N-9C --vopt cst=tangnano9k.cst \
+  --freq 27 --report build/pnr_report.json -l build/nextpnr.log
+Info: Using uarch 'gowin' for device 'GW1NR-LV9QN88PC6/I5'
+
+Info: Cell O_psram_ck[0] not found
+Info: Cell O_psram_ck[1] not found
+Info: Cell O_psram_ck_n[0] not found
+Info: Cell O_psram_ck_n[1] not found
+Info: Cell O_psram_cs_n[0] not found
+Info: Cell O_psram_cs_n[1] not found
+Info: Cell O_psram_reset_n[0] not found
+Info: Cell O_psram_reset_n[1] not found
+Info: Cell IO_psram_dq[0] not found
+Info: Cell IO_psram_dq[1] not found
+Info: Cell IO_psram_dq[2] not found
+Info: Cell IO_psram_dq[3] not found
+Info: Cell IO_psram_dq[4] not found
+Info: Cell IO_psram_dq[5] not found
+Info: Cell IO_psram_dq[6] not found
+Info: Cell IO_psram_dq[7] not found
+Info: Cell IO_psram_dq[8] not found
+Info: Cell IO_psram_dq[9] not found
+Info: Cell IO_psram_dq[10] not found
+Info: Cell IO_psram_dq[11] not found
+Info: Cell IO_psram_dq[12] not found
+Info: Cell IO_psram_dq[13] not found
+Info: Cell IO_psram_dq[14] not found
+Info: Cell IO_psram_dq[15] not found
+Info: Cell IO_psram_rwds[0] not found
+Info: Cell IO_psram_rwds[1] not found
+Info: Reading constraints...
+Info: Create constant nets...
+Info: Modify LUTs...
+Info: Pack IOBs...
+Info: Pack I3C IOs...
+Info: Pack MIPI IOs...
+Info: Pack diff IOBs...
+Info: Pack FFs into IO cells...
+Info: Pack IODELAY...
+Info: Pack Input Edge Monitors...
+Info: Pack IO logic...
+Info: Pack DESER16 logic...
+Info: Pack GSR...
+Info: Pack HCLK cells...
+Info: Pack DLLDLYs...
+Info: Pack wide LUTs...
+Info: Packed MUX2_LUT8:1, MUX2_LU7:10, MUX2_LUT6:11, MUX2_LUT5:153
+Info: Pack ALUs...
+Info: Pack SSRAMs...
+Info: Constrained 306 LUTFF pairs.
+Info: Pack PLL...
+Info: Pack ADC...
+Info: Pack GW JTAG...
+Info: Pack BSRAMs...
+Info: Pack DSP...
+Info: Pack INV...
+Info: Pack buffered nets...
+Info: Pack EMCU and UserFlash cells...
+Info: Pack UserFlash cells...
+Info: Pack DQCE cells...
+Info: Pack DCS cells...
+Info: Checksum: 0x08ead398
+
+Info: Device utilisation:
+Info: 	                 VCC:       1/      1   100%
+Info: 	                 IOB:      11/    276     3%
+Info: 	                LUT4:    2534/   8640    29%
+Info: 	              OSER16:       0/     80     0%
+Info: 	              IDES16:       0/     80     0%
+Info: 	            IOLOGICI:       0/    276     0%
+Info: 	            IOLOGICO:       0/    276     0%
+Info: 	           MUX2_LUT5:     223/   4320     5%
+Info: 	           MUX2_LUT6:      35/   2160     1%
+Info: 	           MUX2_LUT7:      12/   1080     1%
+Info: 	           MUX2_LUT8:       1/   1080     0%
+Info: 	                 ALU:     998/   6480    15%
+Info: 	                 GND:       1/      1   100%
+Info: 	                 DFF:    1293/   6480    19%
+Info: 	           RAM16SDP4:       7/    270     2%
+Info: 	               BSRAM:      10/     26    38%
+Info: 	              ALU54D:       0/     10     0%
+Info: 	     MULTADDALU18X18:       0/     10     0%
+Info: 	        MULTALU18X18:       0/     10     0%
+Info: 	        MULTALU36X18:       0/     10     0%
+Info: 	           MULT36X36:       0/      5     0%
+Info: 	           MULT18X18:       0/     20     0%
+Info: 	             MULT9X9:       0/     40     0%
+Info: 	              PADD18:       0/     20     0%
+Info: 	               PADD9:       0/     40     0%
+Info: 	                 GSR:       1/      1   100%
+Info: 	                 OSC:       0/      1     0%
+Info: 	                rPLL:       0/      2     0%
+Info: 	           FLASH608K:       0/      1     0%
+Info: 	                BUFG:       0/     22     0%
+Info: 	                DQCE:       0/     24     0%
+Info: 	                 DCS:       0/      8     0%
+Info: 	               DHCEN:       0/     24     0%
+Info: 	              CLKDIV:       0/      8     0%
+Info: 	             CLKDIV2:       0/     16     0%
+Info: 	           MIPI_IBUF:       0/     22     0%
+Info: 	           MIPI_OBUF:       0/     20     0%
+
+Info: Running custom HCLK placer...
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 2216 cells, random placement wirelen = 98125.
+Info:     at initial placer iter 0, wirelen = 3499
+Info:     at initial placer iter 1, wirelen = 2946
+Info:     at initial placer iter 2, wirelen = 2959
+Info:     at initial placer iter 3, wirelen = 2952
+Info: Running main analytical placer, max placement attempts per cell = 3285766.
+Info:     at iteration #1, type ALL: wirelen solved = 2944, spread = 22243, legal = 38082; time = 0.43s
+Info:     at iteration #2, type ALL: wirelen solved = 1801, spread = 19902, legal = 35904; time = 0.91s
+Info:     at iteration #3, type ALL: wirelen solved = 2114, spread = 19790, legal = 33017; time = 0.52s
+Info:     at iteration #4, type ALL: wirelen solved = 2353, spread = 20569, legal = 34236; time = 0.44s
+Info:     at iteration #5, type ALL: wirelen solved = 2948, spread = 21698, legal = 33597; time = 0.42s
+Info:     at iteration #6, type ALL: wirelen solved = 3107, spread = 18849, legal = 31995; time = 0.37s
+Info:     at iteration #7, type ALL: wirelen solved = 3970, spread = 19393, legal = 31826; time = 0.81s
+Info:     at iteration #8, type ALL: wirelen solved = 4520, spread = 22344, legal = 34044; time = 0.46s
+Info:     at iteration #9, type ALL: wirelen solved = 5006, spread = 19448, legal = 31570; time = 0.96s
+Info:     at iteration #10, type ALL: wirelen solved = 5293, spread = 19855, legal = 30125; time = 0.57s
+Info:     at iteration #11, type ALL: wirelen solved = 5730, spread = 19955, legal = 31151; time = 0.84s
+Info:     at iteration #12, type ALL: wirelen solved = 6418, spread = 20468, legal = 28837; time = 1.17s
+Info:     at iteration #13, type ALL: wirelen solved = 6241, spread = 20210, legal = 28594; time = 0.37s
+Info:     at iteration #14, type ALL: wirelen solved = 6818, spread = 20403, legal = 28884; time = 0.59s
+Info:     at iteration #15, type ALL: wirelen solved = 7158, spread = 19916, legal = 29501; time = 0.90s
+Info:     at iteration #16, type ALL: wirelen solved = 7013, spread = 19904, legal = 27724; time = 0.32s
+Info:     at iteration #17, type ALL: wirelen solved = 7804, spread = 19579, legal = 26283; time = 0.28s
+Info:     at iteration #18, type ALL: wirelen solved = 7939, spread = 20088, legal = 26359; time = 0.30s
+Info:     at iteration #19, type ALL: wirelen solved = 7442, spread = 18582, legal = 23760; time = 0.75s
+Info:     at iteration #20, type ALL: wirelen solved = 7616, spread = 20273, legal = 23676; time = 0.36s
+Info:     at iteration #21, type ALL: wirelen solved = 7875, spread = 17481, legal = 24312; time = 0.25s
+Info:     at iteration #22, type ALL: wirelen solved = 7455, spread = 20017, legal = 24549; time = 0.21s
+Info:     at iteration #23, type ALL: wirelen solved = 8380, spread = 18981, legal = 23166; time = 0.21s
+Info:     at iteration #24, type ALL: wirelen solved = 8505, spread = 19405, legal = 23718; time = 0.30s
+Info:     at iteration #25, type ALL: wirelen solved = 8746, spread = 17402, legal = 22246; time = 0.19s
+Info:     at iteration #26, type ALL: wirelen solved = 8423, spread = 19806, legal = 22628; time = 0.23s
+Info:     at iteration #27, type ALL: wirelen solved = 9108, spread = 20751, legal = 24166; time = 0.84s
+Info:     at iteration #28, type ALL: wirelen solved = 9557, spread = 19446, legal = 23956; time = 0.45s
+Info:     at iteration #29, type ALL: wirelen solved = 9655, spread = 18448, legal = 21366; time = 0.12s
+Info:     at iteration #30, type ALL: wirelen solved = 9402, spread = 18229, legal = 21797; time = 0.19s
+Info:     at iteration #31, type ALL: wirelen solved = 9416, spread = 19550, legal = 22087; time = 0.12s
+Info:     at iteration #32, type ALL: wirelen solved = 9849, spread = 20759, legal = 23756; time = 0.21s
+Info:     at iteration #33, type ALL: wirelen solved = 10081, spread = 19010, legal = 22027; time = 0.15s
+Info:     at iteration #34, type ALL: wirelen solved = 10571, spread = 20204, legal = 22954; time = 0.19s
+Info: HeAP Placer Time: 16.53s
+Info:   of which solving equations: 3.04s
+Info:   of which spreading cells: 0.46s
+Info:   of which strict legalisation: 12.03s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 789, wirelen = 21366
+Info:   at iteration #5: temp = 0.000000, timing cost = 317, wirelen = 18469
+Info:   at iteration #10: temp = 0.000000, timing cost = 242, wirelen = 17386
+Info:   at iteration #15: temp = 0.000000, timing cost = 216, wirelen = 16940
+Info:   at iteration #20: temp = 0.000000, timing cost = 230, wirelen = 16574
+Info:   at iteration #22: temp = 0.000000, timing cost = 226, wirelen = 16498 
+Info: SA placement time 8.98s
+
+Info: Max frequency for clock 'pbit_array_inst.clk': 84.68 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 5 endpoint(s)
+Info:          + represents [1,5) endpoint(s)
+Info: [ 25228,  25794) |**+
+Info: [ 25794,  26360) |*****+
+Info: [ 26360,  26926) |*****************+
+Info: [ 26926,  27492) |***********************+
+Info: [ 27492,  28058) |*************************************************+
+Info: [ 28058,  28624) |************************************************************ 
+Info: [ 28624,  29190) |******************************+
+Info: [ 29190,  29756) |*****************************************************+
+Info: [ 29756,  30322) |*************************+
+Info: [ 30322,  30888) |******************************+
+Info: [ 30888,  31454) |**********************************************+
+Info: [ 31454,  32020) |*************************************+
+Info: [ 32020,  32586) |**********************************+
+Info: [ 32586,  33152) |**************************+
+Info: [ 33152,  33718) |*******************************+
+Info: [ 33718,  34284) |*******************************+
+Info: [ 34284,  34850) |************************+
+Info: [ 34850,  35416) |*************************+
+Info: [ 35416,  35982) |**************************+
+Info: [ 35982,  36548) |*****************+
+Info: Checksum: 0xa8db462c
+Info: Routing globals...
+Info:     'pbit_array_inst.clk' net was routed using global resources only.
+Info:     'run_prev_LUT2_I1_F_LUT4_I1_F_LUT4_F_I1_LUT3_I1_F[1]' is routed using segments.
+Info:     'rst_s2_LUT2_I0_1_F[0]' is routed using segments.
+Info:     'run_prev_LUT2_I1_F_LUT4_I1_F_LUT4_F_I3_LUT4_I2_F_LUT4_I3_F[2]' is routed using segments.
+Info:     'state_reg_DFFRE_Q_1_D_LUT4_F_I3_LUT4_F_I2_LUT3_F_I0[2]' is routed using segments.
+Info:     'cnt_reg[2]' is routed using segments.
+Info:     'nby_reg_DFFRE_Q_1_D_LUT3_F_I2_LUT4_F_I0[3]' is routed using segments.
+Info:     'pbit_array_inst.pbit_inst.done_reg_LUT4_I0_F_MUX2_LUT5_I0_O' is routed using segments.
+Info:     'pbit_array_inst.pb_bit' is routed using segments.
+Info:     'schedule_ctrl_inst.cnt_reg_DFFRE_Q_8_D_LUT2_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT[3]' is routed using segments.
+Info:     'pbit_array_inst.coupling_row_inst.spins_DFFRE_Q_11_D_LUT4_F_I3[1]' is routed using segments.
+Info:     'readout_counter_inst.gen_hist.hist_mem.0.0_DOB[1]' is routed using segments.
+Info:     'nargs_reg_DFFE_Q_2_D_LUT4_F_I3_LUT3_F_I2[6]' is routed using segments.
+Info:     'pbit_array_inst.coupling_row_inst.field_DFFRE_Q_D_LUT3_F_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM[4]' is routed using segments.
+Info:     'readout_counter_inst.up_q_DFF_Q_21_D_LUT4_F_I3_MUX2_LUT5_O_S0[3]' is routed using segments.
+Info:     'state_reg_DFFRE_Q_1_D_LUT4_F_I3_LUT4_F_I2_LUT3_F_I1[3]' is routed using segments.
+Info:     'cnt_reg[3]' is routed using segments.
+Info:     'nby_reg_DFFRE_Q_1_D_LUT3_F_I2_LUT4_F_I0[2]' is routed using segments.
+Info:     'run_prev_LUT2_I1_F_LUT4_I1_F_LUT4_F_I3_LUT2_I1_F_LUT3_F_I0_LUT4_I0_F[0]' is routed using segments.
+Info:     'pbit_array_inst.pbit_inst.bsh_reg_LUT3_I1_F[0]' is routed using segments.
+Info:     'hold_reg_LUT3_I0_I1[2]' is routed using segments.
+Info:     'cnt_reg[0]' is routed using segments.
+Info:     'run_prev_LUT2_I1_F_LUT4_I1_F_LUT4_F_I2_LUT2_I1_F_LUT2_F_I0_LUT2_I0_1_F_LUT2_F_I1_LUT3_I1_F_LUT4_I3_F' is routed using segments.
+Info:     'args_reg[1]' is routed using segments.
+Info:     'args_reg[10]' is routed using segments.
+Info:     'args_reg[8]' is routed using segments.
+Info:     'args_reg[11]' is routed using segments.
+Info:     'readout_counter_inst.clr_reg_DFFRE_Q_RESET[1]' is routed using segments.
+Info:     'args_reg[9]' is routed using segments.
+Info:     'readout_counter_inst.up_q_DFF_Q_1_D_LUT4_F_I3_MUX2_LUT5_O_S0[2]' is routed using segments.
+Info:     'readout_counter_inst.up_q_DFF_Q_18_D_LUT4_F_I3_MUX2_LUT5_O_S0[3]' is routed using segments.
+Info:     'readout_counter_inst.up_q_DFF_Q_11_D_LUT4_F_I3_MUX2_LUT5_O_S0[3]' is routed using segments.
+Info:     'readout_counter_inst.state_reg_LUT2_I1_F[2]' is routed using segments.
+Info:     'nby_reg_DFFRE_Q_1_D_LUT3_F_I2_LUT4_F_I0[1]' is routed using segments.
+Info:     'pbit_array_inst.coupling_row_inst.done_reg_LUT4_I2_F_MUX2_LUT5_I1_O[2]' is routed using segments.
+Info:     'n_samples_DFFRE_Q_10_D_LUT2_F_I0[1]' is routed using segments.
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 11197 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |       14        985 |   14   985 |     10213|       1.25       1.25|
+Info:       2000 |       48       1951 |   34   966 |      9271|       0.87       2.12|
+Info:       3000 |       98       2901 |   50   950 |      8336|       1.24       3.36|
+Info:       4000 |      197       3802 |   99   901 |      7505|       1.64       5.01|
+Info:       5000 |      343       4622 |  146   820 |      6728|       0.77       5.77|
+Info:       6000 |      456       5377 |  113   755 |      5880|       0.76       6.53|
+Info:       7000 |      570       5988 |  114   611 |      5049|       1.50       8.03|
+Info:       8000 |      647       6463 |   77   475 |      4152|       0.56       8.59|
+Info:       9000 |      709       7079 |   62   616 |      3254|       1.27       9.86|
+Info:      10000 |      811       7890 |  102   811 |      2387|       0.61      10.48|
+Info:      11000 |      858       8814 |   47   924 |      1464|       0.42      10.90|
+Info:      12000 |      879       9705 |   21   891 |       491|       0.49      11.39|
+Info:      12520 |      900      10157 |   21   452 |         0|       0.31      11.70|
+Info: Routing complete.
+Info: Router1 time 11.70s
+Info: Checksum: 0x9b852d1f
+
+Info: Critical path report for clock 'pbit_array_inst.clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.46  0.46 Source run_stable_DFFSE_Q.Q
+Info:    routing  1.22  1.67 Net run_stable (2,6) -> (3,8)
+Info:                          Sink run_prev_LUT2_I1.I0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.03  2.71 Source run_prev_LUT2_I1.F
+Info:    routing  2.08  4.79 Net run_prev_LUT2_I1_F[3] (3,8) -> (6,13)
+Info:                          Sink rst_s2_LUT2_I0_1_F_MUX2_LUT5_O_1_I1_LUT4_F.I3
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.62  5.41 Source rst_s2_LUT2_I0_1_F_MUX2_LUT5_O_1_I1_LUT4_F.F
+Info:    routing  0.00  5.41 Net rst_s2_LUT2_I0_1_F_MUX2_LUT5_O_1_I1 (6,13) -> (6,13)
+Info:                          Sink rst_s2_LUT2_I0_1_F_MUX2_LUT5_O_1.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:151.13-151.15
+Info:      logic  0.50  5.91 Source rst_s2_LUT2_I0_1_F_MUX2_LUT5_O_1.O
+Info:    routing  3.69  9.60 Net rst_s2_LUT2_I0_1_F[0] (6,13) -> (13,13)
+Info:                          Sink schedule_ctrl_inst.table_mem.0.1_DO_3_LUT4_F.I0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.03  10.64 Source schedule_ctrl_inst.table_mem.0.1_DO_3_LUT4_F.F
+Info:    routing  1.93  12.56 Net schedule_ctrl_inst.cnt_reg_DFFRE_Q_8_D_LUT2_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT[3] (13,13) -> (13,16)
+Info:                          Sink mode_reg_LUT4_I1_F_MUX2_LUT5_I1_I0_LUT1_F.I0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.03  13.59 Source mode_reg_LUT4_I1_F_MUX2_LUT5_I1_I0_LUT1_F.F
+Info:    routing  0.00  13.59 Net mode_reg_LUT4_I1_F_MUX2_LUT5_I1_I0 (13,16) -> (13,16)
+Info:                          Sink mode_reg_LUT4_I1_F_MUX2_LUT5_I1.I0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:151.9-151.11
+Info:      logic  0.47  14.06 Source mode_reg_LUT4_I1_F_MUX2_LUT5_I1.O
+Info:    routing  1.85  15.91 Net mode_reg_LUT4_I1_F_MUX2_LUT5_I1_O (13,16) -> (13,16)
+Info:                          Sink beta_DFFE_Q_5.CE
+Info:      setup  0.04  15.96 Source beta_DFFE_Q_5.CE
+Info: 5.19 ns logic, 10.77 ns routing
+
+Info: Max frequency for clock 'pbit_array_inst.clk': 62.67 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 8 endpoint(s)
+Info:          + represents [1,8) endpoint(s)
+Info: [ 21080,  21813) |+
+Info: [ 21813,  22546) |*+
+Info: [ 22546,  23279) |+
+Info: [ 23279,  24012) |***+
+Info: [ 24012,  24745) |********************************+
+Info: [ 24745,  25478) |************************************************************ 
+Info: [ 25478,  26211) |**************************************************+
+Info: [ 26211,  26944) |*****************************+
+Info: [ 26944,  27677) |*********+
+Info: [ 27677,  28410) |************************+
+Info: [ 28410,  29143) |*****************************************+
+Info: [ 29143,  29876) |********************+
+Info: [ 29876,  30609) |*****************+
+Info: [ 30609,  31342) |***************+
+Info: [ 31342,  32075) |***********************+
+Info: [ 32075,  32808) |************************+
+Info: [ 32808,  33541) |************************+
+Info: [ 33541,  34274) |************************+
+Info: [ 34274,  35007) |********************+
+Info: [ 35007,  35740) |******+
+
+Info: Program finished normally.
+gowin_pack -d GW1N-9C -o build/top.fs build/pnr.json
+/home/jero98772/tools/oss-cad-suite/lib/python3.11/site-packages/apycula/bitmatrix.py:60: UserWarning: Numpy is not available, performance will be degraded.
+  warnings.warn("Numpy is not available, performance will be degraded.")
+/home/jero98772/tools/oss-cad-suite/lib/python3.11/site-packages/apycula/chipdb.py:261: UserWarning: Msgspec is not available, performance will be degraded.
+  warnings.warn("Msgspec is not available, performance will be degraded.")
+/home/jero98772/tools/oss-cad-suite/lib/python3.11/site-packages/apycula/crc16.py:19: UserWarning: fastcrc is not available, performance will be degraded.
+  warnings.warn("fastcrc is not available, performance will be degraded.")

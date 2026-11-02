@@ -1,0 +1,9 @@
+localparam integer CASE_N        = 16;
+localparam integer CASE_WFRAC    = 4;
+localparam integer CASE_MODE     = 0;
+localparam integer CASE_BETA0    = 7;
+localparam integer CASE_BETA1    = 7;
+localparam integer CASE_DELTA    = 0;
+localparam integer CASE_SPS      = 1;
+localparam integer CASE_SWEEPS   = 2000;
+localparam [31:0]  CASE_SEED     = 32'hace1f00d;

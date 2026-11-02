@@ -1,0 +1,17 @@
+localparam integer CASE_N        = 12;
+localparam integer CASE_P        = 4;
+localparam integer CASE_D        = 3;
+localparam integer CASE_DW       = 2;
+localparam integer CASE_LW       = 2;
+localparam integer CASE_ROUNDS   = 3;
+localparam integer CASE_WFRAC    = 4;
+localparam integer CASE_MODE     = 0;
+localparam integer CASE_BETA0    = 8;
+localparam integer CASE_BETA1    = 8;
+localparam integer CASE_DELTA    = 0;
+localparam integer CASE_SPS      = 1;
+localparam integer CASE_SWEEPS   = 2000;
+localparam [31:0]  CASE_SEED     = 32'hace1f00d;
+localparam integer CASE_NZ_TAU   = 0;
+localparam integer CASE_NZ_SHARE = 0;
+localparam integer CASE_NZ_Q     = 0;

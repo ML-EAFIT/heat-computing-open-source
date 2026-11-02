@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 600" role="img" aria-label="How p-gates compose: shared wires merge into one p-bit and their energies add; the 2 by 2 multiplier built this way runs backwards to factor 6" font-family="IBM Plex Sans, system-ui, sans-serif">
+<style>
+svg{--bg:#faf9f6;--ink:#1d2329;--mut:#66707a;--line:#8f99a3;--warm:#c4501d;--warmf:#fbe5d8;
+--cool:#16708a;--coolf:#dbeef3;--ok:#2c8a4b;--okf:#ddf0e3;--bad:#b9b5ac;--badf:#efede8;--panel:#f1efea}
+@media (prefers-color-scheme:dark){svg{--bg:#14181c;--ink:#e5e8eb;--mut:#9aa4ae;--line:#64707b;
+--warm:#f08a5c;--warmf:#3b2418;--cool:#5cc1d9;--coolf:#12303a;--ok:#6dca8b;--okf:#163322;--bad:#6d6a64;
+--badf:#24272a;--panel:#1b2025}}
+
+.bg{fill:var(--bg)} .panel{fill:var(--panel)}
+.t{fill:var(--ink);font:13px 'IBM Plex Sans',system-ui,sans-serif}
+.ts{fill:var(--mut);font:11px 'IBM Plex Sans',system-ui,sans-serif}
+.tm{fill:var(--ink);font:11.5px 'IBM Plex Mono',ui-monospace,monospace}
+.tms{fill:var(--mut);font:10.5px 'IBM Plex Mono',ui-monospace,monospace}
+.th{fill:var(--ink);font:600 15px 'IBM Plex Sans',system-ui,sans-serif}
+.tb{fill:var(--ink);font:600 13px 'IBM Plex Sans',system-ui,sans-serif}
+.tw{fill:var(--warm)} .tc{fill:var(--cool)} .tok{fill:var(--ok)}
+.warm{fill:var(--warmf);stroke:var(--warm);stroke-width:1.4}
+.cool{fill:var(--coolf);stroke:var(--cool);stroke-width:1.4}
+.ok{fill:var(--okf);stroke:var(--ok);stroke-width:1.4}
+.bad{fill:var(--badf);stroke:var(--bad);stroke-width:1.2}
+.plain{fill:var(--bg);stroke:var(--line);stroke-width:1.2}
+.ln{stroke:var(--line);stroke-width:1.4;fill:none}
+.lw{stroke:var(--warm);stroke-width:1.6;fill:none}
+.lc{stroke:var(--cool);stroke-width:1.6;fill:none}
+.lk{stroke:var(--ink);stroke-width:1.6;fill:none}
+.dash{stroke-dasharray:4 4}
+.fw{fill:var(--warm)} .fc{fill:var(--cool)} .fk{fill:var(--ink)} .fl{fill:var(--line)}
+</style>
+<rect width="1180" height="600" class="bg"/>
+<text x="24.0" y="32.0" class="th" text-anchor="start" >Composition: wire = shared p-bit, circuit energy = sum of gate energies</text>
+<rect x="14.0" y="50.0" width="400.0" height="250.0" rx="10" class="panel"/>
+<text x="28.0" y="74.0" class="tb" text-anchor="start" >a) Two gates share wire t</text>
+<circle cx="70.0" cy="120.0" r="15" class="cool"/>
+<text x="70.0" y="124.0" class="tb" text-anchor="middle" >a</text>
+<circle cx="70.0" cy="180.0" r="15" class="cool"/>
+<text x="70.0" y="184.0" class="tb" text-anchor="middle" >b</text>
+<circle cx="190.0" cy="150.0" r="17" class="warm"/>
+<text x="190.0" y="154.0" class="tb" text-anchor="middle" >t</text>
+<circle cx="300.0" cy="120.0" r="15" class="cool"/>
+<text x="300.0" y="124.0" class="tb" text-anchor="middle" >c</text>
+<circle cx="300.0" cy="200.0" r="15" class="warm"/>
+<text x="300.0" y="204.0" class="tb" text-anchor="middle" >y</text>
+<line x1="85.0" y1="122.0" x2="173.0" y2="147.0" class="lc"/>
+<line x1="85.0" y1="178.0" x2="173.0" y2="153.0" class="lc"/>
+<line x1="82.0" y1="132.0" x2="82.0" y2="168.0" class="lc"/>
+<line x1="207.0" y1="147.0" x2="285.0" y2="122.0" class="lw"/>
+<line x1="204.0" y1="160.0" x2="287.0" y2="192.0" class="lw"/>
+<line x1="300.0" y1="135.0" x2="300.0" y2="185.0" class="lw"/>
+<text x="110.0" y="222.0" class="ts tc" text-anchor="middle" >gate 1 (teal)</text>
+<text x="260.0" y="236.0" class="ts tw" text-anchor="middle" >gate 2 (orange)</text>
+<text x="28.0" y="262.0" class="tm" text-anchor="start" >h_t = h_t(gate 1) + h_t(gate 2)</text>
+<text x="28.0" y="280.0" class="ts" text-anchor="start" >J adds the same way. Nothing else is needed.</text>
+<rect x="14.0" y="316.0" width="400.0" height="270.0" rx="10" class="panel"/>
+<text x="28.0" y="340.0" class="tb" text-anchor="start" >b) Clamping chooses the direction</text>
+<text x="28.0" y="360.0" class="ts" text-anchor="start" >clamp = extreme bias ±8 on a p-bit (h RAM write)</text>
+<rect x="40.0" y="380.0" width="110.0" height="44.0" rx="6" class="cool"/>
+<text x="95.0" y="399.0" class="tb" text-anchor="middle" >inputs</text>
+<text x="95.0" y="414.0" class="ts" text-anchor="middle" >a, b</text>
+<rect x="270.0" y="380.0" width="110.0" height="44.0" rx="6" class="warm"/>
+<text x="325.0" y="399.0" class="tb" text-anchor="middle" >outputs</text>
+<text x="325.0" y="414.0" class="ts" text-anchor="middle" >p = a·b</text>
+<line x1="150.0" y1="394.0" x2="270.0" y2="394.0" class="lc"/>
+<polygon points="270.0,394.0 262.0,398.0 262.0,390.0" class="fc"/>
+<text x="210.0" y="387.0" class="ts" text-anchor="middle" >forward: clamp a, b</text>
+<line x1="270.0" y1="414.0" x2="150.0" y2="414.0" class="lw"/>
+<polygon points="150.0,414.0 158.0,410.0 158.0,418.0" class="fw"/>
+<text x="210.0" y="432.0" class="ts" text-anchor="middle" >backward: clamp p</text>
+<text x="28.0" y="470.0" class="ts" text-anchor="start" >Forward = an ordinary (noisy) circuit.</text>
+<text x="28.0" y="488.0" class="ts" text-anchor="start" >Backward = the sampler searches for inputs that</text>
+<text x="28.0" y="504.0" class="ts" text-anchor="start" >produce the clamped output: factoring, SAT,</text>
+<text x="28.0" y="520.0" class="ts" text-anchor="start" >inversion. A deterministic circuit cannot do this.</text>
+<text x="28.0" y="548.0" class="tb" text-anchor="start" >Same hardware, same J; only 4 bias words change.</text>
+<rect x="430.0" y="50.0" width="736.0" height="536.0" rx="10" class="panel"/>
+<text x="446.0" y="74.0" class="tb" text-anchor="start" >c) 2 × 2-bit multiplier = 6 AND + 2 XOR = 14 p-bits (model/pgates.mult2x2)</text>
+<line x1="498.0" y1="140.0" x2="642.0" y2="120.0" class="ln"/>
+<line x1="498.0" y1="280.0" x2="642.0" y2="120.0" class="ln"/>
+<line x1="498.0" y1="140.0" x2="642.0" y2="200.0" class="ln"/>
+<line x1="498.0" y1="340.0" x2="642.0" y2="200.0" class="ln"/>
+<line x1="498.0" y1="200.0" x2="642.0" y2="280.0" class="ln"/>
+<line x1="498.0" y1="280.0" x2="642.0" y2="280.0" class="ln"/>
+<line x1="498.0" y1="200.0" x2="642.0" y2="370.0" class="ln"/>
+<line x1="498.0" y1="340.0" x2="642.0" y2="370.0" class="ln"/>
+<line x1="678.0" y1="200.0" x2="832.0" y2="220.0" class="ln"/>
+<line x1="678.0" y1="280.0" x2="832.0" y2="220.0" class="ln"/>
+<line x1="678.0" y1="200.0" x2="832.0" y2="300.0" class="ln"/>
+<line x1="678.0" y1="280.0" x2="832.0" y2="300.0" class="ln"/>
+<line x1="678.0" y1="370.0" x2="992.0" y2="320.0" class="ln"/>
+<line x1="868.0" y1="300.0" x2="992.0" y2="320.0" class="ln"/>
+<line x1="678.0" y1="370.0" x2="992.0" y2="400.0" class="ln"/>
+<line x1="868.0" y1="300.0" x2="992.0" y2="400.0" class="ln"/>
+<circle cx="480.0" cy="140.0" r="17" class="cool"/>
+<text x="480.0" y="144.0" class="tm" text-anchor="middle" >a0</text>
+<circle cx="480.0" cy="200.0" r="17" class="cool"/>
+<text x="480.0" y="204.0" class="tm" text-anchor="middle" >a1</text>
+<circle cx="480.0" cy="280.0" r="17" class="cool"/>
+<text x="480.0" y="284.0" class="tm" text-anchor="middle" >b0</text>
+<circle cx="480.0" cy="340.0" r="17" class="cool"/>
+<text x="480.0" y="344.0" class="tm" text-anchor="middle" >b1</text>
+<circle cx="660.0" cy="120.0" r="17" class="warm"/>
+<text x="660.0" y="124.0" class="tm" text-anchor="middle" >p0</text>
+<text x="660.0" y="97.0" class="tms" text-anchor="middle" >AND</text>
+<rect x="682.0" y="110.0" width="46.0" height="20.0" rx="10" class="warm"/>
+<text x="705.0" y="124.0" class="tm" text-anchor="middle" >= 0</text>
+<circle cx="660.0" cy="200.0" r="17" class="plain"/>
+<text x="660.0" y="204.0" class="tm" text-anchor="middle" >q01</text>
+<text x="660.0" y="177.0" class="tms" text-anchor="middle" >AND</text>
+<circle cx="660.0" cy="280.0" r="17" class="plain"/>
+<text x="660.0" y="284.0" class="tm" text-anchor="middle" >q10</text>
+<text x="660.0" y="257.0" class="tms" text-anchor="middle" >AND</text>
+<circle cx="660.0" cy="370.0" r="17" class="plain"/>
+<text x="660.0" y="374.0" class="tm" text-anchor="middle" >q11</text>
+<text x="660.0" y="347.0" class="tms" text-anchor="middle" >AND</text>
+<circle cx="850.0" cy="220.0" r="17" class="warm"/>
+<text x="850.0" y="224.0" class="tm" text-anchor="middle" >p1</text>
+<text x="850.0" y="197.0" class="tms" text-anchor="middle" >XOR (+aux)</text>
+<rect x="872.0" y="210.0" width="46.0" height="20.0" rx="10" class="warm"/>
+<text x="895.0" y="224.0" class="tm" text-anchor="middle" >= 1</text>
+<circle cx="850.0" cy="300.0" r="17" class="plain"/>
+<text x="850.0" y="304.0" class="tm" text-anchor="middle" >c1</text>
+<text x="850.0" y="277.0" class="tms" text-anchor="middle" >AND</text>
+<circle cx="1010.0" cy="320.0" r="17" class="warm"/>
+<text x="1010.0" y="324.0" class="tm" text-anchor="middle" >p2</text>
+<text x="1010.0" y="297.0" class="tms" text-anchor="middle" >XOR (+aux)</text>
+<rect x="1032.0" y="310.0" width="46.0" height="20.0" rx="10" class="warm"/>
+<text x="1055.0" y="324.0" class="tm" text-anchor="middle" >= 1</text>
+<circle cx="1010.0" cy="400.0" r="17" class="warm"/>
+<text x="1010.0" y="404.0" class="tm" text-anchor="middle" >p3</text>
+<text x="1010.0" y="377.0" class="tms" text-anchor="middle" >AND</text>
+<rect x="1032.0" y="390.0" width="46.0" height="20.0" rx="10" class="warm"/>
+<text x="1055.0" y="404.0" class="tm" text-anchor="middle" >= 0</text>
+<text x="480.0" y="380.0" class="ts" text-anchor="middle" >inputs</text>
+<text x="1100.0" y="160.0" class="ts tw" text-anchor="middle" >product clamped to 6 = 0110</text>
+<text x="1100.0" y="176.0" class="tms" text-anchor="middle" >(p3 p2 p1 p0)</text>
+<text x="446.0" y="450.0" class="ts" text-anchor="start" >Measured on the RTL (tb_pgates.v, β = 2, 1800 sweeps after burn-in per product):</text>
+<rect x="446.0" y="462.0" width="168.0" height="96.0" rx="8" class="plain"/>
+<text x="458.0" y="484.0" class="tb" text-anchor="start" >clamp p = 6</text>
+<text x="458.0" y="506.0" class="tm" text-anchor="start" >a=3 b=2</text>
+<text x="602.0" y="506.0" class="tm tok" text-anchor="end" >0.45</text>
+<text x="458.0" y="524.0" class="tm" text-anchor="start" >a=2 b=3</text>
+<text x="602.0" y="524.0" class="tm tok" text-anchor="end" >0.44</text>
+<text x="458.0" y="548.0" class="ts" text-anchor="start" >P(a·b = p) = 0.89</text>
+<rect x="626.0" y="462.0" width="168.0" height="96.0" rx="8" class="plain"/>
+<text x="638.0" y="484.0" class="tb" text-anchor="start" >clamp p = 3</text>
+<text x="638.0" y="506.0" class="tm" text-anchor="start" >a=1 b=3</text>
+<text x="782.0" y="506.0" class="tm tok" text-anchor="end" >0.96</text>
+<text x="638.0" y="524.0" class="tm" text-anchor="start" >a=3 b=1</text>
+<text x="782.0" y="524.0" class="tm tok" text-anchor="end" >0.02</text>
+<text x="638.0" y="548.0" class="ts" text-anchor="start" >P(a·b = p) = 0.98</text>
+<rect x="806.0" y="462.0" width="168.0" height="96.0" rx="8" class="plain"/>
+<text x="818.0" y="484.0" class="tb" text-anchor="start" >clamp p = 9</text>
+<text x="818.0" y="506.0" class="tm" text-anchor="start" >a=3 b=3</text>
+<text x="962.0" y="506.0" class="tm tok" text-anchor="end" >1.00</text>
+<text x="818.0" y="548.0" class="ts" text-anchor="start" >P(a·b = p) = 1.00</text>
+<rect x="986.0" y="462.0" width="168.0" height="96.0" rx="8" class="plain"/>
+<text x="998.0" y="484.0" class="tb" text-anchor="start" >clamp p = 4</text>
+<text x="998.0" y="506.0" class="tm" text-anchor="start" >a=2 b=2</text>
+<text x="1142.0" y="506.0" class="tm tok" text-anchor="end" >0.89</text>
+<text x="998.0" y="524.0" class="tm" text-anchor="start" >a=0 b=2</text>
+<text x="1142.0" y="524.0" class="tm" text-anchor="end" >0.02</text>
+<text x="998.0" y="548.0" class="ts" text-anchor="start" >P(a·b = p) = 0.89</text>
+</svg>

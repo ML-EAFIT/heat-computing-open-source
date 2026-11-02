@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>p-bit chip viewer</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="viz-root">
+<header class="top">
+  <div class="brand">
+    <h1>p-bit chip viewer</h1>
+    <p class="sub">Tang Nano 9K thermodynamic-computer emulation: same UART protocol for the Python model, the Verilog RTL and the board.</p>
+  </div>
+  <button id="theme" class="ghost" title="Toggle light / dark">Theme</button>
+</header>
+
+<section id="chips" class="chips" aria-label="Chips"></section>
+
+<section class="connect" aria-label="Connection">
+  <div class="chipname"><span class="muted">Chip</span> <strong id="cur-chip">none</strong></div>
+  <fieldset id="backends" class="seg">
+    <legend class="sr">Backend</legend>
+    <label><input type="radio" name="backend" value="model" checked> Python model</label>
+    <label><input type="radio" name="backend" value="rtl"> Verilog RTL (Verilator)</label>
+    <label><input type="radio" name="backend" value="board"> Tang Nano 9K</label>
+  </fieldset>
+  <label id="port-wrap" class="port" hidden>Port
+    <select id="port"></select>
+    <button id="ports-refresh" class="ghost small" title="Rescan serial ports">Rescan</button>
+  </label>
+  <button id="connect" class="primary">Connect</button>
+  <span id="status" class="status" role="status">not connected</span>
+</section>
+<div id="error" class="error" role="alert" hidden></div>
+<div id="warn" class="warn" role="status" hidden></div>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" data-tab="arch" aria-selected="true">Architecture</button>
+  <button role="tab" data-tab="program">Program</button>
+  <button role="tab" data-tab="run">Run</button>
+  <button role="tab" data-tab="results">Results</button>
+  <button role="tab" data-tab="learn">Learn</button>
+  <button role="tab" data-tab="wire">Wire</button>
+</nav>
+
+<main>
+  <!-- ARCHITECTURE -->
+  <section class="tab" id="tab-arch">
+    <div class="grid2">
+      <div class="card">
+        <h2 id="arch-title">Architecture</h2>
+        <p id="arch-summary" class="muted"></p>
+        <div id="arch-svg" class="arch"></div>
+        <p class="hint">Highlighted blocks are present in this build. Click a block for its Verilog source.</p>
+      </div>
+      <div class="card">
+        <h2>FPGA build</h2>
+        <table id="fpga-table" class="tbl"></table>
+        <p id="fpga-flash" class="mono"></p>
+        <h3 id="block-title">Block source</h3>
+        <p id="block-desc" class="muted">Pick a block in the diagram.</p>
+        <pre id="block-src" class="src"></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRAM -->
+  <section class="tab" id="tab-program" hidden>
+    <div class="grid2">
+      <div class="card span2" id="editor-card">
+        <div class="row between">
+          <h2>Circuit editor</h2>
+          <div class="row">
+            <button id="ed-from-example" class="ghost small">Open selected example</button>
+            <button id="ed-from-current" class="ghost small">Open loaded program</button>
+            <button id="ed-from-json" class="ghost small">Open JSON below</button>
+          </div>
+        </div>
+        <p class="muted">Pick a gate type, then click its input wires: the gate is added with a new output wire. Click a gate to select it. Right-click a wire to clamp it (free → 1 → 0); double-click a wire to rename it.</p>
+        <div class="row" id="ed-tools">
+          <fieldset class="seg" id="ed-kinds" aria-label="Gate type"></fieldset>
+          <label>output name <input id="ed-outname" placeholder="auto" size="7"></label>
+          <button id="ed-add-input">+ input wire</button>
+          <button id="ed-del" disabled>Delete gate</button>
+          <button id="ed-clear" class="ghost">Clear</button>
+        </div>
+        <div id="ed-svg" class="schem"></div>
+        <div class="row">
+          <label>groups <input id="ed-show" size="38" placeholder="a=a0,a1; b=b0,b1; p=p0,p1,p2,p3"></label>
+          <label>β <input id="ed-beta" type="number" step="0.0625" min="0.0625" max="15.9" value="2"></label>
+          <label>name <input id="ed-name" value="circuit" size="10"></label>
+        </div>
+        <div class="row">
+          <span id="ed-info" class="muted"></span>
+        </div>
+        <div class="row">
+          <button id="ed-load" class="primary">Load circuit into chip</button>
+          <button id="ed-to-json">Copy to JSON</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Program the chip</h2>
+        <p class="muted">A program is an energy function H(s) = −Σ J<sub>ij</sub> s<sub>i</sub> s<sub>j</sub> − Σ h<sub>i</sub> s<sub>i</sub> plus a β schedule. Pick an example or a built-in case, or edit the JSON (format: <a href="/docs/09_programming.md" target="_blank">docs/09</a>).</p>
+        <div class="row">
+          <label>Example <select id="prog-example"></select></label>
+          <label>Built-in case <select id="prog-case"></select></label>
+        </div>
+        <textarea id="prog-json" spellcheck="false" rows="18" aria-label="Problem JSON"></textarea>
+        <div class="row">
+          <button id="prog-load-json" class="primary">Load JSON</button>
+          <button id="prog-load-case">Load built-in case</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2 id="prog-title">Loaded program</h2>
+        <div id="prog-stats" class="tiles"></div>
+        <h3>Exact ground states (computed on the host)</h3>
+        <div id="prog-ground"></div>
+        <h3>Couplings (quantized, Q3.4)</h3>
+        <div id="prog-j" class="scrollbox"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RUN -->
+  <section class="tab" id="tab-run" hidden>
+    <div class="grid2 wide-left">
+      <div class="card">
+        <div class="row between">
+          <h2>Live state</h2>
+          <div id="leds" class="leds" aria-label="Board LEDs"></div>
+        </div>
+        <div class="row between" id="mode-row">
+          <fieldset class="seg modes" aria-label="Click mode">
+            <label><input type="radio" name="mode" value="pin" checked> Pin: click a p-bit to clamp it (free → 1 → 0)</label>
+            <label><input type="radio" name="mode" value="edit"> Edit: click a p-bit or coupling to change h / J</label>
+          </fieldset>
+        </div>
+        <div id="graph" class="graph"></div>
+        <div id="graph-legend" class="legend"></div>
+      </div>
+      <div class="card">
+        <h2>Controls</h2>
+        <div class="controls" id="spin-controls">
+          <div class="row">
+            <button id="run-anneal" class="primary">Restart anneal</button>
+            <label>β <input id="run-beta" type="number" step="0.0625" min="0" max="15.9" value="1"></label>
+            <button id="run-const">Hold β</button>
+          </div>
+          <div class="row">
+            <button id="run-play">Play</button>
+            <button id="run-step">Step</button>
+            <label>Sweeps per frame <input id="run-chunk" type="number" min="1" max="200" value="1"></label>
+            <label>Frame ms <input id="run-ms" type="range" min="0" max="400" value="60"></label>
+          </div>
+        </div>
+        <div class="controls" id="pm-controls" hidden>
+          <div class="row">
+            <button id="pm-play" class="primary">Play</button>
+            <button id="pm-step">Step 500</button>
+            <button id="pm-reset">Reset</button>
+          </div>
+        </div>
+        <div id="now" class="now"></div>
+        <div id="live-edit">
+          <div class="row between">
+            <span class="muted">Program: <span id="edit-status">as loaded</span></span>
+            <button id="reset-program" class="ghost small" disabled>Reset program</button>
+          </div>
+          <div id="groups"></div>
+          <div id="inspector" class="inspector" hidden></div>
+        </div>
+        <h3 id="chart1-title">Energy per sweep</h3>
+        <div id="chart-energy" class="chart"></div>
+        <h3 id="chart2-title">β per sweep</h3>
+        <div id="chart-beta" class="chart small"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="tab" id="tab-results" hidden>
+    <div class="grid2" id="results-spin">
+      <div class="card">
+        <h2>Sample the distribution</h2>
+        <p class="muted">Runs n sweeps at constant β with the on-chip histogram ('R' + 'D'), then compares it with the exact Boltzmann law computed on the host.</p>
+        <div class="row">
+          <label>Sweeps <input id="smp-sweeps" type="number" min="100" step="1000" value="20000"></label>
+          <label>β <input id="smp-beta" type="number" step="0.0625" min="0" max="15.9" value="1"></label>
+          <button id="smp-run" class="primary">Sample</button>
+        </div>
+        <div id="smp-tiles" class="tiles"></div>
+        <h3>Most probable states: chip vs exact</h3>
+        <div id="smp-hist" class="chart tall"></div>
+        <h3>Magnetisation ⟨s<sub>i</sub>⟩ per p-bit</h3>
+        <div id="smp-mag" class="chart"></div>
+      </div>
+      <div class="card">
+        <h2>Solve (anneal from many seeds)</h2>
+        <div class="row">
+          <label>Runs <input id="sol-runs" type="number" min="1" max="200" value="10"></label>
+          <button id="sol-run" class="primary">Solve</button>
+        </div>
+        <div id="sol-out"></div>
+      </div>
+    </div>
+    <div class="card" id="results-pm" hidden>
+      <h2>p-mode marginals: chip vs exact e<sup>−V/T</sup></h2>
+      <p class="muted">Histograms accumulate while the Run tab plays. Exact marginals are a 4-D grid sum on the host.</p>
+      <div id="pm-hists" class="multiples"></div>
+    </div>
+  </section>
+
+  <!-- LEARN -->
+  <section class="tab" id="tab-learn" hidden>
+    <div class="card">
+      <h2>Machine learning on the chip</h2>
+      <p class="muted">The p-bit array is a sampler for energy-based models. Training runs the chip in a loop (clamped and free phases, <a href="/docs/09_programming.md" target="_blank">docs/09</a>); inference pins what is known and samples the rest. Each card lists the engines that can run it; on the Python model a click connects the right chip. The <b>ideal Python simulator</b> (float weights, any size, <code>model/pysim.py</code>) runs the p-bit demos without the FPGA's limits, plus models too big for it.</p>
+      <p id="ml-engine" class="hint"></p>
+      <div id="ml-demos" class="chips"></div>
+    </div>
+    <div id="ml-panel"></div>
+  </section>
+
+  <!-- WIRE -->
+  <section class="tab" id="tab-wire" hidden>
+    <div class="grid2">
+      <div class="card">
+        <div class="row between"><h2>UART wire</h2><button id="wire-refresh" class="ghost small">Refresh</button></div>
+        <p class="muted">Every command the page sent to the engine and the bytes it answered (115200 8N1 on the board, 8 clocks per bit in the RTL). When programming, the host sends all W / H / O words first and reads their one-byte acks afterwards, so those acks are listed under the last command sent.</p>
+        <div class="scrollbox tall"><table id="wire-table" class="tbl mono"></table></div>
+      </div>
+      <div class="card">
+        <h2>Model ≡ RTL check</h2>
+        <p class="muted">Runs one session (program, reseed, 2000 sweeps, histogram, counters, 50 streamed samples) on the Python model and on the Verilog, and compares every reply byte.</p>
+        <button id="cmp-run" class="primary">Compare model vs RTL</button>
+        <div id="cmp-out"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>

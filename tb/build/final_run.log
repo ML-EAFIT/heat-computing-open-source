@@ -1,0 +1,119 @@
+cd ../model && /usr/bin/python3 export_vectors.py
+ring8     N= 8 Q3.4 beta_q= 24 (1.5000) mode=0 colours=2 order=[0, 2, 4, 6, 1, 3, 5, 7]
+ring8_q6  N= 8 Q1.6 beta_q= 24 (1.5000) mode=0 colours=2 order=[0, 2, 4, 6, 1, 3, 5, 7]
+maxcut12  N=12 Q3.4 beta_q=  8 (0.5000) mode=0 colours=3 order=[0, 1, 5, 11, 2, 3, 6, 9, 4, 7, 8, 10]
+grid16    N=16 Q3.4 beta_q=  7 (0.4375) mode=0 colours=2 order=[0, 2, 5, 7, 8, 10, 13, 15, 1, 3, 4, 6, 9, 11, 12, 14]
+maxcut16  N=16 Q3.4 beta_q=  8 (0.5000) mode=2 colours=4 order=[0, 2, 3, 4, 10, 13, 1, 5, 6, 8, 12, 7, 9, 11, 14, 15]
+iverilog -g2005 -Wall -o build/tb_noise_bank.vvp tb_noise_bank.v ../rtl/noise_bank.v ../rtl/lfsr.v
+vvp -n build/tb_noise_bank.vvp
+tb_noise_bank: 4 lanes x 256 draws checked, reseed replay  ok, lane0/lane1 bit0 agreement 120/256
+tb_noise_bank: PASS
+tb_noise_bank.v:77: $finish called at 2596000 (1ps)
+iverilog -g2005 -Wall -o build/tb_sigmoid.vvp tb_sigmoid.v ../rtl/sigmoid_lut.v ../rtl/sigmoid_pwl.v
+vvp -n build/tb_sigmoid.vvp
+tb_sigmoid: LUT[0]=0 LUT[512]=32768 LUT[1023]=65535, non-monotone steps=0, max|PWL-LUT|=1241/65536
+tb_sigmoid: PASS
+tb_sigmoid.v:59: $finish called at 10236000 (1ps)
+iverilog -g2005 -Wall -o build/tb_weight_mac.vvp tb_weight_mac.v ../rtl/coupling_row.v ../rtl/weight_mac.v
+vvp -n build/tb_weight_mac.vvp
+tb_weight_mac: 512 rows, N=8, start->done = 10 cycles
+tb_weight_mac: PASS
+tb_weight_mac.v:73: $finish called at 51216000 (1ps)
+iverilog -g2005 -Wall -o build/tb_pbit.vvp tb_pbit.v ../rtl/pbit.v ../rtl/sigmoid_lut.v ../rtl/sigmoid_pwl.v
+vvp -n build/tb_pbit.vvp
+tb_pbit: 4096 updates, start->done = 12 cycles, ones = 2071
+tb_pbit: PASS
+tb_pbit.v:74: $finish called at 491536000 (1ps)
+iverilog -g2005 -Wall -o build/tb_schedule_ctrl.vvp tb_schedule_ctrl.v ../rtl/schedule_ctrl.v
+../rtl/schedule_ctrl.v:96: warning: @* is sensitive to all 16 words in array 'table_mem'.
+vvp -n build/tb_schedule_ctrl.vvp
+tb_schedule_ctrl: 3 modes x 64 sweeps, final linear beta=40 table beta=137
+tb_schedule_ctrl: PASS
+tb_schedule_ctrl.v:88: $finish called at 4105000 (1ps)
+iverilog -g2005 -Wall -o build/tb_readout_counter.vvp tb_readout_counter.v ../rtl/readout_counter.v
+vvp -n build/tb_readout_counter.vvp
+tb_readout_counter: 5000 samples, n_samples=5000, hist[0xA5]=344, errors after counting=0
+tb_readout_counter: PASS
+tb_readout_counter.v:92: $finish called at 213176000 (1ps)
+iverilog -g2005 -Wall -o build/tb_uart.vvp tb_uart.v ../rtl/uart_rx.v ../rtl/uart_tx.v
+vvp -n build/tb_uart.vvp
+tb_uart: 256 bytes looped back, 0 errors
+tb_uart: PASS
+tb_uart.v:58: $finish called at 22200989466 (1ps)
+../rtl/schedule_ctrl.v:96: warning: @* is sensitive to all 16 words in array 'table_mem'.
+tb_pbit_array[../model/vectors/ring8/]: N=8, 2000 sweeps, 208 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+../rtl/schedule_ctrl.v:96: warning: @* is sensitive to all 16 words in array 'table_mem'.
+tb_pbit_array[../model/vectors/ring8_q6/]: N=8, 2000 sweeps, 208 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+../rtl/schedule_ctrl.v:96: warning: @* is sensitive to all 16 words in array 'table_mem'.
+tb_pbit_array[../model/vectors/maxcut12/]: N=12, 2000 sweeps, 360 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+../rtl/schedule_ctrl.v:96: warning: @* is sensitive to all 16 words in array 'table_mem'.
+tb_pbit_array[../model/vectors/grid16/]: N=16, 2000 sweeps, 544 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+../rtl/schedule_ctrl.v:96: warning: @* is sensitive to all 16 words in array 'table_mem'.
+tb_pbit_array[../model/vectors/maxcut16/]: N=16, 2000 sweeps, 544 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+iverilog -g2005 -Wall -I ../model/vectors/ring8 -P "tb_pbit_array.CASE_DIR=\"../model/vectors/ring8/\"" -P tb_pbit_array.USE_PWL=1 -P 'tb_pbit_array.TRACE="trace_pwl.hex"' \
+  -o build/tb_pbit_array_pwl.vvp tb_pbit_array.v ../rtl/pbit_array.v ../rtl/coupling_row.v ../rtl/weight_mac.v ../rtl/pbit.v ../rtl/sigmoid_lut.v ../rtl/sigmoid_pwl.v ../rtl/noise_bank.v ../rtl/lfsr.v ../rtl/schedule_ctrl.v
+../rtl/schedule_ctrl.v:96: warning: @* is sensitive to all 16 words in array 'table_mem'.
+vvp -n build/tb_pbit_array_pwl.vvp | grep -v finish
+tb_pbit_array[../model/vectors/ring8/ PWL]: N=8, 2000 sweeps, 208 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+verilator --lint-only -Wall -Wno-DECLFILENAME -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM -Wno-PROCASSINIT \
+  -I../rtl --top-module top ../rtl/pbit_array.v ../rtl/coupling_row.v ../rtl/weight_mac.v ../rtl/pbit.v ../rtl/sigmoid_lut.v ../rtl/sigmoid_pwl.v ../rtl/noise_bank.v ../rtl/lfsr.v ../rtl/schedule_ctrl.v ../rtl/readout_counter.v ../rtl/uart_rx.v ../rtl/uart_tx.v ../rtl/top.v
+- V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-555-g043f7aa51 (mod)
+- Verilator: Built from 0.525 MB sources in 15 modules, into 0.268 MB in 3 C++ files needing 0.000 MB
+- Verilator: Walltime 0.080 s (elab=0.008, cvt=0.057, bld=0.000); cpu 0.080 s on 1 threads; allocated 27.992 MB
+lint: top.v hierarchy clean (verilator -Wall)
+tb_pbit_array[../model/vectors/ring8/]: N=8, 200000 sweeps, 208 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+tb_pbit_array[../model/vectors/ring8_q6/]: N=8, 200000 sweeps, 208 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+tb_pbit_array[../model/vectors/maxcut12/]: N=12, 200000 sweeps, 360 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+tb_pbit_array[../model/vectors/grid16/]: N=16, 200000 sweeps, 544 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+/usr/bin/python3 compare.py --sweeps 200000 --cases ring8 ring8_q6 maxcut12 grid16 --out build/stats.json
+case      fmt    samples  trace TV rtl/exact       KL TV rtl/fxstat TV rtl/golden TV gold/exact TV iid floor TV quant  TV mag
+ring8     Q3.4   199000      0       0.0092   0.0007        0.0092        0.0136        0.0097       0.0085   0.0534  0.0014
+ring8_q6  Q1.6   199000      0       0.0106   0.0007        0.0087        0.0132        0.0090       0.0097   0.0130  0.0028
+maxcut12  Q3.4   199000      0       0.0341   0.0102        0.0341        0.0474        0.0356       0.0333   0.0000  0.0012
+grid16    Q3.4   199000      0       0.0560   0.0666        0.0560        0.0673        0.0519       0.0522   0.0417  0.0073
+columns: trace = RTL vs fixed.py post-sweep mismatches over the whole run; TV quant = exact(quantized params) vs exact(original float params); TV mag = magnetisation-distribution TV
+compare: PASS (all RTL traces bit-exact)
+/usr/bin/python3 plot_hist.py --stats build/stats.json --out build
+plot_hist: wrote build/hist_ring8.png
+plot_hist: wrote build/hist_ring8_q6.png
+plot_hist: wrote build/hist_maxcut12.png
+plot_hist: wrote build/hist_grid16.png
+mkdir -p /tmp/pbit_vl_jero98772/top
+verilator --binary --timing -O3 -Wno-fatal -Wno-lint -Wno-style --top-module tb_top -Mdir /tmp/pbit_vl_jero98772/top -o tb tb_top.v ../rtl/pbit_array.v ../rtl/coupling_row.v ../rtl/weight_mac.v ../rtl/pbit.v ../rtl/sigmoid_lut.v ../rtl/sigmoid_pwl.v ../rtl/noise_bank.v ../rtl/lfsr.v ../rtl/schedule_ctrl.v ../rtl/readout_counter.v ../rtl/uart_rx.v ../rtl/uart_tx.v ../rtl/top.v > build/vl_top.log 2>&1
+/tmp/pbit_vl_jero98772/top/tb +dump=build/top_uart_dump.txt | grep -v -E "S i m|Verilator: cpu"
+tb_top: 16767 bytes received over UART, button run observed busy=1
+tb_top: byte stream written to build/top_uart_dump.txt (checked by compare.py --top-dump)
+- tb_top.v:139: Verilog $finish
+- Verilator: $finish at 26ms; walltime 2.815 s; speed 9.269 ms/s
+/usr/bin/python3 compare.py --top-dump build/top_uart_dump.txt
+top UART replay: received 16767 bytes, expected 16767, mismatching bytes: 0
+  ping reply N=16 HIST_BITS=12; final spins 0x0000; samples counted 2000+5+128
+compare --top-dump: PASS
+cd ../model && /usr/bin/python3 denoise.py --export
+denoise: N=16 T=4 K=16 beta=1.0 Gamma_t/2 (Q3.4) per step t=1..T: [17, 11, 8, 6] = [1.0625, 0.6875, 0.5, 0.375]
+denoise: 2000 chains from uniform x^T: x^0 within Hamming 1 of a stored pattern (or its negation) in 96.0% (exact 90.2%); uniform random baseline 0.1%
+denoise: exported vectors to /home/jero98772/Downloads/takss/Reverse enginering_fpga_extropic/model/vectors/denoise
+iverilog -g2005 -Wall -o build/tb_denoise.vvp tb_denoise.v ../rtl/denoise_demo.v ../rtl/pbit_array.v ../rtl/coupling_row.v ../rtl/weight_mac.v ../rtl/pbit.v ../rtl/sigmoid_lut.v ../rtl/sigmoid_pwl.v ../rtl/noise_bank.v ../rtl/lfsr.v ../rtl/schedule_ctrl.v
+../rtl/schedule_ctrl.v:96: warning: @* is sensitive to all 16 words in array 'table_mem'.
+../rtl/denoise_demo.v:99: warning: @* is sensitive to all 16 words in array 'hbase'.
+../rtl/denoise_demo.v:99: warning: @* is sensitive to all 16 words in array 'hbase'.
+vvp -n build/tb_denoise.vvp | grep -v finish
+run 0 x^T=676b x^0=0660 : .... .##. .##. ....
+run 1 x^T=6179 x^0=6996 : .##. #..# #..# .##.
+run 2 x^T=3338 x^0=33cc : ..## ..## ##.. ##..
+run 3 x^T=9974 x^0=33cc : ..## ..## ##.. ##..
+run 4 x^T=2dc5 x^0=6996 : .##. #..# #..# .##.
+run 5 x^T=3af2 x^0=6996 : .##. #..# #..# .##.
+run 6 x^T=3f99 x^0=6996 : .##. #..# #..# .##.
+run 7 x^T=221c x^0=33cc : ..## ..## ##.. ##..
+tb_denoise: PASS (8 chains x 4 steps bit-exact)

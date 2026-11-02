@@ -1,0 +1,472 @@
+<title>Thermal Computer on a Tang Nano</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one lab-notebook column; each section = claim + live instrument + drawing.
+   Warm = physics / heat / randomness, cool = digital FPGA. */
+:root{
+  --bg:#f5f6f4; --fg:#1d2329; --ink:#1d2329; --mut:#5d6871; --line:#c7ced3; --panel:#eceeea; --card:#fbfbfa;
+  --warm:#c4501d; --warmf:#fbe5d8; --cool:#16708a; --coolf:#dbeef3; --ok:#2c8a4b; --okf:#ddf0e3;
+  --bad:#b9b5ac; --badf:#efede8;
+  --f-display:'IBM Plex Sans Condensed','Arial Narrow',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#13171b; --fg:#e5e8eb; --ink:#e5e8eb; --mut:#98a2ac; --line:#3a444d; --panel:#1b2025; --card:#171c20;
+  --warm:#f08a5c; --warmf:#3b2418; --cool:#5cc1d9; --coolf:#12303a; --ok:#6dca8b; --okf:#163322;
+  --bad:#6d6a64; --badf:#24272a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13171b; --fg:#e5e8eb; --ink:#e5e8eb; --mut:#98a2ac; --line:#3a444d; --panel:#1b2025; --card:#171c20;
+  --warm:#f08a5c; --warmf:#3b2418; --cool:#5cc1d9; --coolf:#12303a; --ok:#6dca8b; --okf:#163322;
+  --bad:#6d6a64; --badf:#24272a; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 64px;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,5vw,50px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(22px,3vw,30px);font-weight:600}
+h3{font-size:17px;font-weight:600}
+p{margin:0;max-width:68ch}
+.lede{font-size:17px;color:var(--mut);max-width:70ch}
+.eyebrow{font:500 11.5px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.eyebrow b{color:var(--warm);font-weight:500}
+code,.mono{font-family:var(--f-mono);font-size:.9em}
+section{display:flex;flex-direction:column;gap:16px}
+.sec-head{display:flex;flex-direction:column;gap:8px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.inst{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.fig{overflow-x:auto;border-radius:10px;background:var(--panel)}
+.fig svg{display:block;width:100%;min-width:720px;height:auto}
+figure{margin:0;display:flex;flex-direction:column;gap:8px}
+figcaption{font-size:13px;color:var(--mut);max-width:90ch}
+.controls{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+label.sl{display:flex;flex-direction:column;gap:2px;font:12px var(--f-mono);color:var(--mut);min-width:150px;flex:1}
+label.sl span b{color:var(--fg);font-weight:500}
+input[type=range]{width:100%;accent-color:var(--warm)}
+button,.seg button{font:500 13px var(--f-body);border:1px solid var(--line);background:var(--bg);color:var(--fg);
+  border-radius:6px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--mut)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cool);outline-offset:2px}
+button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.seg{display:inline-flex;gap:0}
+.seg button{border-radius:0;margin-left:-1px}
+.seg button:first-child{border-radius:6px 0 0 6px;margin-left:0}
+.seg button:last-child{border-radius:0 6px 6px 0}
+.stat{font:500 13px var(--f-mono);color:var(--mut)}
+.stat b{color:var(--fg);font-weight:500}
+.coins{display:grid;grid-template-columns:repeat(32,1fr);gap:3px}
+.coin{aspect-ratio:1;border-radius:50%;background:var(--badf);border:1px solid var(--bad)}
+.coin.up{background:var(--warm);border-color:var(--warm)}
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;align-items:center}
+@media (max-width:820px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero-inst{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+canvas{display:block;width:100%;height:auto;max-width:100%}
+.rows{display:flex;flex-direction:column;gap:4px;font:12.5px var(--f-mono)}
+.row{display:grid;grid-template-columns:7.5em minmax(0,1fr) 4em;gap:8px;align-items:center}
+.bar{height:12px;border-radius:2px;background:var(--bad);transition:width .15s}
+.row.ok .bar{background:var(--ok)}
+.row .lab{white-space:nowrap}
+.row.ok .lab{color:var(--ok)}
+.row .v{text-align:right;font-variant-numeric:tabular-nums}
+.nodebtn{font:12px var(--f-mono);padding:4px 8px}
+.clamps{display:flex;flex-wrap:wrap;gap:8px}
+.clamp{display:flex;align-items:center;gap:6px;font:12px var(--f-mono)}
+.big{font:600 28px var(--f-display);font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font:500 12px var(--f-mono);padding:2px 8px;border-radius:99px;background:var(--okf);color:var(--ok);border:1px solid var(--ok)}
+.pill.no{background:var(--badf);color:var(--mut);border-color:var(--bad)}
+.table{width:100%;border-collapse:collapse;font-size:13.5px}
+.table td,.table th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.table th{font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.tscroll{overflow-x:auto}
+pre.cmd{background:var(--panel);border-radius:8px;padding:12px 14px;overflow-x:auto;font:12.5px/1.55 var(--f-mono);margin:0}
+.key{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--mut)}
+.key i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.note{font-size:12.5px;color:var(--mut)}
+/* graph svgs drawn by JS */
+.gnode{stroke-width:1.6;transition:fill .08s}
+.gnode.s1{fill:var(--warm);stroke:var(--warm)} .gnode.s0{fill:var(--card);stroke:var(--mut)}
+.gnode.cl{stroke-width:4;stroke:var(--cool)}
+.glab{font:600 12px var(--f-mono);text-anchor:middle;pointer-events:none}
+.glab.s1{fill:#fff} .glab.s0{fill:var(--fg)}
+.gedge{stroke-width:1.6}
+.gedge.pos{stroke:var(--warm)} .gedge.neg{stroke:var(--cool);stroke-dasharray:4 3}
+.gedge.mid{stroke:var(--line)} .gedge.cut{stroke:var(--warm);stroke-width:2.6}
+.gw{font:10.5px var(--f-mono);fill:var(--mut);text-anchor:middle}
+@media (prefers-reduced-motion: reduce){.bar,.gnode{transition:none}}
+/*SVGCSS*/
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="sec-head">
+    <div class="eyebrow">Reverse-engineered from Extropic's papers · built in Verilog · Tang Nano 9K</div>
+    <h1>A computer made of biased coins</h1>
+    <p class="lede">A thermodynamic computer does not compute answers. It samples them. Its gate is the <b>p-bit</b>, a bit that flips at random with odds you program. Wire p-bits together with couplings J and biases h, let them flip, and the states they visit most are the low-energy ones, which is where the answers are. This page shows each basic unit, how the units connect, and how this repo runs them on a $20 FPGA.</p>
+    <div class="key"><span><i style="background:var(--warm)"></i>physical / thermodynamic side</span><span><i style="background:var(--cool)"></i>our FPGA emulation</span><span><i style="background:var(--ok)"></i>valid answer</span></div>
+  </div>
+  <div class="hero-inst" aria-label="64 independent p-bits flipping live">
+    <div class="eyebrow">Live: 64 p-bits, same bias h</div>
+    <div class="coins" id="coins"></div>
+    <div class="controls">
+      <label class="sl" for="heroH"><span>bias h = <b id="heroHv">0.00</b></span><input id="heroH" type="range" min="-2" max="2" step="0.05" value="0"></label>
+      <div class="stat">ones: <b id="heroFrac">50%</b> · expected σ(2βh) = <b id="heroExp">50%</b></div>
+    </div>
+    <p class="note">β = 1. Every coin redraws on every frame. Move h and the crowd tilts. No single coin is predictable, but the fraction is.</p>
+  </div>
+</header>
+
+<section id="units">
+  <div class="sec-head">
+    <div class="eyebrow"><b>1</b> · the basic units</div>
+    <h2>Every classical block has a thermal twin</h2>
+    <p>In a CPU, noise is the enemy and every block is deterministic. In a thermodynamic computer, noise is the fuel and every block is a sampler. All the right-hand units are built from one primitive, the p-bit.</p>
+  </div>
+  <figure>
+    <div class="fig"><!--SVG:01_classical_vs_thermo--></div>
+    <figcaption>Classical block → thermodynamic counterpart → the Verilog file that emulates it (rtl/). Source table: docs/02_building_blocks.md.</figcaption>
+  </figure>
+</section>
+
+<section id="pbit">
+  <div class="sec-head">
+    <div class="eyebrow"><b>2</b> · the p-bit</div>
+    <h2>One p-bit: weigh the neighbours, add noise, compare, latch</h2>
+    <p>The neighbours' states, weighted by J, plus the bias h give a <i>field</i>. The field shifts noise in front of a comparator, so P(1) = σ(2β·field) [DTM p.5 Eq. 11]. β is the inverse temperature: high β means sharp, almost deterministic; low β means hot and random.</p>
+  </div>
+  <div class="grid2">
+    <div class="inst">
+      <h3>p-bit playground</h3>
+      <canvas id="sigC" width="520" height="260" aria-label="Sigmoid P(1) versus field with the current operating point"></canvas>
+      <div class="controls">
+        <label class="sl" for="pbF"><span>field ℓ = Σ J·x + h = <b id="pbFv">0.50</b></span><input id="pbF" type="range" min="-3" max="3" step="0.05" value="0.5"></label>
+        <label class="sl" for="pbB"><span>β (inverse temperature) = <b id="pbBv">1.00</b></span><input id="pbB" type="range" min="0.1" max="4" step="0.05" value="1"></label>
+      </div>
+      <div class="stat">P(1) = <b id="pbP">—</b> · sampled: <b id="pbS">—</b> of the last <b id="pbN">0</b> draws</div>
+      <canvas id="pbStrip" width="520" height="34" aria-label="Recent random bits drawn by the p-bit"></canvas>
+    </div>
+    <div class="inst">
+      <h3>The same p-bit on the FPGA</h3>
+      <div class="tscroll"><table class="table">
+        <tr><th>stage</th><th>chip (papers)</th><th>Verilog</th></tr>
+        <tr><td>weigh + sum</td><td>XOR + resistor network on node V_b</td><td><code>weight_mac.v</code>: acc ± J, N cycles</td></tr>
+        <tr><td>to probability</td><td>bias voltage shifts shot noise</td><td><code>pbit.v</code>: ×β shift-add, 1024×16 σ table</td></tr>
+        <tr><td>random decision</td><td>comparator: noise &gt; threshold</td><td><code>rand16 &lt; p16</code>, LFSR noise</td></tr>
+        <tr><td>hold</td><td>latch on clock edge</td><td>spin register <code>s[i]</code></td></tr>
+      </table></div>
+      <p class="note">The RTL equals the Python model bit for bit over 200,000 sweeps, and its histograms equal the exact Boltzmann law within the noise of independent samples (docs/06).</p>
+    </div>
+  </div>
+  <figure>
+    <div class="fig"><!--SVG:02_pbit_anatomy--></div>
+    <figcaption>Physical cell (top, DTM Fig. 10 + App. K) and FPGA emulation (bottom) side by side, stage by stage.</figcaption>
+  </figure>
+</section>
+
+<section id="gates">
+  <div class="sec-head">
+    <div class="eyebrow"><b>3</b> · p-gates</div>
+    <h2>AND, OR, NOT as energy landscapes, and they run backwards</h2>
+    <p>Pick J and h so that the truth-table rows are the lowest-energy states. A free-running p-gate then visits only (almost only) valid rows. <b>Clamp</b> a p-bit (pin it with a huge bias) to choose the direction: clamp the inputs for a normal gate, or clamp the output and watch it find inputs that produce it.</p>
+  </div>
+  <div class="grid2">
+    <div class="inst">
+      <div class="controls">
+        <div class="seg" role="group" aria-label="choose gate" id="gateSel"></div>
+        <label class="sl" for="gB" style="max-width:220px"><span>β = <b id="gBv">1.00</b></span><input id="gB" type="range" min="0.2" max="3" step="0.05" value="1"></label>
+      </div>
+      <svg id="gateSvg" viewBox="0 0 300 220" role="img" aria-label="p-gate graph; nodes light up when they are 1"></svg>
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px">clamp each p-bit</div>
+        <div class="clamps" id="gateClamps"></div>
+      </div>
+    </div>
+    <div class="inst">
+      <h3>Truth table, as visited by the sampler</h3>
+      <div class="rows" id="gateRows"></div>
+      <div class="stat">P(valid row) = <b id="gateValid">—</b> over <b id="gateN">0</b> sweeps</div>
+      <p class="note" id="gateNote">Free run: all 4 valid rows equally likely. Try clamping Y = 1 on AND: only A = B = 1 survives.</p>
+    </div>
+  </div>
+  <figure>
+    <div class="fig"><!--SVG:03_pgates--></div>
+    <figcaption>Coefficients of every p-gate and their exact Boltzmann truth-table probabilities (model/pgates.py). These are standard Ising gadgets; the papers only say gates can be built by composing energies [BP p.3].</figcaption>
+  </figure>
+</section>
+
+<section id="factor">
+  <div class="sec-head">
+    <div class="eyebrow"><b>4</b> · connecting units</div>
+    <h2>Wire gates into a multiplier, clamp the product, get the factors</h2>
+    <p>A wire between two gates is one shared p-bit, and the circuit's energy is the sum of the gates' energies. Six p-ANDs and two p-XORs make a 2×2-bit multiplier of 14 p-bits. Clamp the product bits and the sampler hunts for a and b. This is the same hardware and the same J; only four bias words change.</p>
+  </div>
+  <div class="inst">
+    <div class="controls">
+      <div class="seg" role="group" aria-label="product to factor" id="prodSel"></div>
+      <label class="sl" for="fB" style="max-width:220px"><span>β = <b id="fBv">2.00</b></span><input id="fB" type="range" min="0.2" max="3" step="0.05" value="2"></label>
+      <button id="fShake">Reheat (randomise)</button>
+    </div>
+    <div class="grid2">
+      <svg id="multSvg" viewBox="0 0 580 360" role="img" aria-label="2 by 2 bit multiplier graph; output p-bits clamped"></svg>
+      <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div><span class="big" id="fNow">a = ? · b = ?</span> <span class="pill no" id="fOk">searching</span></div>
+        <canvas id="fGrid" width="320" height="320" aria-label="Probability of each (a, b) pair over recent sweeps" style="max-width:320px"></canvas>
+        <p class="note" id="fMeas"></p>
+      </div>
+    </div>
+  </div>
+  <figure>
+    <div class="fig"><!--SVG:04_composition--></div>
+    <figcaption>Composition rule, direction by clamping, and the multiplier with the product clamped. The four boxes are measured on the RTL (tb/tb_pgates.v).</figcaption>
+  </figure>
+</section>
+
+<section id="anneal">
+  <div class="sec-head">
+    <div class="eyebrow"><b>5</b> · programs as energies</div>
+    <h2>Annealing: start hot, cool slowly, land in a deep valley</h2>
+    <p>Max-Cut on the built-in 16-node graph (case maxcut16, the board's power-on program). Antiferromagnetic couplings J = −1 make neighbours want to disagree, so a low energy means many cut edges. The schedule raises β from 0.25 to 4. The optimum cut is 20 of 24 edges.</p>
+  </div>
+  <div class="grid2">
+    <div class="inst">
+      <svg id="mcSvg" viewBox="0 0 320 320" role="img" aria-label="Max-Cut graph; colour = spin, thick orange edges are cut"></svg>
+      <div class="controls">
+        <button id="mcRun" class="on">Run anneal</button>
+        <button id="mcHot">Hold hot (β = 0.25)</button>
+        <div class="stat">β = <b id="mcB">0.25</b> · cut = <b id="mcCut">0</b> / 24 · best = <b id="mcBest">0</b> (optimum 20)</div>
+      </div>
+    </div>
+    <div class="inst">
+      <h3>Cut size over sweeps</h3>
+      <canvas id="mcPlot" width="520" height="260" aria-label="Cut size and beta over sweeps"></canvas>
+      <p class="note">The RTL schedule is 16 β steps × 8 sweeps. In the Python mirror of the bit-exact RTL, 96 % of anneals reach the optimum (docs/06).</p>
+    </div>
+  </div>
+  <figure>
+    <div class="fig"><!--SVG:05_hierarchy--></div>
+    <figcaption>The stack: each layer is built only from the one below, like transistors → gates → ALU → instructions.</figcaption>
+  </figure>
+  <figure>
+    <div class="fig"><!--SVG:06_gibbs_timeline--></div>
+    <figcaption>One p-bit update is N + 18 clock cycles in our engine. A sweep updates colour 0, then colour 1; same-colour nodes are independent, so sequential equals parallel.</figcaption>
+  </figure>
+</section>
+
+<section id="fpga">
+  <div class="sec-head">
+    <div class="eyebrow"><b>6</b> · on the board</div>
+    <h2>The whole machine on the Tang Nano 9K</h2>
+    <p>Orange is the thermodynamic core. Everything around it is plain digital plumbing that plays the role of Extropic's XTR-0 host + FPGA. No DSP blocks are used; the p-bit engine is shifts, adds and a table.</p>
+  </div>
+  <figure>
+    <div class="fig"><!--SVG:07_fpga_board--></div>
+    <figcaption>Measured: LUT4 29 %, BSRAM 10/26, Fmax 62.67 MHz (27 MHz needed). The factor6 build: LUT4 27 %, 69.46 MHz.</figcaption>
+  </figure>
+  <div class="grid2">
+    <div class="inst">
+      <h3>Run it</h3>
+<pre class="cmd">source ~/tools/oss-cad-suite/environment
+cd tb  &amp;&amp; make test     # bit-exact RTL vs model
+make pgates             # gates fwd/bwd, factoring
+cd ../fpga &amp;&amp; make      # default bitstream
+make case CASE=factor6  # power-on = factor 6
+make flash-case         # program the board
+python3 host.py pgate --case pgate_and --clamp Y=1</pre>
+    </div>
+    <div class="inst">
+      <h3>What the FPGA does not capture</h3>
+      <p class="note">The noise is a deterministic LFSR, not shot noise; one engine visits p-bits in turn instead of thousands of cells flipping in parallel; there is no analog relaxation, device variation or energy saving. It reproduces the <i>mathematics</i> of the chip exactly, not its physics (docs/08).</p>
+      <p class="note">Bitstreams were built and timed; flashing and <code>host.py</code> were not run because no board was attached.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+const DATA = /*DATA*/null;
+const sig = u => 1 / (1 + Math.exp(-u));
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+function hiDPI(c) { const r = window.devicePixelRatio || 1; const w = c.width, h = c.height;
+  if (!c.dataset.w) { c.dataset.w = w; c.dataset.h = h; c.width = w * r; c.height = h * r; }
+  const g = c.getContext('2d'); g.setTransform(r, 0, 0, r, 0, 0); return [g, +c.dataset.w, +c.dataset.h]; }
+
+/* ---------------- Ising sampler (float mirror of the hardware rule) ---------------- */
+class Ising {
+  constructor(J, h) { this.n = h.length; this.J = J; this.h0 = h.slice(); this.h = h.slice();
+    this.s = Array.from({length: this.n}, () => Math.random() < .5 ? 1 : -1); this.beta = 1;
+    this.order = [...Array(this.n).keys()]; }
+  clamp(map) { this.h = this.h0.slice(); for (const i in map) this.h[i] = map[i] ? 127 / 16 : -8; }
+  sweep() { const {n, J, s, h, beta} = this;
+    for (const i of this.order) { let f = h[i]; const r = J[i];
+      for (let j = 0; j < n; j++) if (r[j]) f += r[j] * s[j];
+      s[i] = Math.random() < sig(2 * beta * f) ? 1 : -1; } }
+  bit(i) { return this.s[i] > 0 ? 1 : 0; }
+}
+
+/* ---------------- hero coins ---------------- */
+(() => { const box = document.getElementById('coins'); const coins = [];
+  for (let k = 0; k < 64; k++) { const d = document.createElement('div'); d.className = 'coin'; box.appendChild(d); coins.push(d); }
+  const H = document.getElementById('heroH'); let avg = .5;
+  function frame() { const h = +H.value, p = sig(2 * h); let ones = 0;
+    for (const c of coins) { const u = Math.random() < p; c.classList.toggle('up', u); ones += u; }
+    avg = .9 * avg + .1 * ones / 64;
+    document.getElementById('heroHv').textContent = h.toFixed(2);
+    document.getElementById('heroFrac').textContent = Math.round(avg * 100) + '%';
+    document.getElementById('heroExp').textContent = Math.round(p * 100) + '%'; }
+  frame(); if (!reduce) setInterval(frame, 140); H.addEventListener('input', frame); })();
+
+/* ---------------- p-bit playground ---------------- */
+(() => { const C = document.getElementById('sigC'), S = document.getElementById('pbStrip');
+  const F = document.getElementById('pbF'), B = document.getElementById('pbB'); const hist = [];
+  function draw() { const [g, w, h] = hiDPI(C); const f = +F.value, b = +B.value, p = sig(2 * b * f);
+    g.clearRect(0, 0, w, h); const L = 36, R = 12, T = 12, Bm = 28, X = u => L + (u + 3) / 6 * (w - L - R), Y = v => T + (1 - v) * (h - T - Bm);
+    g.strokeStyle = css('--line'); g.lineWidth = 1; g.font = '11px ' + css('--f-mono'); g.fillStyle = css('--mut');
+    for (const v of [0, .5, 1]) { g.beginPath(); g.moveTo(L, Y(v)); g.lineTo(w - R, Y(v)); g.stroke(); g.fillText(v.toFixed(1), 6, Y(v) + 4); }
+    for (const u of [-3, -2, -1, 0, 1, 2, 3]) { g.fillText(u, X(u) - 4, h - 10); }
+    g.fillText('field ℓ', w - 60, h - 10); g.fillText('P(1)', L + 4, T + 10);
+    for (const [bb, col, dash] of [[.5, css('--bad'), [4, 3]], [b, css('--warm'), []], [4, css('--bad'), [1, 3]]]) {
+      g.beginPath(); g.setLineDash(dash); g.strokeStyle = col; g.lineWidth = bb === b ? 2.4 : 1.2;
+      for (let k = 0; k <= 120; k++) { const u = -3 + 6 * k / 120; const xx = X(u), yy = Y(sig(2 * bb * u)); k ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
+      g.stroke(); } g.setLineDash([]);
+    g.strokeStyle = css('--cool'); g.beginPath(); g.moveTo(X(f), Y(0)); g.lineTo(X(f), Y(p)); g.lineTo(L, Y(p)); g.stroke();
+    g.fillStyle = css('--warm'); g.beginPath(); g.arc(X(f), Y(p), 5, 0, 7); g.fill();
+    g.fillStyle = css('--mut'); g.fillText('dashed: β = 0.5 (hot) · dotted: β = 4 (cold)', L + 8, T + 28);
+    document.getElementById('pbFv').textContent = f.toFixed(2); document.getElementById('pbBv').textContent = b.toFixed(2);
+    document.getElementById('pbP').textContent = p.toFixed(3); }
+  function tick() { const p = sig(2 * +B.value * +F.value); for (let k = 0; k < 3; k++) hist.push(Math.random() < p ? 1 : 0);
+    while (hist.length > 200) hist.shift();
+    const [g, w, h] = hiDPI(S); g.clearRect(0, 0, w, h); const n = 100, cw = w / n;
+    hist.slice(-n).forEach((b, k) => { g.fillStyle = b ? css('--warm') : css('--badf'); g.fillRect(k * cw + .5, b ? 4 : 18, cw - 1, 12); });
+    document.getElementById('pbS').textContent = (hist.reduce((a, b) => a + b, 0) / hist.length).toFixed(2);
+    document.getElementById('pbN').textContent = hist.length; }
+  F.addEventListener('input', () => { hist.length = 0; draw(); }); B.addEventListener('input', () => { hist.length = 0; draw(); });
+  draw(); tick(); if (!reduce) setInterval(tick, 120); addEventListener('resize', draw);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw); })();
+
+/* ---------------- graph drawing helper ---------------- */
+function drawGraph(svg, circ, opts = {}) { svg.innerHTML = ''; const {nodes, J, pos} = circ; const n = nodes.length;
+  const eg = el('g', {}, svg), ng = el('g', {}, svg); const edges = [];
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) if (J[i][j]) {
+    const [x1, y1] = pos[i], [x2, y2] = pos[j];
+    const line = el('line', {x1, y1, x2, y2, class: 'gedge ' + (opts.neutral ? 'mid' : (J[i][j] > 0 ? 'pos' : 'neg'))}, eg);
+    if (opts.weights) { const t = el('text', {x: (x1 + x2) / 2, y: (y1 + y2) / 2 - 4, class: 'gw'}, eg);
+      t.textContent = (J[i][j] > 0 ? '+' : '') + J[i][j]; }
+    edges.push({i, j, line}); }
+  const R = opts.r || 16; const cs = [], ls = [];
+  for (let i = 0; i < n; i++) { const [x, y] = pos[i];
+    const c = el('circle', {cx: x, cy: y, r: nodes[i].includes('aux') ? R * .7 : R, class: 'gnode s0'}, ng);
+    const t = el('text', {x, y: y + 4, class: 'glab s0'}, ng); t.textContent = opts.label ? opts.label(nodes[i]) : nodes[i];
+    cs.push(c); ls.push(t); }
+  return {edges, set(sim, clamped = {}) { for (let i = 0; i < n; i++) { const b = sim.bit(i);
+      cs[i].setAttribute('class', 'gnode s' + b + (i in clamped ? ' cl' : '')); ls[i].setAttribute('class', 'glab s' + b); } }}; }
+
+/* ---------------- p-gate lab ---------------- */
+(() => { const sel = document.getElementById('gateSel'), svg = document.getElementById('gateSvg');
+  const clampBox = document.getElementById('gateClamps'), rowsBox = document.getElementById('gateRows');
+  const B = document.getElementById('gB'); let kind = 'AND', sim, view, clamps = {}, counts = {}, total = 0, rowEls = {};
+  const notes = {AND: 'Try clamping Y = 1: only A = B = 1 survives. Clamp Y = 0: the three other rows share the time.',
+    OR: 'Clamp Y = 0 and the sampler forces A = B = 0.', NOT: 'Two p-bits that prefer to disagree.',
+    XOR: 'X is a hidden auxiliary p-bit. It is not part of the truth table, but XOR cannot be built without it.'};
+  for (const k of ['AND', 'OR', 'NOT', 'XOR']) { const b = document.createElement('button'); b.textContent = 'p-' + k; b.id = 'g_' + k;
+    b.onclick = () => setGate(k); sel.appendChild(b); }
+  function wires(c) { return c.ins.concat(c.outs); }
+  function setGate(k) { kind = k; const c = DATA.gates[k];
+    [...sel.children].forEach(b => b.classList.toggle('on', b.id === 'g_' + k));
+    sim = new Ising(c.J, c.h); sim.beta = +B.value; clamps = {};
+    view = drawGraph(svg, c, {weights: true});
+    clampBox.innerHTML = ''; c.nodes.forEach((nm, i) => { if (nm === 'X') return;
+      const d = document.createElement('div'); d.className = 'clamp'; d.innerHTML = '<span>' + nm + '</span>';
+      const sg = document.createElement('div'); sg.className = 'seg';
+      for (const [lab, v] of [['free', null], ['0', 0], ['1', 1]]) { const b = document.createElement('button');
+        b.className = 'nodebtn' + (v === null ? ' on' : ''); b.textContent = lab; b.id = 'cl_' + nm + '_' + lab;
+        b.onclick = () => { if (v === null) delete clamps[i]; else clamps[i] = v; sim.clamp(clamps);
+          [...sg.children].forEach(x => x.classList.toggle('on', x === b)); reset(); };
+        sg.appendChild(b); } d.appendChild(sg); clampBox.appendChild(d); });
+    rowsBox.innerHTML = ''; rowEls = {}; const w = wires(c), nin = c.ins.length;
+    for (let r = 0; r < (1 << w.length); r++) { const key = w.map((_, k) => (r >> (w.length - 1 - k)) & 1).join('');
+      const div = document.createElement('div'); div.className = 'row' + (c.valid.includes(key) ? ' ok' : '');
+      div.innerHTML = '<span class="lab">' + key.slice(0, nin).split('').join(' ') + ' → ' + key.slice(nin) + '</span><div><div class="bar" style="width:0"></div></div><span class="v">0.00</span>';
+      rowsBox.appendChild(div); rowEls[key] = div; }
+    document.getElementById('gateNote').textContent = notes[k]; reset(); }
+  function reset() { counts = {}; total = 0; }
+  function frame() { const c = DATA.gates[kind], idx = wires(c).map(w => c.nodes.indexOf(w));
+    for (let k = 0; k < 6; k++) { sim.sweep(); const key = idx.map(i => sim.bit(i)).join('');
+      counts[key] = (counts[key] || 0) + 1; total++; }
+    view.set(sim, clamps); let pv = 0;
+    for (const key in rowEls) { const p = (counts[key] || 0) / total; if (c.valid.includes(key)) pv += p;
+      rowEls[key].querySelector('.bar').style.width = (100 * p) + '%'; rowEls[key].querySelector('.v').textContent = p.toFixed(2); }
+    document.getElementById('gateValid').textContent = pv.toFixed(3); document.getElementById('gateN').textContent = total; }
+  B.addEventListener('input', () => { sim.beta = +B.value; document.getElementById('gBv').textContent = (+B.value).toFixed(2); reset(); });
+  setGate('AND'); frame(); setInterval(frame, reduce ? 600 : 90); })();
+
+/* ---------------- factoring ---------------- */
+(() => { const c = DATA.mult, svg = document.getElementById('multSvg'), B = document.getElementById('fB');
+  const sim = new Ising(c.J, c.h); sim.beta = 2; const view = drawGraph(svg, c, {neutral: true, r: 17});
+  const ix = w => c.nodes.indexOf(w); let prod = 6, clamps = {}, grid = new Float64Array(16), tot = 0;
+  const sel = document.getElementById('prodSel');
+  for (const p of [6, 3, 4, 9, 2]) { const b = document.createElement('button'); b.textContent = 'p = ' + p; b.id = 'prod_' + p;
+    b.onclick = () => setProd(p); sel.appendChild(b); }
+  function setProd(p) { prod = p; clamps = {}; c.outs.forEach((w, k) => clamps[ix(w)] = (p >> k) & 1); sim.clamp(clamps);
+    [...sel.children].forEach(b => b.classList.toggle('on', b.id === 'prod_' + p)); grid.fill(0); tot = 0;
+    const m = DATA.measured && DATA.measured.factor6 && DATA.measured.factor6.find(s => s.label === 'factor ' + p);
+    document.getElementById('fMeas').textContent = m ? `On the RTL (tb_pgates.v, β = 2): P(a·b = ${p}) = ${m.p_ok.toFixed(2)}; exact law of the quantized chip: ${m.p_ok_exact.toFixed(2)}.`
+      : `p = ${p} was not in the RTL test script; this panel is the in-browser float sampler only.`; }
+  document.getElementById('fShake').onclick = () => { sim.s = sim.s.map(() => Math.random() < .5 ? 1 : -1); grid.fill(0); tot = 0; };
+  B.addEventListener('input', () => { sim.beta = +B.value; document.getElementById('fBv').textContent = (+B.value).toFixed(2); });
+  function drawGrid() { const C = document.getElementById('fGrid'); const [g, w, h] = hiDPI(C); g.clearRect(0, 0, w, h);
+    const L = 34, T = 10, cs = (w - L - 10) / 4; g.font = '12px ' + css('--f-mono');
+    for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) { const p = tot ? grid[a * 4 + b] / tot : 0;
+      g.fillStyle = css('--panel'); g.fillRect(L + b * cs + 1, T + a * cs + 1, cs - 2, cs - 2);
+      g.globalAlpha = Math.min(1, p * 1.6); g.fillStyle = a * b === prod ? css('--ok') : css('--warm');
+      g.fillRect(L + b * cs + 1, T + a * cs + 1, cs - 2, cs - 2); g.globalAlpha = 1;
+      g.fillStyle = css('--fg'); g.textAlign = 'center';
+      g.fillText(a + '×' + b, L + b * cs + cs / 2, T + a * cs + cs / 2 - 2);
+      if (p > .005) g.fillText(p.toFixed(2), L + b * cs + cs / 2, T + a * cs + cs / 2 + 14); }
+    g.textAlign = 'left'; g.fillStyle = css('--mut'); g.fillText('a', 8, T + 2 * cs); g.fillText('b →', L, h - 2); }
+  function frame() { for (let k = 0; k < 4; k++) { sim.sweep();
+      const a = sim.bit(ix('a0')) + 2 * sim.bit(ix('a1')), b = sim.bit(ix('b0')) + 2 * sim.bit(ix('b1'));
+      grid[a * 4 + b]++; tot++; if (tot > 1500) { for (let q = 0; q < 16; q++) grid[q] *= .999; tot *= .999; } }
+    view.set(sim, clamps);
+    const a = sim.bit(ix('a0')) + 2 * sim.bit(ix('a1')), b = sim.bit(ix('b0')) + 2 * sim.bit(ix('b1'));
+    document.getElementById('fNow').textContent = `a = ${a} · b = ${b}`;
+    const ok = a * b === prod, pill = document.getElementById('fOk');
+    pill.textContent = ok ? `${a} × ${b} = ${prod}` : `${a} × ${b} = ${a * b} ≠ ${prod}`; pill.classList.toggle('no', !ok); drawGrid(); }
+  setProd(6); frame(); setInterval(frame, reduce ? 600 : 110); })();
+
+/* ---------------- Max-Cut anneal ---------------- */
+(() => { const {n, edges} = DATA.maxcut; const J = Array.from({length: n}, () => new Array(n).fill(0));
+  edges.forEach(([i, j]) => { J[i][j] = J[j][i] = -1; });
+  const pos = [...Array(n).keys()].map(k => [160 + 130 * Math.cos(2 * Math.PI * k / n - Math.PI / 2), 160 + 130 * Math.sin(2 * Math.PI * k / n - Math.PI / 2)]);
+  const circ = {nodes: [...Array(n).keys()].map(String), J, pos};
+  const svg = document.getElementById('mcSvg'), view = drawGraph(svg, circ, {neutral: true, r: 13});
+  const sim = new Ising(J, new Array(n).fill(0)); const table = [...Array(16).keys()].map(k => .25 * Math.pow(16, k / 15));
+  let t = 0, mode = 'run', best = 0, trace = [];
+  const cut = () => edges.reduce((a, [i, j]) => a + (sim.s[i] !== sim.s[j] ? 1 : 0), 0);
+  function restart() { t = 0; trace = []; sim.s = sim.s.map(() => Math.random() < .5 ? 1 : -1); }
+  document.getElementById('mcRun').onclick = () => { mode = 'run'; restart(); best = 0; toggle(); };
+  document.getElementById('mcHot').onclick = () => { mode = 'hot'; restart(); toggle(); };
+  function toggle() { document.getElementById('mcRun').classList.toggle('on', mode === 'run'); document.getElementById('mcHot').classList.toggle('on', mode === 'hot'); }
+  function plot() { const C = document.getElementById('mcPlot'); const [g, w, h] = hiDPI(C); g.clearRect(0, 0, w, h);
+    const L = 34, R = 34, T = 10, Bm = 24, X = k => L + k / 200 * (w - L - R), Y = v => T + (1 - v / 24) * (h - T - Bm);
+    g.font = '11px ' + css('--f-mono'); g.strokeStyle = css('--line'); g.fillStyle = css('--mut');
+    for (const v of [0, 12, 20, 24]) { g.beginPath(); g.moveTo(L, Y(v)); g.lineTo(w - R, Y(v)); g.stroke(); g.fillText(v, 8, Y(v) + 4); }
+    g.fillText('sweeps →', w - R - 60, h - 6); g.fillStyle = css('--ok'); g.fillText('optimum', L + 4, Y(20) - 4);
+    g.strokeStyle = css('--cool'); g.setLineDash([4, 3]); g.beginPath();
+    trace.forEach((p, k) => { const yy = T + (1 - Math.log(p.b / .25) / Math.log(16)) * (h - T - Bm); k ? g.lineTo(X(k), yy) : g.moveTo(X(k), yy); }); g.stroke(); g.setLineDash([]);
+    g.strokeStyle = css('--warm'); g.lineWidth = 2; g.beginPath(); trace.forEach((p, k) => k ? g.lineTo(X(k), Y(p.c)) : g.moveTo(X(k), Y(p.c))); g.stroke(); g.lineWidth = 1;
+    g.fillStyle = css('--cool'); g.fillText('β (log, right)', w - R - 92, T + 12); g.fillStyle = css('--warm'); g.fillText('cut', L + 4, T + 12); }
+  function frame() { const b = mode === 'hot' ? .25 : table[Math.min(15, Math.floor(t / 8))]; sim.beta = b; sim.sweep(); t++;
+    const c = cut(); if (mode === 'run') best = Math.max(best, c); trace.push({c, b}); if (trace.length > 200) { if (mode === 'run') { restart(); } else trace.shift(); }
+    view.set(sim); view.edges.forEach(e => e.line.setAttribute('class', 'gedge ' + (sim.s[e.i] !== sim.s[e.j] ? 'cut' : 'mid')));
+    document.getElementById('mcB').textContent = b.toFixed(2); document.getElementById('mcCut').textContent = c;
+    document.getElementById('mcBest').textContent = best; plot(); }
+  restart(); frame(); setInterval(frame, reduce ? 500 : 70); })();
+</script>

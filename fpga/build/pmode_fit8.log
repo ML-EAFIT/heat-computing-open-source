@@ -1,0 +1,314 @@
+Info: Using uarch 'gowin' for device 'GW1NR-LV9QN88PC6/I5'
+
+Info: Cell O_psram_ck[0] not found
+Info: Cell O_psram_ck[1] not found
+Info: Cell O_psram_ck_n[0] not found
+Info: Cell O_psram_ck_n[1] not found
+Info: Cell O_psram_cs_n[0] not found
+Info: Cell O_psram_cs_n[1] not found
+Info: Cell O_psram_reset_n[0] not found
+Info: Cell O_psram_reset_n[1] not found
+Info: Cell IO_psram_dq[0] not found
+Info: Cell IO_psram_dq[1] not found
+Info: Cell IO_psram_dq[2] not found
+Info: Cell IO_psram_dq[3] not found
+Info: Cell IO_psram_dq[4] not found
+Info: Cell IO_psram_dq[5] not found
+Info: Cell IO_psram_dq[6] not found
+Info: Cell IO_psram_dq[7] not found
+Info: Cell IO_psram_dq[8] not found
+Info: Cell IO_psram_dq[9] not found
+Info: Cell IO_psram_dq[10] not found
+Info: Cell IO_psram_dq[11] not found
+Info: Cell IO_psram_dq[12] not found
+Info: Cell IO_psram_dq[13] not found
+Info: Cell IO_psram_dq[14] not found
+Info: Cell IO_psram_dq[15] not found
+Info: Cell IO_psram_rwds[0] not found
+Info: Cell IO_psram_rwds[1] not found
+Info: Reading constraints...
+Info: Create constant nets...
+Info: Modify LUTs...
+Info: Pack IOBs...
+Info: Pack I3C IOs...
+Info: Pack MIPI IOs...
+Info: Pack diff IOBs...
+Info: Pack FFs into IO cells...
+Info: Pack IODELAY...
+Info: Pack Input Edge Monitors...
+Info: Pack IO logic...
+Info: Pack DESER16 logic...
+Info: Pack GSR...
+Info: Pack HCLK cells...
+Info: Pack DLLDLYs...
+Info: Pack wide LUTs...
+Info: Packed MUX2_LUT8:3, MUX2_LU7:15, MUX2_LUT6:19, MUX2_LUT5:61
+Info: Pack ALUs...
+Info: Pack SSRAMs...
+Info: Constrained 87 LUTFF pairs.
+Info: Pack PLL...
+Info: Pack ADC...
+Info: Pack GW JTAG...
+Info: Pack BSRAMs...
+Info: Pack DSP...
+Info: Pack INV...
+Info: Pack buffered nets...
+Info: Pack EMCU and UserFlash cells...
+Info: Pack UserFlash cells...
+Info: Pack DQCE cells...
+Info: Pack DCS cells...
+Info: Checksum: 0x5ed14b63
+
+Info: Device utilisation:
+Info: 	                 VCC:       1/      1   100%
+Info: 	                 IOB:      11/    276     3%
+Info: 	                LUT4:    1232/   8640    14%
+Info: 	              OSER16:       0/     80     0%
+Info: 	              IDES16:       0/     80     0%
+Info: 	            IOLOGICI:       0/    276     0%
+Info: 	            IOLOGICO:       0/    276     0%
+Info: 	           MUX2_LUT5:     183/   4320     4%
+Info: 	           MUX2_LUT6:      61/   2160     2%
+Info: 	           MUX2_LUT7:      21/   1080     1%
+Info: 	           MUX2_LUT8:       3/   1080     0%
+Info: 	                 ALU:     424/   6480     6%
+Info: 	                 GND:       1/      1   100%
+Info: 	                 DFF:     678/   6480    10%
+Info: 	           RAM16SDP4:      10/    270     3%
+Info: 	               BSRAM:       2/     26     7%
+Info: 	              ALU54D:       0/     10     0%
+Info: 	     MULTADDALU18X18:       0/     10     0%
+Info: 	        MULTALU18X18:       0/     10     0%
+Info: 	        MULTALU36X18:       0/     10     0%
+Info: 	           MULT36X36:       0/      5     0%
+Info: 	           MULT18X18:       7/     20    35%
+Info: 	             MULT9X9:       0/     40     0%
+Info: 	              PADD18:       0/     20     0%
+Info: 	               PADD9:       0/     40     0%
+Info: 	                 GSR:       1/      1   100%
+Info: 	                 OSC:       0/      1     0%
+Info: 	                rPLL:       0/      2     0%
+Info: 	           FLASH608K:       0/      1     0%
+Info: 	                BUFG:       0/     22     0%
+Info: 	                DQCE:       0/     24     0%
+Info: 	                 DCS:       0/      8     0%
+Info: 	               DHCEN:       0/     24     0%
+Info: 	              CLKDIV:       0/      8     0%
+Info: 	             CLKDIV2:       0/     16     0%
+Info: 	           MIPI_IBUF:       0/     22     0%
+Info: 	           MIPI_OBUF:       0/     20     0%
+
+Info: Running custom HCLK placer...
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 1032 cells, random placement wirelen = 46265.
+Info:     at initial placer iter 0, wirelen = 1415
+Info:     at initial placer iter 1, wirelen = 1407
+Info:     at initial placer iter 2, wirelen = 1424
+Info:     at initial placer iter 3, wirelen = 1420
+Info: Running main analytical placer, max placement attempts per cell = 886446.
+Info:     at iteration #1, type ALL: wirelen solved = 1418, spread = 9388, legal = 15093; time = 0.09s
+Info:     at iteration #2, type ALL: wirelen solved = 936, spread = 7979, legal = 14378; time = 0.08s
+Info:     at iteration #3, type ALL: wirelen solved = 1077, spread = 7575, legal = 13642; time = 0.08s
+Info:     at iteration #4, type ALL: wirelen solved = 1272, spread = 7759, legal = 15240; time = 0.10s
+Info:     at iteration #5, type ALL: wirelen solved = 1418, spread = 6675, legal = 15993; time = 0.13s
+Info:     at iteration #6, type ALL: wirelen solved = 1514, spread = 7548, legal = 15814; time = 0.13s
+Info:     at iteration #7, type ALL: wirelen solved = 1568, spread = 7928, legal = 15990; time = 0.11s
+Info:     at iteration #8, type ALL: wirelen solved = 1882, spread = 7992, legal = 15402; time = 0.11s
+Info: HeAP Placer Time: 1.03s
+Info:   of which solving equations: 0.25s
+Info:   of which spreading cells: 0.03s
+Info:   of which strict legalisation: 0.62s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 488, wirelen = 13642
+Info:   at iteration #5: temp = 0.000000, timing cost = 287, wirelen = 10740
+Info:   at iteration #10: temp = 0.000000, timing cost = 292, wirelen = 10168
+Info:   at iteration #15: temp = 0.000000, timing cost = 284, wirelen = 9837
+Info:   at iteration #20: temp = 0.000000, timing cost = 252, wirelen = 9637
+Info:   at iteration #25: temp = 0.000000, timing cost = 265, wirelen = 9597
+Info:   at iteration #25: temp = 0.000000, timing cost = 265, wirelen = 9597 
+Info: SA placement time 2.55s
+
+Info: Max frequency for clock 'pmode_top_inst.clk': 55.65 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 3 endpoint(s)
+Info:          + represents [1,3) endpoint(s)
+Info: [ 19068,  19924) |+
+Info: [ 19924,  20780) |*****+
+Info: [ 20780,  21636) |****+
+Info: [ 21636,  22492) |*************************+
+Info: [ 22492,  23348) |+
+Info: [ 23348,  24204) |*+
+Info: [ 24204,  25060) |*+
+Info: [ 25060,  25916) |***+
+Info: [ 25916,  26772) |**+
+Info: [ 26772,  27628) |****+
+Info: [ 27628,  28484) |***+
+Info: [ 28484,  29340) |************+
+Info: [ 29340,  30196) |*******************+
+Info: [ 30196,  31052) |****************************************+
+Info: [ 31052,  31908) |*************************************************+
+Info: [ 31908,  32764) |************************************************************ 
+Info: [ 32764,  33620) |****************************************+
+Info: [ 33620,  34476) |************************+
+Info: [ 34476,  35332) |********************+
+Info: [ 35332,  36188) |**************************************************+
+Info: Checksum: 0xb490546b
+Info: Routing globals...
+Info:     'pmode_top_inst.clk' net was routed using global resources only.
+Info:     'pmode_top_inst.pmode_array_inst.gss40_DFFE_Q_CE[2]' is routed using segments.
+Info:     'pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_22_D_ALU_SUM_COUT_ALU_CIN_I0_ALU_SUM_I0_MUX2_LUT5_O_I1_LUT3_F_I2[1]' is routed using segments.
+Info:     'pmode_top_inst.on_reg_LUT4_I0_F_LUT4_I3_F_LUT2_F_I0_LUT4_I3_F[1]' is routed using segments.
+Info:     'pmode_top_inst.on_reg_LUT4_I0_F_LUT4_I3_F_LUT2_F_I0_LUT2_I1_F[2]' is routed using segments.
+Info:     'pmode_top_inst.on_reg_LUT4_I0_F_LUT4_I3_F[2]' is routed using segments.
+Info:     'pmode_top_inst.pmode_array_inst.j_reg[0]' is routed using segments.
+Info:     'pmode_top_inst.pmode_array_inst.j_reg[1]' is routed using segments.
+Info:     'pmode_top_inst.pmode_array_inst.j_reg[2]' is routed using segments.
+Info:     'pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_A_5_ALU_SUM_COUT_ALU_CIN_SUM_LUT3_F_1_I2_LUT4_F_I2_LUT4_I2_F_LUT4_F_I2_LUT2_I0_1_F' is routed using segments.
+Info:     'pmode_top_inst.pmode_array_inst.sq_reg_MULT18X18_A_DOUT[24]' is routed using segments.
+Info:     'pmode_top_inst.pmode_array_inst.smem.1.3_WRE_LUT2_I0_F' is routed using segments.
+Info:     'pmode_top_inst.pmode_array_inst.i_reg_DFFRE_Q_2_D_LUT3_F_I2[1]' is routed using segments.
+Info:     'pmode_top_inst.pmode_array_inst.state_reg_DFFRE_Q_2_D_LUT4_F_I3[1]' is routed using segments.
+Info:     'pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_16_D_ALU_SUM_I0_ALU_SUM_I1_MUX2_LUT6_O_S0[4]' is routed using segments.
+Info:     'pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_21_D_ALU_SUM_I0_ALU_SUM_I1_LUT3_F_I2[0]' is routed using segments.
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 6025 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |      151        848 |  151   848 |      5221|       0.79       0.79|
+Info:       2000 |      319       1680 |  168   832 |      4456|       0.74       1.53|
+Info:       3000 |      608       2268 |  289   588 |      3817|       0.73       2.26|
+Info:       4000 |      649       2777 |   41   509 |      2891|       0.30       2.56|
+Info:       5000 |      700       3560 |   51   783 |      1965|       0.46       3.01|
+Info:       6000 |      730       4450 |   30   890 |      1010|       0.36       3.37|
+Info:       7000 |      755       5327 |   25   877 |        46|       0.65       4.02|
+Info:       7046 |      756       5368 |    1    41 |         0|       0.03       4.05|
+Info: Routing complete.
+Info: Router1 time 4.05s
+Info: Checksum: 0xbdeb468f
+
+Info: Critical path report for clock 'pmode_top_inst.clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.46  0.46 Source pmode_top_inst.pmode_array_inst.i_reg_DFFRE_Q_2.Q
+Info:    routing  2.24  2.70 Net pmode_top_inst.pmode_array_inst.i_reg[1] (2,7) -> (7,14)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_B_3_MUX2_LUT5_O_S0_LUT3_F.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.10  3.80 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_B_3_MUX2_LUT5_O_S0_LUT3_F.F
+Info:    routing  1.93  5.73 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_A_5_ALU_SUM_COUT_ALU_CIN_SUM_LUT3_F_1_I2_LUT4_F_I2[3] (7,14) -> (10,10)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_B_3_MUX2_LUT5_O_I1_LUT4_F.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.10  6.82 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_B_3_MUX2_LUT5_O_I1_LUT4_F.F
+Info:    routing  0.00  6.82 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_B_3_MUX2_LUT5_O_I1 (10,10) -> (10,10)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_B_3_MUX2_LUT5_O.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:151.13-151.15
+Info:      logic  0.50  7.33 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_B_3_MUX2_LUT5_O.O
+Info:    routing  1.85  9.18 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_A_5_ALU_SUM_COUT_ALU_CIN_SUM_LUT3_F_1_I2_LUT4_F_I2_LUT4_I2_F_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM[2] (10,10) -> (6,13)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_B_3_LUT2_I1.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.10  10.27 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_D_MULT18X18_DOUT_B_3_LUT2_I1.F
+Info:    routing  1.85  12.12 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_17_D_ALU_SUM_I0_ALU_SUM_I0[1] (6,13) -> (3,16)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_18_D_ALU_SUM_I0_ALU_SUM_I0_MUX2_LUT5_O_I1_LUT4_F.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  1.10  13.22 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_18_D_ALU_SUM_I0_ALU_SUM_I0_MUX2_LUT5_O_I1_LUT4_F.F
+Info:    routing  0.00  13.22 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_18_D_ALU_SUM_I0_ALU_SUM_I0_MUX2_LUT5_O_I1 (3,16) -> (3,16)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_18_D_ALU_SUM_I0_ALU_SUM_I0_MUX2_LUT5_O.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:151.13-151.15
+Info:      logic  0.50  13.72 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_18_D_ALU_SUM_I0_ALU_SUM_I0_MUX2_LUT5_O.O
+Info:    routing  2.57  16.29 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_18_D_ALU_SUM_I0_ALU_SUM_I0 (3,16) -> (9,10)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_18_D_ALU_SUM_I0_ALU_SUM.I0
+Info:      logic  0.96  17.25 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_18_D_ALU_SUM_I0_ALU_SUM.COUT
+Info:    routing  0.00  17.25 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_18_D_ALU_SUM_I0_ALU_SUM_COUT (9,10) -> (9,10)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_19_D_ALU_SUM_I0_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.56  17.81 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_19_D_ALU_SUM_I0_ALU_SUM.SUM
+Info:    routing  1.93  19.74 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_19_D_ALU_SUM_I0 (9,10) -> (14,12)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_19_D_ALU_SUM.I0
+Info:      logic  0.96  20.70 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_19_D_ALU_SUM.COUT
+Info:    routing  0.00  20.70 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_19_D_ALU_SUM_COUT (14,12) -> (14,12)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_20_D_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               ../rtl/pmode_array.v:270.21-270.47
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:80.6-84.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:314.5-318.4
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:175.32-175.125
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  20.75 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_20_D_ALU_SUM.COUT
+Info:    routing  0.00  20.75 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_20_D_ALU_SUM_COUT (14,12) -> (14,12)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_21_D_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               ../rtl/pmode_array.v:270.21-270.47
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:80.6-84.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:314.5-318.4
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:175.32-175.125
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  20.81 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_21_D_ALU_SUM.COUT
+Info:    routing  0.00  20.81 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_21_D_ALU_SUM_COUT (14,12) -> (14,12)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_22_D_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               ../rtl/pmode_array.v:270.21-270.47
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:80.6-84.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:314.5-318.4
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:175.32-175.125
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.06  20.87 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_22_D_ALU_SUM.COUT
+Info:    routing  0.00  20.87 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_22_D_ALU_SUM_COUT (14,12) -> (15,12)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_22_D_ALU_SUM_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/pmode_array.v:270.21-270.47
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:80.6-84.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:314.5-318.4
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/mul2dsp.v:175.32-175.125
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.56  21.43 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_22_D_ALU_SUM_COUT_ALU_CIN.SUM
+Info:    routing  0.00  21.43 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_22_D_ALU_SUM_COUT_ALU_CIN_SUM (15,12) -> (15,12)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_24_passthrough_lut$.I3
+Info:      logic  0.62  22.06 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_24_passthrough_lut$.F
+Info:    routing  0.00  22.06 Net pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_24$conn$D (15,12) -> (15,12)
+Info:                          Sink pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_24.D
+Info:      setup  0.40  22.45 Source pmode_top_inst.pmode_array_inst.q_reg_DFFE_Q_24.D
+Info: 10.09 ns logic, 12.37 ns routing
+
+Info: Max frequency for clock 'pmode_top_inst.clk': 44.53 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 4 endpoint(s)
+Info:          + represents [1,4) endpoint(s)
+Info: [ 14582,  15626) |*+
+Info: [ 15626,  16670) |******+
+Info: [ 16670,  17714) |***************+
+Info: [ 17714,  18758) |*******+
+Info: [ 18758,  19802) |*+
+Info: [ 19802,  20846) |+
+Info: [ 20846,  21890) |**+
+Info: [ 21890,  22934) |**+
+Info: [ 22934,  23978) |***+
+Info: [ 23978,  25022) |****+
+Info: [ 25022,  26066) |**+
+Info: [ 26066,  27110) |**********+
+Info: [ 27110,  28154) |**************+
+Info: [ 28154,  29198) |****************+
+Info: [ 29198,  30242) |**************************+
+Info: [ 30242,  31286) |***************************+
+Info: [ 31286,  32330) |************************************************************ 
+Info: [ 32330,  33374) |*********************************+
+Info: [ 33374,  34418) |********************************************+
+Info: [ 34418,  35462) |****************************+
+
+Info: Program finished normally.

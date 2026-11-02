@@ -1,0 +1,2518 @@
+A Framework for Stochastic Dierentiable Programming
+Guillaume Verdon, Leo Tyrpak, Owen Lockwood, Seth Morton,
+Alexander Neagoe, Anton Sugolov, Ian MacCormack, and Mirko Amico
+Extropic Corporation, San Francisco, California 94111, USA
+(Dated: August 14, 2026)
+
+arXiv:2608.01612v2 [cs.ET] 13 Aug 2026
+
+We introduce Parametrized Stochastic Circuits (PSCs), a gate-based intermediate representation
+for programmable stochastic dynamics in which typed local stochastic kernels with tunable parameters compose over explicit binary, categorical, and continuous wires, and torx, an open-source JAX
+framework for constructing, executing, and dierentiating them. PSC’s data types and stochastic
+kernels are chosen to align closely with the native operations exposed by emerging probabilistic
+hardware. In this way, stochastic algorithms can be designed directly in terms of the operations the
+hardware executes natively, so that the energy advantage arising at this level is not lost on mappings
+that introduce substantial decomposition, communication, or control overhead. We demonstrate the
+framework on a variety of example applications such as random walks on graphs, discrete diusion,
+stochastic graph networks, jump diusion and Ising sampling. We also report a hardware experiment in which probabilistic bits on the X0 subthreshold CMOS test chip, hosted by the XTR-0
+desktop platform, provide physical randomness for Metropolis-Hastings and importance-sampling
+estimators, yielding estimates consistent with a software pseudorandom baseline.
+I.
+
+INTRODUCTION
+
+Many modern algorithms are built from parametrized
+stochastic maps. Diusion models learn denoising transitions that turn noise into data [1], Monte Carlo methods chain transition kernels to estimate high-dimensional
+expectations [2], probabilistic circuits represent distributions through compositions of tractable factors [3, 4], and
+regime-switching models couple a latent discrete process
+to a continuous observable [5]. These methods share a
+compositional structure: local probabilistic operations
+are assembled into a global computation, and their parameters may be xed or optimized against scalar objectives dened on samples or output distributions. A
+logical composition, however, does not by itself specify
+how its operations are realized. In conventional software
+this distinction is largely an implementation detail but
+on specialized stochastic hardware, it can determine the
+feasibility and cost of execution.
+Emerging thermodynamic and probabilistic devices
+implement physical stochastic primitives at low energy
+cost. Some devices provide physical random sources that
+can be consumed by otherwise digital algorithms, such as
+probabilistic bits built from magnetic tunnel junctions [6,
+7] or subthreshold CMOS circuits [8], whereas other devices implement families of stochastic kernels directly
+through their physical dynamics, such as Ising machines
+executing Gibbs sampling natively in silicon [9] and superconducting circuits realizing continuous-variable computations at thermodynamic equilibrium [10]. These devices dier in their supported variable types, transition
+families, connectivity, and control interfaces. Any advantage depends on the total cost of realizing the logical
+operations on the device. Lowering a high-level stochastic map through a complex sequence of physical primitives, communication steps, or digital computations may
+eliminate the potential advantage of the substrate. This
+motivates a hardware-near intermediate representation
+
+that species the logical composition of stochastic kernels while keeping the structure and cost of their physical
+realization visible.
+Existing software frameworks for stochastic computing focus mainly on providing composable primitives at a
+high level of abstraction. Stochastic computation graphs
+formalize computations as directed graphs of deterministic operations and conditional random variables and give
+general rules for constructing unbiased gradient estimators [11]. Pyro [12] and NumPyro [13] provide composable modeling and inference primitives on dierentiable
+array frameworks, while TensorFlow Probability exposes
+composable Markov-transition kernels for constructing
+and executing MCMC algorithms [14]. The frameworks
+establish that stochastic maps can be represented, composed and executed in multiple ways. However, their
+primitives are software constructs, distribution objects,
+tensor operations, and inference routines, with no direct
+correspondence to the typed variables and local stochastic kernels a device natively provides. Gate-and-circuit
+abstractions in quantum software frameworks such as
+TensorFlow-Quantum [15] and PennyLane [16] faced the
+same constraint, where the scarce resource in noisy quantum devices is coherence rather than energy, and settled on the circuit as the lowest level of abstraction that
+remains intelligible and dierentiable while keeping the
+mapping to hardware simple. However, an analogous solution for stochastic computation has not yet appeared.
+In this work, we introduce Parametrized Stochastic
+Circuits (PSCs), a gate-based model of programmable
+stochastic dynamics which serves as such an intermediate
+representation, together with torx [17], an open-source
+JAX [18, 19] framework for constructing, executing and
+dierentiating them. A PSC is an ordered sequence of
+layers of stochastic gates acting on binary, categorical,
+and continuous wires, where each gate is a local conditional transition rule with tunable settings. Gates may
+be nite transition matrices, Markov kernels on contin-
+
+2
+uous spaces, or nite-time operators obtained by exponentiating local rate models. The primitives of a PSC,
+typed variables and local stochastic kernels with explicit
+supports are close to the components a device natively
+provides while leaving some freedom to lower the logical
+description given by a PSC to match exactly the hardware constraints. All stochastic eects are localized to
+the gates, so one can x the program semantics by dening a logical PSC and then choose a variety of execution
+methods. Exact execution propagates the full output distribution when the state space allows it. Sampled execution provides trajectories drawn from the circuit and
+is compatible with software and hardware randomness
+providers, which can be exchanged without modifying
+the logical PSC. In the case of devices implementing kernels via their physical dynamics, one can compile the
+logical PSC to a hardware-compatible representation, as
+described in the thermalizers framework of the companion manuscript [20].
+We demonstrate the framework on various example applications, from purely binary circuits to hybrid discretecontinuous ones, including random walks on graphs, Ising
+sampling, discrete diusion, stochastic graph networks,
+and jump diusion. We also report a hardware experiment in which calibrated probabilistic bits (pbits) on
+the X0 subthreshold CMOS test chip, hosted by the
+XTR-0 desktop platform, supply Bernoulli randomness
+to Metropolis-Hastings and importance-sampling estimators, with estimates consistent with a software pseudorandom baseline. The logical PSC is unchanged between
+the two runs, and the only dierence between them is the
+randomness provider.
+The remainder of the manuscript is organized as follows. Section II denes the computational primitives,
+stochastic kernels and their compositions. Section III denes PSCs, the elementary gate library, product-formula
+approximations, and the gradient estimation rules. Section IV describes the torx framework along with its software and hardware backends. Section V demonstrates
+the framework on the examples mentioned above, including the X0 hardware experiment, and the conclusions follow in Section VI. Appendices expand on details left out
+of the main text.
+
+II.
+
+BACKGROUND AND PRELIMINARIES
+
+This Section introduces the basic concepts which we
+build upon. We proceed at dierent levels of granularity, leading up to the gate-based circuit model of PSCs
+of Section III. In Section II A we dene the fundamental units of stochastic computation that we work with.
+Section II B denes stochastic kernels as the basic operations on data, the maps that transform states. We recall
+the denition of a Markov chain, a sequence of stochastic
+kernels, in Section II C. Finally, composition of stochastic
+kernels into Directed Acyclic Graphs (DAGs) is covered
+in Section II D.
+
+A.
+
+Primitives and notation
+
+sample stream xt
+
+P (x)
+
+pbit
+{0, 1}
+
+pdit
+{0, . . . , d−1}
+
+Gaussian
+
+R
+
+MoG
+
+R
+time
+
+FIG. 1: The data primitives of Table I. Each row shows
+an example of a sample stream xt together with the
+distribution P (x) from which the samples are drawn. A
+pbit carries a distribution over two states, a pdit a
+distribution over d states, and a pmode a probability
+density over R; the Gaussian and mixture-of-Gaussians
+rows are two examples of distributions carried by a
+pmode wire.
+We consider three data types, distinguished by their
+state space, summarized in Table I and illustrated in
+Figure 1. Throughout, we refer to a variable carrying
+one of these data types as a wire, in analogy with circuit diagrams; the circuits acting on wires are dened in
+Section III.
+TABLE I: Data primitives and their state spaces.
+Data type
+
+State space X
+
+pbit (2 states)
+{0, 1}
+pdit (d states)
+{0, . . . , d − 1}
+pmode (N dimensions) RN
+
+A pbit is the binary case: its state space is X =
+0, 1 and its state is a length-2
+ probability vector
+ ρ=
+(ρ0 , ρ1 )  ∆1 , where ∆d−1 = ρ  Rd : ρa ≥ 0,
+a ρa =
+1 denotes the probability simplex on d states.
+A pdit generalizes this to d states [21]: its state space is
+X = 0,    , d − 1 and its state is a length-d probability
+vector ρ  ∆d−1 .
+A pmode is a continuous wire with state space X =
+RN ; its state is a probability density ρ(x) ≥ 0 satisfying RN ρ(x) dx = 1. The scalar case N = 1 is
+assumed when N is left unspecied. While a pmode
+can carry an arbitrary continuous distribution, the elementary pmode gates of Section III A act on Gaussian
+
+3
+(a) kernel
+
+x
+
+(b) identity
+
+K
+
+y
+
+K
+(d) sequential
+L◦K
+
+K
+
+For any bounded measurable function f : X → R, the
+expectation with respect to ρ is written uniformly as
+
+(c) parallel
+K⊗L
+
+Id
+
+L
+
+(e) prepare ancilla
+
+(f) discard
+(marginalise)
+
+
+
+f (a) ρa = f ⊤ ρ
+
+
+a∈X
+⟨f, ρ⟩ = 
+
+
+ f (x) ρ(x) dx
+R
+
+L
+
+0)
+
+K
+
+K
+
+densities for tractability; non-Gaussian generator-derived
+gates (e.g. PGBM, PCIR) are catalogued in Appendix C.
+Combining two state spaces X1 and X2 gives a joint
+state space X1 × X2 whose elements are pairs (a1 , a2 ). A
+register of n pbits, for example, has state space 0, 1n
+and state ρ  ∆2n −1 .
+We adopt Dirac-style notation for deterministic states:
+a1    an ) denotes the distribution on 0, 1n that assigns
+probability 1 to the string (a1 ,    , an ),
+(1)
+
+Every distribution
+on 0, 1n is then a convex combi
+nation ρ = a1 ,,an λa1 an a1    an ). This notation is
+inspired by quantum computation for convenience and
+used only where it aids clarity.
+With the states xed, the next step is to dene the
+maps that act on them.
+
+B.
+
+(4)
+(pmode wire).
+
+For state spaces that combine discrete and continuous
+factors, the joint expectation expands to a sum-integral:
+
+FIG. 2: Diagrammatic notation for stochastic kernels,
+matching the panel labels above. (e) prepares an
+ancilla in the xed state 0); (f ) discards (marginalizes)
+a wire, denoted by a ground symbol.
+
+a1    an ) = ( · ),(a1 ,,an ) 
+
+(discrete wire),
+
+Stochastic Kernels
+
+A stochastic kernel with input space X and output
+space Y is a function K : Y × X → R where K(y  x)
+is the conditional density of outputting y given input x.
+We write y ∼ K(·  x) for a draw from this conditional.
+It must satisfy positivity K(y  x) ≥ 0 and normalization
+for each xed x,
+
+K(y  x) dy = 1,
+(2)
+Y
+
+where the integral is a nite sum when Y is discrete. In the discrete case, (2) is equivalent
+ to column
+stochasticity: each column of the matrix K(y  x) y,x
+sums to 1. A stochastic kernel acts on distributions by
+
+ρout (y) = (K ρin )(y) =
+K(y  x) ρin (x) dx, (3)
+X
+
+which for 
+discrete states is the matrix vector product
+ρout (y) = x K(y  x) ρin (x).
+
+⟨f, ρ⟩ =
+
+ 
+
+a∈Xd
+
+f (a, x) ρ(a, x) dx,
+
+(5)
+
+Xc
+
+where Xd and Xc are the discrete and continuous parts of
+the state space, respectively. Applying K to ρ transforms
+expectations as ⟨f, ρ⟩ → ⟨f, Kρ⟩ = ⟨K ⊤ f, ρ⟩, so a kernel acts forward on states and backward on observables.
+This dual action is what allows the circuit objectives of
+Section III C to be dierentiated one gate at a time.
+We build stochastic programs by combining single kernels as our building blocks. Figure 2 xes the diagrammatic notation used throughout. A kernel is a
+box on a wire, read from input x on the left to output y on the right (Figure 2(a)), with the identity kernel I(x′  x) = x′ ,x , which leaves the state unchanged,
+drawn simply as an empty wire (Figure 2(b)). We can
+then compose kernels either in series and in parallel.
+Parallel composition (Figure 2(c)) places kernels on
+disjoint wires. For K : Y × X → R and L : Y ′ × X ′ → R
+acting on disjoint state spaces,
+(K ⊗ L)(y, y ′  x, x′ ) = K(y  x) L(y ′  x′ )
+
+(6)
+
+Since each factor integrates to one, so does their product,
+and parallel composition sends probability distributions
+to probability distributions.
+Sequential composition (Figure 2(d)) places kernels
+one after the other. For K : Z × X → R followed by
+L : Y × Z → R,
+(L ◦ K)(y  x) =
+
+
+
+Z
+
+L(y  z) K(z  x) dz,
+
+(7)
+
+which in the discrete case is ordinary matrix multiplication. Since each kernel integrates to one over its output,
+composition sends probability distributions to probability distributions, with ρout = (L ◦ K) ρin = L(K ρin ). In
+particular, the kernels with the same input and output
+space X form a semigroup under composition with the
+identity I(x′  x) = x′ =x .
+Finally, two operations can change the numbers of
+wires. Figure 2(e) prepares an ancilla, a fresh wire initialized to a xed state 0) and fed into a gate, and Figure 2(f) discards a wire by marginalizing over its values.
+These four operations, ◦, ⊗, preparation, and discarding,
+suce to build every kernel considered in this paper.
+
+4
+C.
+
+Discrete and continuous-time Markov chains
+
+By iterating the compositions introduced in Section II B one can generate dynamical behavior. Here we
+briey review the resulting discrete-time Markov chains
+and their continuous-time limit, for a more complete
+treatment see [22].
+The repeated application of a xed kernel denes a
+discrete-time Markov chain. Starting from ρ0 , the state
+after n steps is
+ρn = K n ρ0 ,
+
+K n = K ◦ ·
+· · ◦ K 
+
+(8)
+
+K1 (θ1 )
+
+z1
+
+K3 (θ3 )
+
+y1
+
+K2 (θ2 )
+
+z2
+
+K4 (θ4 )
+
+y2
+
+x
+
+FIG. 3: A directed factor graph of stochastic kernels.
+Variable nodes (circles) are connected via factor nodes
+(rectangles) representing the kernels Ki (θi ).
+
+n
+
+At the level of sample paths, (Xn )n≥0 is a stochastic process whose one-step transition satises P (Xn+1 = xn+1 
+X0 = x0 ,    , Xn = xn ) = K(xn+1  xn ), so the future
+depends on the past only through the current state. A
+distribution π is stationary for K if Kπ = π. Under
+standard ergodicity conditions (irreducibility and aperiodicity in the discrete-state case), ρn → π as n → ∞
+regardless of ρ0 . We call K the transition kernel of this
+Markov chain. We note that in standard literature the
+transition kernel P = K ⊤ is right multiplied to the probability vector giving ρP unlike here where we left multiply.
+Continuous-time dynamics arise from the same construction when the step becomes innitesimal. Consider
+a kernel that deviates from the identity by a small step
+τ,
+Kτ = I + τ Q,
+
+(9)
+
+where column-stochasticity of Kτ requires Q to have odiagonal entries Qij ≥ 0, the transition rate
+ from state
+j to state i, and diagonal entries Qii = − j̸=i Qij , so
+that each column sums to zero. We call Q a rate matrix
+(or generator ). Composing N such steps over a time t
+and letting N → ∞ gives
+
+N
+(10)
+ρ(t) = lim I + Q tN ρ0 = eQt ρ0 ,
+N →∞
+
+which is the solution of the forward Kolmogorov equation
+dρdt = Q ρ. A stationary distribution satises Qπ = 0.
+The family Kt = eQt is column-stochastic for every t ≥ 0
+and forms a one-parameter semigroup within the semigroup of kernels of Section II B. Fixing a step size t recovers the discrete-time picture. Both the Euler kernel
+I + τ Q and the exact exponential eQt reappear as gates.
+The former in the product formulas of Section III B, the
+latter in generator-derived gates such as PIsing in Section III A.
+To express larger parametrized probabilistic programs,
+we next allow many kernels to be organized in an acyclic
+graph and composed through their shared variables.
+D.
+
+Directed Factor Graphs
+
+The compositions of Section II B build kernels in series and in parallel, but many probabilistic models are
+
+specied more loosely, as a network of conditional distributions in which several kernels consume and produce
+shared variables. A Directed Factor Graph (DFG) captures this general case: it is a directed acyclic graph of
+stochastic kernels, where the output of each kernel is fed
+as input to one or more subsequent kernels. This structure is an instance of a directed graphical model [23],
+where nodes represent stochastic kernels, directed edges
+carry the variables passed between them, and internal
+variables are marginalized out to yield an overall conditional distribution from the designated inputs to the
+designated outputs. We use the DFG as the internal representation underlying the PSCs of Section III, and to
+derive the gradient estimators of Section III C.
+Each kernel Ki (θi ) : Y × X → R is indexed by parameters θi  Θi ⊆ Rdi , with entries Ki (y  x; θi ). We shall
+sometimes omit the dependence on θi when convenient.
+We call Ki a parent of Kj if there is a directed edge from
+Ki to Kj , i.e. an output of Ki serves as an input to Kj .
+We assume a hierarchical (also called topological) ordering: all parents appear before their children, so if Ki is a
+parent of Kj , then i < j. This ordering means the DAG
+can always be evaluated as the sequential composition
+K(θ) = Kn (θn ) ◦ · · · ◦ K1 (θ1 ),
+
+(11)
+
+parametrized by θ = (θ1 ,    , θn )  Θ and the state
+evolves through the graph as
+ρj = Kj ρj−1 ,
+ρout = K ρin = Kn · · · K1 ρin 
+
+(12)
+
+The corresponding sample path is z (0) ,    , z (n) with
+z (0) ∼ ρin ,
+
+z (j) ∼ Kj ( ·  z (j−1) ),
+
+j = 1,    , n,
+
+so that z (n) ∼ ρout . We call z (0) the input, z (n) the output, and z (1) ,    , z (n−1) the latent variables. We note
+that, as shown in Figure 3, the same DAG may admit
+several hierarchical orderings. We do not assume access
+to a closed-form expression for the conditional distribution, we assume only that each kernel Kj can be sampled
+eciently. A smooth parameterization is typically chosen in learning settings so that the gradients θi Ki (y  x)
+can be computed.
+
+5
+layer 1
+
+pbit
+
+G1
+
+pdit
+
+G2
+
+layer 2
+
+layer 3
+
+layer 4
+
+G3
+G4
+G5
+
+pmode
+
+time
+
+FIG. 4: Within layer 1, gates G1 and G2 execute in
+parallel. Layer 2 contains a cross-type gate G3 coupling
+the pbit and the pdit. Layer 3 contains a cross-type
+gate G4 coupling the pdit and the pmode. Layer 4 acts
+on the pmode.
+
+with tunable parameters θ. When an operation changes
+the number of wires, it is represented in the xed-register
+picture by preparing ancilla wires and discarding unused
+wires, using the primitives of Section II B. We dene a
+set of elementary gates in Section III A. These are the
+primitives from which more complex kernels are built by
+composition in series and parallel.
+A layer is a collection of gates with pairwise disjoint
+supports, as illustrated in Figure 4, where gates G1 and
+G2 occupy the same layer and execute in parallel. If
+J = I1 ,    , Im  is the collection of active supports in
+the layer, then
+LJ (θ) =
+
+m
+
+
+GIr (θr )
+
+(14)
+
+r=1
+
+A DFG places no constraint on how kernels are scheduled beyond the topological ordering. The PSC of Section III equips this structure with a xed register of
+typed wires and ordered layers of gates with disjoint supports. The layered structure makes parallel execution explicit, thus making compilation to hardware more obvious. Conversely, every PSC unrolls to a DFG by treating
+each gate as a kernel and each wire segment as a shared
+variable.
+III.
+
+PARAMETRIZED STOCHASTIC CIRCUITS
+
+A Parametrized Stochastic Circuit is the circuitshaped specialization of the directed factor graph in Section II D. Its kernels are grouped into ordered layers: kernels in the same layer have disjoint state spaces and execute in parallel, while layers compose in series to dene
+a global stochastic map on the full state space. Within
+a PSC, wires carry states of the data types described in
+Sec. II A. All stochasticity is localized to the gate kernels, while the wires themselves only transmit the variables’ state between layers. PSCs give a hardware-near
+model for stochastic computation. A logical circuit dened within this model can be compiled to backends
+with dierent execution rules, such as full state-space
+simulation and sample-based execution with softwaresourced pseudo-randomness and hardware-sourced randomness (via the XTR-0 platform, Sec. IV B). The companion manuscript [20] also explores execution of PSCs
+on thermodynamic hardware (the Z1 chip of Fig. 7) by
+compiling them to an energy-based model intermediate
+representation.
+We now give more precise denitions of the components of a PSC. A register is the full collection of wires
+acted on by the circuit. Using the notation of Section II A, let W be the set of wires 
+in the register, Xw the
+state space of wire w, and XI = w∈I Xw the product
+state space of a subset I ⊆ W. A local stochastic gate
+supported on I is a stochastic kernel
+GI (θ) : XI × XI → R,
+
+(13)
+
+Wires outside the active support pass unchanged to the
+next layer:
+ J (θ) = LJ (θ) ⊗ I(m I )c 
+L
+r=1 r
+
+(15)
+
+This embedding, together with any necessary wire permutation, is understood implicitly. A parametrized
+stochastic circuit
+ J (θ1 ) : XW × XW → R,
+ J (θk ) · · · L
+G(θ) = L
+1
+k
+
+(16)
+
+is a stochastic kernel on the register XW : the register’s
+state is a distribution ρ over XW , while any single realization (sample) of the register takes a denite, deter J (θj ),
+ministic value in XW . It is composed of layers L
+j
+ J (θ1 )
+and the composition is read from right to left: L
+1
+ J (θk ) acts last.
+ J (θ2 ), and so on until L
+acts rst, then L
+2
+k
+A.
+
+Elementary Gates
+
+Gates of a PSC are dened here through three possible
+constructions. The rst is the direct specication of a
+stochastic matrix. The second is via convex combinations
+of deterministic operations. For any deterministic gate
+B, the mixture (1−p) I+p B is implemented by preparing
+an auxiliary pbit in the state ρaux = (1 − p)0) + p1),
+applying B conditioned on the auxiliary state 1) and
+nothing conditioned on 0), and discarding the auxiliary
+pbit. A convenient parametrization for learning passes
+the mixture weight through a sigmoid,
+
+
+G(θ) = 1 − σ(θ) I + σ(θ) B,
+
+σ(θ) =
+
+1
+, (17)
+1 + e−θ
+
+so that p = σ(θ)  (0, 1) for every θ  R. This is the gate
+family to which the parameter-shift rule of Section III C
+applies. The third construction method uses exponentials of the local generators of Section II C. Continuoustime nite-state Markov models are generated by rate
+matrices whose exponentials are stochastic transition
+maps [22]. To dene a gate, choose a nite-state rate matrix Q and exponentiate it to obtain a generator-derived
+
+6
+stochastic kernel K(t) = exp(tQ). Markov-type Lie theory provides a reference point for such generator-based
+operator families [24]. In the generator-derived subfamily, PSCs recover the operator-splitting picture where local Markov generators are exponentiated to nite-time
+stochastic kernels and then composed in time.
+Let us now dene some elementary gates for stochastic
+circuits, organized by wire type (further gates are cataloged in the Appendices A and C).
+a. pbit and pdit The probabilistic NOT (PNOT)
+ips the state of a pbit with probability p  [0, 1]:
+
+
+1−p p
+PNOT(p) =
+
+(18)
+p 1−p
+At p = 0 this is the identity, at p = 1 it is the deterministic NOT, and at p = 12 it produces a uniform distribution
+regardless of input. Applying PNOT(p) to a single-pbit
+with distribution ρ = (, )⊤ yields
+
+
+(1 − p)  + p 
+PNOT(p) ρ =
+,
+(19)
+p  + (1 − p) 
+exchanging probability mass between 0) and 1).
+Gates can also act on multiple binary wires, the probabilistic swap (PSWAP) is one such example. It operates
+on two pbits, exchanging their states with probability
+p  [0, 1]:
+PSWAP(p) ab) = (1 − p) ab) + p ba)
+
+(20)
+
+Like PNOT, PSWAP is a convex combination of the identity and a deterministic operation.
+As an example of a generator-derived gate we take
+PIsing, which denes a local two-spin Glauber kernel [25].
+Given parameters θ = (J, h1 , h2 , , ∆t), the energy of a
+two-pbit conguration s = (s1 , s2 )  0, 12 is
+E(s) = −J(2s1 − 1)(2s2 − 1) − h1 (2s1 − 1) − h2 (2s2 − 1)
+(21)
+The associated Glauber dynamics has rate matrix Q with
+o-diagonal entries
+ 
+
+Qab = σ − E(sa ) − E(sb )
+(22)
+for single-spin-ip
+transitions a ̸= b, zero otherwise, and
+diagonal Qbb = − a̸=b Qab . The gate is
+PIsing(θ) = exp(∆t Q),
+
+X ∼ N (µ, Σ),
+
+CShift(α) : k) ⊗ p(x) −→ k) ⊗ p(x − k ),
+
+(25)
+
+where α = (0 ,    , d−1 ) gives the shift selected by each
+pdit state. The pmode-side action when the pdit is held
+in state k is a PDisp(k ), the displacement gate dened
+in Appendix C.
+Controlled scale CScale(r): the multiplicative analog,
+CScale(r) : k) ⊗ p(x) −→ k) ⊗ e−rk p(e−rk x),
+
+(26)
+
+rk
+
+rescales the pmode by e when the pdit is in state k.
+Mixture-of-Gaussians MoG(π, α): preparing a pdit ancilla with probability distribution π = (π0 ,    , πd−1 ) 
+∆d−1 , applying CShift(α) to a Gaussian pmode X ∼
+N (µ, σ 2 ), and marginalizing the ancilla yields the Gaussian mixture
+pX ′ (x) =
+
+d−1
+
+
+k=0
+
+πk N (x; µ + k , σ 2 ),
+
+(27)
+
+a universal density approximator under standard regularity conditions. Combining
+ CScale with CShift yields
+the heteroscedastic variant k πk N (erk µ + k , e2rk σ 2 ).
+Note that MoG is precisely the construction of Figure 2(e)–(f): a prepared ancilla, a controlled gate, and a
+discard.
+
+(23)
+
+which is column-stochastic for ∆t ≥ 0. We expand upon
+this in our companion paper [20] which focuses exclusively on energy-based transition kernels.
+b. pmode A pmode gate is a kernel K(y  x) on RN .
+The elementary directly specied gate is the ane Gaussian gate (M, d, ∆),
+X → M X + d + ,
+
+which maps N (µ, Σ) to N (M µ + d, M ΣM ⊤ + ∆), and
+special cases such as displacements, scalings, and rotations are cataloged in Appendix C. The generator-derived
+example is the Ornstein–Uhlenbeck gate POU(, D, t),
+obtained by exponentiating the Fokker–Planck
+genera√
+tor of the SDE dXt = −Xt dt + 2D dWt ; it combines deterministic contraction with noise injection and
+plays for pmodes the role PIsing plays for pbits (Appendix C). These Gaussian primitives support a broad
+family of continuous-variable algorithms, ranging from
+Gaussian sampling to deep neural networks, whose execution on equilibrium-based superconducting thermodynamic hardware is demonstrated in Ref. [10], and could
+be readily implemented in CMOS using X0 or in Z1 via
+thermalizers compilation [20].
+c. Hybrid pdit/pmode gates Many stochastic systems couple a discrete state to a continuous one. PSCs
+accommodate this through gates acting on the product
+space 0,    , d − 1 × RN with the compositional rules
+of Section II B unchanged.
+Controlled shift CShift(α): a pdit conditions a deterministic displacement on the pmode,
+
+ ∼ N (0, ∆),
+(24)
+
+B.
+
+Trotterization
+
+In Section III A we have introduced gates that act locally on a few wires at a time. However, in most cases
+one is interested in the dynamics generated by a sum of
+local terms
+Q=
+
+k
+
+j=1
+
+Qj ,
+
+(28)
+
+7
+where each Qj is supported on a few wires while the
+exponential eQt is a kernel on the full register, in general
+not equal to any product of local gates.
+Trotterization [26] allows us to approximate eQt by a
+circuit of local gates applied over N steps of size τ = tN ,
+each implementing either the exact local exponential
+eQj τ or the Euler kernel I + τ Qj of Eq. (9). For example, in Section V A the graph Laplacian decomposes
+into one generator per edge, and each factor is a single
+PSWAP gate.
+Given access to exact local exponentials, one can approximate eQt via Lie–Trotter splitting [26], which splits
+the exponential of the sum into a product of local exponentials,
+
+
+eQt = eQtN
+
+
+
+N
+
+≈
+
+k
+
+
+j=1
+
+N
+
+eQj tN  
+
+(29)
+
+The error of a single step is controlled by the commutators [Qi , Qj ], and vanishes when all generators commute.
+The single-step error is of order O(t2 k 2 N 2 ), and since
+the errors of the N steps accumulate at most additively
+(the telescoping bound), the global error is O(t2 k 2 N ).
+This is a rst-order method, doubling N halves the global
+error. The splitting error can be reduced by symmetrizing the product. The second-order Strang splitting [27]
+approximates
+eQtN ≈eQ1 t2N eQ2 t2N · · · eQk−1 t2N eQk tN
+e
+
+Qk−1 t2N
+
+···e
+
+Q2 t2N Q1 t2N
+
+e
+
+(30)
+
+,
+
+which cancels the leading commutator error by symmetry and achieves a local error of O(t3 k 3 N 3 ), hence a
+global error of O(t3 k 3 N 2 ), at the cost of 2k − 1 rather
+than k gate applications per step. Higher-order product
+formulas [28] exist but are not needed here.
+When the exact local exponentials are not available as
+gates, each factor can be replaced by its Euler kernel,
+
+
+eQt = eQtN
+
+N
+
+
+
+≈
+
+k
+
+
+
+j=1
+
+
+
+N
+
+I + Qj tN  ,
+
+(31)
+
+and the single-step error decomposes into an Euler part
+and a splitting part,
+
+
+
+
+k
+ QtN 
+
+ 
+
+
+
+QtN
+e
+≤
+I
++
+Q
+−
+tN
+−
+I
++
+QtN
+
+e
+j
+
+
+
+ 
+
+
+j=1
+
+
+
+
+k
+
+
+
+ 
+,
++
+tN
+I
++
+Q
+I
++
+QtN
+−
+j
+
+
+
+
+j=1
+
+
+
+
+O(t2 N 2 )
+
+O(t2 k2 N 2 )
+
+giving the same O(t2 k 2 N ) global error as Lie–Trotter.
+These bounds hold for any submultiplicative matrix
+
+norm; the implicit constant is proportional to the maximum pairwise commutator norm maxi̸=j ∥[Qi , Qj ]∥.
+The number of factors k entering these bounds can often be reduced by grouping. If some of the generators
+commute pairwise, one constructs the non-commutation
+graph on Qj  and colors it with χ colors, so that generators of the same color commute. Within a color
+Qj τ
+with
+class the product is exact, eGc τ =
+j∈Cc e
+
+Gc = j∈Cc Qj , so Trotterizing the χ grouped generators
+replaces k by χ in all the bounds above. For generators
+tiled over the edges of a graph this is an edge coloring,
+the case used in Section V A.
+In practice the choice of formula reduces to what is
+available as a gate. When only Euler kernels I + Qj τ are
+available, both splittings incur an additional O(kt2 N )
+Euler error that dominates at any practical N , so Lie–
+Trotter is simpler and sucient. When exact local exponentials are available, Strang is preferable for N ≳ kt
+steps, where its error O(k 3 t3 N 2 ) drops below the Lie–
+Trotter error O(k 2 t2 N ).
+C.
+
+Dierentiation & Optimization
+
+Here we focus on methods for training a PSC by gradient descent on a scalar objective estimated from samples,
+which requires gradient estimators that are themselves
+computable by running circuits. Figure 5 illustrates this
+hybrid classical-stochastic loop. We present three such
+estimators, in increasing order of the structure they assume on the gates: the REINFORCE estimator, valid
+for any smoothly parametrized gate; the parameter-shift
+rule, valid for the sigmoid-mixture gates of Eq. (17); and
+an energy-based estimator, valid for gates sampling from
+a Boltzmann conditional. Following Section II D, we derive them at the generality of the underlying DFG. We
+write the circuit as gates Gj ≡ GIj (θj ), j = 1,    , k, applied in topological order; running the circuit once produces a latent trajectory (z (0) ,    , z (k) ) with z (0) ∼ ρin
+and z (j) ∼ Gj ( ·  z (j−1) ), so that z (k) ∼ ρout (θ).
+The objective is the expectation of a readout function
+f under the output distribution ρout (θ) = Gk · · · G1 ρin ,
+J(θ) = EY ∼ρout (θ) [f (Y )] = ⟨f, ρout (θ)⟩
+
+= ⟨f, Gk · · · G1 ρin ⟩,
+
+(32)
+
+which we want to optimize with respect to θ. Since every
+Gj is linear in the state, the derivative follows from the
+product rule,
+∂θj J = ⟨f, Gk · · · Gj+1 (∂θj Gj ) Gj−1 · · · G1 ρin ⟩,
+
+(33)
+
+where the dual action of Section II B moves the xed
+gates onto the observable side. Writing the derivative of a kernel entrywise as (∂θj Gj )(y  x) = Gj (y 
+x) ∂θj log Gj (y  x) turns Eq. (33) into an expectation
+over trajectories,
+
+
+∂θj J = E(z (0) ,,z (k) ) f (z (k) ) ∂θj log Gj (z (j)  z (j−1) ) ,
+(34)
+
+8
+the REINFORCE (or score-function) estimator [29]:
+drawing S independent trajectories and averaging the
+bracket gives an unbiased estimate of the full gradient
+from a single batch of circuit runs. The entrywise identity requires Gj (z (j)  z (j−1) ) > 0 on the support of the
+trajectory distribution, which holds for the gate library
+of Section III A provided parameter values are kept away
+from the boundary p  0, 1. In the case of the sigmoid
+parametrization of Eq. (17), this is enforced automatically.
+a. Parameter shift rule estimator Consider the
+sigmoid-mixture gates G(θ) = (1 − σ(θ)) I + σ(θ) B of
+Eq. (17). Taking derivatives,
+∂G(θ)
+= σ ′ (θ) (B − I)
+(35)
+∂θ
+
+
+Since σ ′ (θ) = σ(θ) 1 − σ(θ) , the derivative is itself a
+dierence of two gates of the same family. Dening the
+shifted parameter θ− by σ(θ − ) = σ(θ)2 , that is
+
+
+θ− = − ln (1 + e−θ )2 − 1 ,
+(36)
+
+an explicit computation gives the logarithmic shift identity
+∂G(θ)
+= G(θ) − G(θ− ),
+∂θ
+
+(37)
+
+which expresses ∂θ G as a dierence of two executable
+gates.
+If gate Gj is of the specied form, using (33) we can
+express the gradient as a dierence of two circuit expectations,
+
+∂⟨f, ρout (θ)⟩ 
+
+= EX∼ρ(θ∗ ) [f (X)]−EX∼ρ(θ
+∗− ) [f (X)],
+
+
+∂θj
+θj =θj∗
+(38)
+where ρ(θ∗ ) is the output distributions induced by running the original circuit and ρ(θ∗− ) the shifted circuit
+with parameter θj changed to,
+
+
+∗
+θj∗− = − ln (1 + e−θj )2 − 1 
+
+(39)
+
+i ∼ ρout (θ ∗− )
+Drawing S iid samples Xi ∼ ρout (θ ∗ ) and X
+gives the unbiased estimators
+S
+S
+1
+1 
+f (Xi ) −
+f (Xi ),
+gj =
+S i=1
+S i=1
+
+(40)
+
+with variance Var(
+gj ) = (Varp+ f + Varp− f )S. The rule
+j
+j
+has two limitations. First, it applies only to gates of the
+sigmoid-mixture form of Eq. (17). Second, each parameter requires a separate shifted circuit evaluation, so unlike REINFORCE the full gradient cannot be obtained
+from a single batch of runs. However, only the gates
+downstream of Gj in the DFG need to be resampled; the
+remaining samples of the latent trajectory can be reused.
+
+b. Energy-Based Kernels Suppose one of the kernels
+G(θ) samples from a Boltzmann distribution, i.e., the
+conditional distribution G(θ)(y  x) is obtained by conditioning a joint distribution with density
+pθ (x, y) =
+
+1 −E(x,y;θ)
+e
+
+Z(θ)
+
+(41)
+
+For a xed input x, the resulting kernel is
+G(θ)(y  x) =
+
+e−E(x,y;θ)
+,
+Z(x; θ)
+
+Z(x; θ) =
+
+
+
+′
+
+e−E(x,y ;θ) dy ′ ,
+Y
+
+(42)
+where the integral is replaced by a sum when Y is discrete.
+We can then compute the gradient of the logconditional explicitly:
+θ log G(θ)(y  x) = −θ E(x, y; θ)
++ Ey′ ∼G(θ)(·x) [θ E(x, y ′ ; θ)] 
+(43)
+The expectation in the second term is over the output y ′
+with the input x held xed.
+If gate Gj is of the specied form, using Eq. (34) gives
+
+
+ (k) 
+
+
+−θj E z (j−1) , z (j) ; θj
+θj J(θ) = E(z (0) ,,z (k) ) f z
++
+
+E
+
+z ′ ∼Gj (·z (j−1) )
+
+
+
+
+
+θj E z (j−1) , z ′ ; θj
+
+
+
+(44)
+
+Thus, to estimate the gradient, one runs the full circuit
+to obtain the latent trajectory (z (0) ,    , z (k) ) and draws
+an independent auxiliary sample
+z (j)′ ∼ Gj (θj )(·  z (j−1) )
+to estimate the second term. The trajectory sample z (j)
+can be reused for the rst term, so only gate Gj , clamped
+at the same input z (j−1) , must be run again. This estimator is inexpensive but, as a score-function estimator,
+can suer from high variance [30].
+IV.
+A.
+
+TORX FRAMEWORK
+Execution Interface
+
+torx is a JAX-based library [18, 19] for constructing,
+executing, and training PSCs. Circuits are dened by
+specifying a certain combination of kernels. A circuit is
+then lowered to its underlying directed factor graph, a
+DAG of kernels each exposing a sample method. Given
+input values for a kernel, sample returns output values
+drawn from the kernel’s conditional distribution. Training is implemented following the hybrid loop of Figure 5.
+
+9
+hybrid loop
+
+PSC
+G1
+
+samples
+z (k) ∼ ρout (θ)
+
+G3
+
+G2
+
+G5
+
+evaluate J
+
+classical optimizer
+θ ← θ − η ∂θ J
+
+update θ
+
+FIG. 5: The PSC (top-left) is sampled to produce
+samples z (k) ∼ ρout (θ) (top-right); a classical optimizer
+(bottom-right) evaluates the scalar loss J(θ) from those
+samples and updates θ for the next iteration.
+The circuit is executed to produce samples z (k) ∼ ρout (θ),
+which are used to estimate the objective J(θ) of Eq. (32),
+and the gradient estimators of Section III C supply the
+parameters update for the kernels, with JAX providing
+the automatic dierentiation and compilation machinery.
+B.
+
+Backends
+
+Once a logical PSC has been constructed, one has to
+choose a backend which species how the sample calls
+of a circuit are executed. torx provides three software backends. SampleSimulator draws a sample from
+ρout by sampling sequentially through the gates, and
+HybridSampleSimulator mirrors it for registers that mix
+discrete and continuous wires. StateVectorSimulator
+instead propagates the full probability vector, returning
+ρout exactly up to oating-point error. Since the vector
+has size 2n for n pbits, it is primarily useful for smallscale prototyping.
+XTR-0
+
+can source it directly in hardware. The sigmoid-mixture
+gates of Section III A illustrate this concretely. A gate of
+the form of Eq. (17) is realized by programming a pbit (or
+pdit) to the mixture weight, then routing the register’s
+values according to its outcome.
+Concretely, we obtain randomness from X0, a subthreshold CMOS test chip accessed through the XTR-0
+desktop platform, carrying pbits, pdits, Gaussian samplers, and mixture-of-Gaussian samplers as physically
+separated primitives. The host and FPGA set their parameters and route samples and control, so the logical
+interaction topology is software-dened (Figure 6). Operating transistors in the subthreshold regime exposes
+thermal and shot noise that X0 pbits use as a physical
+Bernoulli source, at energy costs of hundreds of attojoules to single femtojoules per sample at rates of tens
+of MHz [8, 9], comparable to superparamagnetic tunnel
+junctions [31–33], while leveraging CMOS only process
+steps. However, the output statistics of such devices
+drift from device to device. For this reason, before sampling for the rst time each pbit undergoes a Bayesianoptimization-based calibration that maps digital controls
+to bias voltage, with typical per-site calibration errors
+around 5% in absolute probability. After calibration, a
+user programs target probabilities p  [0, 1] directly and
+receives binary outputs at rates set by the device relaxation time (∼100 ns). Appendix D details the X0 probabilistic primitives and the XTR-0 platform.
+Z1
+
+Digital
+Host
+
+hi , Jij
+Samples
+
+(hardwired graph)
+
+X0
+
+CPU
+Host
+
+θ
+
+Control
+
+FPGA
+
+Data
+(separated primitives)
+
+FIG. 6: The XTR-0 desktop platform. A CPU host and
+FPGA control physically separated pbit, pdit,
+Gaussian, and mixture-of-Gaussian primitives on the
+socketed X0 chip. The FPGA mediates data and
+control between primitives, so the logical interaction
+topology and schedule are software-dened. The outer
+box marks the complete XTR-0 platform.
+A hardware backend in torx replaces the software
+pseudorandom generator (e.g. Threefry) with a physical
+randomness source. Any gate that needs a random draw
+
+FIG. 7: Z1 architecture overview. The digital host
+communicates bias elds hi and couplings Jij directly
+to the Z1 chip for Gibbs sampling. The chip hardwires
+a degree-16 interaction graph in silicon, each pbit (black
+dot) is physically coupled to 16 neighbors via on-die
+wiring that extends beyond nearest-neighbor positions.
+Fuchsia edges highlight one node’s full neighborhood.
+Our next generation chip, which we refer to as Z1,
+hardwires a degree-16 sparse interaction graph directly
+in silicon and executes chromatic Gibbs sweeps without
+FPGA mediation, communicating only hi and Jij between sweeps (Figure 7, [9]). The two designs expose
+the substrate locality of Section III in opposite ways.
+XTR-0 reconstructs any k-local generator o-chip via
+the FPGA, paying a per-gate round-trip latency for arbi-
+
+10
+trary topology, while Z1 evaluates 2-local Glauber generators natively in a single sweep but requires compilation
+of the logical PSC to a hardware-compatible representation [20]. The same logical PSC compiles to dierent
+gate schedules on each chip, and torx keeps the support
+Ij of every gate visible so that this compilation is explicit. Section V F tests whether the X0 primitives provide Bernoulli randomness with statistics sucient for
+the sampling algorithms of Section V.
+V.
+
+DEMONSTRATIONS
+
+We demonstrate the torx framework on a series of example sized to showcase the capabilities that a PSC can
+express rather than to show an eciency or scalability
+advantage over standard implementations. Executable
+notebooks, including larger-scale variants of several of
+these examples, are available in the torx documentation [17], and we encourage readers to experiment with
+the framework directly.
+The six demonstrations are: diusion on a weighted
+graph (§V A); discrete diusion for image generation
+(§V B); stochastic graph networks (§V C); a regimeswitching jump-diusion process (§V D); sampling and
+training an Ising model on a spin ring (§V E); and the
+same Ising sampling task driven by hardware randomness
+(§V F). All demonstrations use software pseudorandomness except the last, which sources its randomness from
+calibrated pbits on X0.
+A.
+
+Applying Trotterization (Section III B) with Euler approximations I + Qij tN , k = χ′ (G) local generators and
+N steps gives a global error
+ 2 2
+
+  
+N 
+k t
+
+ Qt
+I + Qij tN
+, (47)
+=O
+e −
+N
+i,j∈E
+
+with each factor I + Qij tN implemented as a single
+PSWAPij gate.
+While applying Trotterization with exact exponential
+etN Qij , k local generators and N steps gives a global
+error
+ 2 2
+
+ 
+N 
+k t
+
+ Qt
+Qij tN
+,
+(48)
+e
+=O
+e −
+N
+i,j∈E
+
+with each factor eQij tN implemented as a single
+PSWAPij gate. Using Strang splitting gives an error of
+O(k 3 t3 N 2 ) at the cost of 2k − 1 gates per step rather
+than k.
+As an example, consider the graph in Figure 8.
+0.3
+
+A
+
+B
+
+D
+
+C
+0.1
+
+E
+
+Random Walks on Graphs
+
+Consider an undirected weighted graph G = (V, E)
+with edge weights wij = wji ≥ 0. The graph Laplacian L = D − A satises L1 = 0, so Q = −L is a valid
+continuous-time Markov generator and the distribution
+x(t) over vertices satises ẋ = Qx with exact solution
+x(t) = eQt x(0).
+We can write the edge decomposition
+
+Qij ,
+Qij = −wij (ei −ej )(ei −ej )⊤ , (45)
+Q=
+i,j∈E
+
+where each Qij is a local operator acting only on coordinates i and j. Since PSWAPij (p) = I−p(ei −ej )(ei −ej )⊤ ,
+setting p = wij τ gives
+PSWAPij (wij τ ) = I + τ Qij 
+The
+exact
+exponential
+
+
+1−e−2wij τ
+= eτ Qij .
+PSWAPij
+2
+
+0.15
+
+0.1
+
+0.2
+
+(46)
+
+corresponds
+to
+Since Qij and Qkl
+
+commute whenever edges i, j and k, l are vertexdisjoint (they act on disjoint coordinates), an edge
+coloring of G groups commuting generators together,
+reducing the number of Trotter groups to k = χ′ (G) the
+edge chromatic number.
+
+FIG. 8: Weighted graph used for the diusion example.
+a. Simulation. Taking initial conditions x(0) =
+(1, 0, 0, 0, 0), corresponding to unit mass on state A, we
+obtain a circuit consisting of a single walk layer of the
+form shown in Figure 9. Applying Trotterization with
+Euler discretization and iterating up to t = 10, the resulting evolution of x(t) is plotted in Figure 10.
+|A)
+|B)
+|C)
+
+S
+S
+
+S
+S
+
+|D)
+
+S
+
+|E)
+×N
+
+FIG. 9: Single step of Trotterized circuit for graph
+diusion. Each box, labeled S, is a PSWAP gate acting
+on the pair of pbits it spans with probability
+proportional to the inverse number of Trotter steps; the
+dashed block is repeated N times.
+
+11
+where ȷ̄ denotes xt with bit j ipped, measuring how
+much j’s state shifts i’s ip probability. We select the
+top K = 50 pairs with the maximum cj→i  and append
+one PCNOT(cj→i ) per pair, giving a circuit of n+K gates
+in total.
+Results on 28 × 28 binary MNIST are shown in Figure 11: the PSC augmentation reduces bit-error rate from
+0114 (tau-leaping) to 0113 and closes 41% of the FID
+gap between corrupted and clean distributions, demonstrating that denoiser outputs can parameterize structured PSC proposals.
+
+FIG. 10: Long term graph diusion trajectory. Trotter
+with Euler discretization is shown in dashed markings.
+Exact solution is shown in solid lines of the same color.
+
+B.
+
+Discrete Diusion
+
+Discrete diusion models [34–37] corrupt data with a
+forward Markov Chain and learn a neural network to
+reverse it. Tau-leaping [38] is an approximate simulation
+method that advances a jump process by a xed time
+interval, treating many small events within that interval
+as independent. We show that the tau-leaping reverse
+step can be implemented as a PSC of independent PNOT
+gates, and that adding a small number of PCNOT gates
+restores local pixel correlations that tau-leaping discards.
+For the forward process, each bit xi  0, 1 evolves
+in
+
+1
+dependently under the uniform rate matrix Q = −1
+1 −1 ,
+giving transition kernel
+
+
+1
+1 −2σ 1
+1 −2σ
+2 + 2e
+2 − 2e
+σQ
+e = 1 1 −2σ 1 1 −2σ 
+(49)
+2 − 2e
+2 + 2e
+The o-diagonal entry 12 (1 − e−2σ ) is the probability that
+a bit has ipped by noise level σ.
+A convolutional denoiser [39] trained with binary cross(0)
+entropy produces per-pixel estimates pi = P (xi = 1 
+xt ). The per-pixel ip probability for one reverse step is
+(i)
+pip =
+
+
+
+1 − pi
+pi
+
+xi = 1,
+xi = 0,
+
+(50)
+
+ (i)
+and the corresponding PNOT logit is θ (i) = log pip (1 −
+(i) 
+pip ) . The tau-leaping reverse step is therefore exactly
+
+the PSC, i PNOT(θ (i) ). It is composed of one independent gate per pixel, parametrized by the denoiser output.
+Because tau-leaping treats all bits as independent, it
+misses joint structure. For each pixel pair (i, j) we compute the coupling
+(i)
+
+(i)
+
+cj→i = pip (xt  ȷ̄) − pip (xt ),
+
+(51)
+
+FIG. 11: A comparison of resulting images from the
+tau-leaping inference method and the augmented PSC
+method. We show the results for 10 solver steps.
+
+C.
+
+Stochastic Graph Networks
+
+Stochastic geometric deep learning [40, 41] builds symmetry into a stochastic model rather than learning it from
+data. The model is constrained to be equivariant under
+a group G of transformations of the input. In our implementation of a stochastic graph network as a PSC this
+is realized by parameter sharing where the same local
+gate kernel is reused wherever a group element relates
+two regions of the wire layout.
+A Stochastic Graph Network (SGNN) instantiates this
+for the symmetry group of graph automorphisms [42, 43]:
+one wire per node, one parametrized PIsing gate per edge,
+with parameters tied under any automorphism that permutes the edges. Assigning pbit σi  0, 1 to node i
+with spin si = 2σi − 1  −1, +1, the gate for edge
+(i, j) is
+Gij (θij ) = PIsing(Jij , hi , hj , , ∆t),
+
+(52)
+
+where Jij  R is a learnable edge coupling and (, ∆t)
+are xed hyperparameters. One sweep is a series of gate
+
+12
+PditCycle
+
+|S)
+|X)
+
+FIG. 12: Expected cut value during SGNN training on
+a random 3-regular 8-site graph (E = 12, optimal cut
+= 12). One PIsing gate per edge, N = 5 sweeps,
+S = 1024 samples per step. Dashed line: uniform
+random baseline; dotted line: optimum.
+
+layers acting on a color partition k of the graph,
+
+
+
+Gk (θ) ⊗ I\k ,
+L(θ)
+=
+
+(53)
+
+k
+
+and the full SGNN circuit
+repeats the sweep N times.
+
+Writing cut(σ) = (i,j)∈E (1 − si sj )2, the objective
+is to maximize the expected cut under the circuit output
+ρθ = GSGNN (θ) ρ0 :
+ 1 − ⟨si sj ⟩ρ
+θ
+
+L(θ) = −Eρθ [cut] = −
+2
+
+(54)
+
+(i,j)∈E
+
+The circuit runs in sample mode with L estimated by
+Monte Carlo and edge couplings are optimized by a
+Metropolis search, which is one of several applicable optimization strategies; gradient-based alternatives such as
+REINFORCE or the parameter-shift rule of Section III C
+are equally applicable. At each step a Gaussian perturbation is proposed to θ, S samples are drawn from the updated circuit, the average cut is estimated, and the proposal is accepted with probability min(1, e−∆LT ). On
+a random 3-regular graph (n = 8, E = 12) with one
+PIsing gate per edge, N = 5 sweeps, and S = 1024 samples per step, the trained SGNN outperforms a uniform
+sampler and recovers the optimal cut in the majority of
+runs (Figure 12). For context, the Goemans–Williamson
+SDP relaxation [44] guarantees a 0878-approximation in
+the worst case over all graphs; this is a dierent kind
+of claim than the instance-specic result reported here,
+where the trained SGNN matches the optimal cut on this
+graph but carries no worst-case guarantee.
+
+D.
+
+MoG
+
+FIG. 13: One Trotter step for the circuit. The PditCycle
+gate transitions the pdit, then the MoG gate applies
+regime-conditioned Gaussian dynamics to the
+continuous wire. Repeating this unit N = T ∆t times
+yields the full circuit.
+
+where St is a continuous-time Markov chain, and the drift
+µk and volatility σk are conditioned on the discrete state,
+as in Eq. (27). This structure results in what is eectively
+a hidden Markov model (HMM) in continuous time, the
+observed process Xt is driven by a latent chain St .
+The generator of the full continuous time process decomposes as A = AS + AX , where AS governs discrete transitions and AX generates the conditioned diusion. These terms do not commute because the drift and
+volatility in AX depend on the discrete state S. Writing
+TG (∆t) for the nite-∆t gate implementing generator G,
+we split the one-step propagator into two local gates:
+TTrotter (∆t) = TMoG (∆t)TPditCycle (∆t)
+
+(56)
+
+The rst factor discretizes the chain. We use a PditCycle
+gate on a K-state wire, which implements a cyclic random walk with forward rate λ+ and backward rate λ−
+which determine the probability of moving forward, cycling backward, or staying. in the current position
+p± = λ± ∆t, p0 = 1 − (λ+ + λ− )∆t. This results in
+an Euler discretization as we have seen before.
+The second factor applies a MoG gate, the hybrid gate
+of Eq. (27), conditioned on the current S = k:
+√
+X ′ = X + µk ∆t + σk ∆tN (0, 1)
+
+(57)
+
+This is an Euler step for the diusion in Eq. (55). The
+full one-step circuit is shown in Figure 13.
+To test this example, we set K = 3 regimes with drifts
+µ = (10, 00, −08), volatilities σ = (03, 10, 05), and
+transition rates λ+ = 05, λ− = 03, simulating to time
+T = 10. Figure 14 shows sample trajectories colored by
+the latent regime at each step. Since AS and AX do
+not commute, the Trotterization incurs an error linear in
+∆t, which can be reduced by decreasing the step size or
+moving to a higher-order method.
+
+Jump Diusion
+E.
+
+Regime-switching models are a classical family of hybrid Markov processes in which a latent discrete state
+modulates the dynamics of a continuous variable [5]. The
+joint state (St , Xt )  0,    , K−1 × R evolves under
+dXt = µSt dt + σSt dWt ,
+
+(55)
+
+Ising Sampling
+
+The Ising model assigns probability π(s) ∝ e−βH(s)
+to 
+binary congurations
+ via the Hamiltonian H(s) =
+− (i,j)∈E Jij si sj − i hi si , si  −1, +1. We demonstrate on an 8-site ring with random couplings Jij and
+elds hi at  = 15.
+
+13
+
+FIG. 14: Sample trajectories from the jump diusion
+circuit, colored by the latent at each step.
+Since the ring is two-colorable, even-indexed sites
+0, 2, 4, 6 and odd-indexed sites 1, 3, 5, 7 each form
+a conditionally independent class [45]. Writing σi =
+(si + 1)2  0, 1 for the circuit variable, the Gibbs
+conditional at site i is
+
+ℓi = hi +
+Jij (2σj − 1),
+(58)
+j∈N (i)
+
+1
+
+π(σi = 1  σN (i) ) =
+1 + e−2βℓi
+
+(59)
+
+One sweep applies two layers in sequence; within each
+layer every site in that color class is updated in parallel
+by
+PColori = PNOT(2ℓi ) ◦ PReset(∞),
+
+(60)
+
+which resets σi to 0 and resamples it from the exact Gibbs
+conditional. For this we need to compute ℓi on the y at
+each sweep, which we do classically in Python, although
+on our Z1 chip this can be done natively [20]. Over 6000
+chains and 240 sweeps this achieves a total-variation distance of 0052 from the exact Boltzmann distribution.
+The parameters (Jij , hi ) can be t to data using Persistent Contrastive Divergence [46], the special case of the
+energy-based-kernel gradient of Section III C in which the
+kernel samples from the Ising Gibbs conditional: 2048
+persistent chains run 2 chromatic sweeps per step to estimate model expectations, giving the log-likelihood gradient
+
+
+∂ log L
+=  ⟨si sj ⟩data − ⟨si sj ⟩model ,
+∂Jij
+
+(61)
+
+and analogously for hi . Over 300 steps at learning rate
+008 the learned parameters converge to the true couplings; see Figure 15.
+A natural alternative assigns one PIsing gate per edge
+and Trotterizes their composition. As N→ ∞, this
+converges to the semigroup generated by
+(i,j)∈E Qij ,
+but this generator is not the Glauber generator for the
+full ring. Each two-site generator Qij gives site i a
+ip rate that depends only on the single neighbor j via
+
+FIG. 15: MSE of learned parameters relative to the true
+Boltzmann distribution during PCD training on the
+8-site ring. Left: magnetization hi ; right: pairwise
+couplings Jij .
+
+
+rate from
+σ −2Jij (2σj − 1) ; the eective single-site
+
+
+composing all edge generators is j∈N (i) σ −2Jij (2σj −
+
+1) . The correct Glauber
+rate is σ(−2ℓi ) with the full
+
+local eld ℓi = hi + j∈N (i) Jij (2σj − 1) inside the sig
+
+σ( j j ) in
+moid. Since σ is nonlinear,
+j σ(j ) ̸= 
+general, so the stationary distribution of
+edges Qij is
+not the Boltzmann distribution. On the same 8-site ring
+this yields TV distance 0402, nearly eight times worse
+than chromatic Gibbs.
+The exact Gibbs conditional can instead be embedded
+into a single gate acting on site i and all its d neighbors.
+This 2d+1 × 2d+1 matrix stores PNOT(2ℓi ) ◦ PReset(∞)
+for each of the 2d neighbor congurations statically, unlike PColori whose ℓi is recomputed dynamically at each
+sweep. Figure 16 conrms that the per-site gate matches
+the exact distribution, while edge-tiled PIsing does not.
+The same gate applies directly to any Ising-type inference
+task, including Boltzmann Machines [47] and DTMs [9].
+
+FIG. 16: State probabilities on the 8-site ring
+comparing the exact Boltzmann distribution, edge-tiled
+PIsing, and the per-site Gibbs gate. States are ordered
+by exact probability.
+
+F.
+
+Ising Sampling with Hardware Randomness
+
+We sample the stationary distribution π of the same
+8-site Ising ring at  = 15 of Section V E using Bernoulli randomness from a calibrated pbit on
+X0, accessed through XTR-0, with proposals q(·; θ)
+
+14
+
+(a) Sampling with a Metropolis-Hastings method.
+
+(b) Sampling with importance reweighting.
+
+FIG. 17: Experimental validation of sampling with noise from XTR-0. The exact distribution is shown in dark red,
+with NumPy-based pseudo-randomness in yellow, and hardware randomness in orange (MH and IS). The target
+distribution is an 8-site Ising ring (with  = 15 and 20,000 samples) using a calibrated pbit on X0 within the
+XTR-0 platform.
+drawn as independent per-site Bernoulli samples at
+the pbits’ programmable biases θi . Two algorithms
+are tested: Metropolis-Hastings (MH) [48, 49], which
+useshardware bits
+ to inform the acceptance ratio a =
+π(x′ ) q(x)
+min 1, π(x) q(x′ ) , and self-normalized importance sam-
+
+pling (IS) [50, 51], which weights each sample by w̃(m) =
+π(x(m) )q(x(m) ; θ). The exact distribution π is available
+by full enumeration over the 28 congurations. Both
+methods achieve a total variation distance consistent
+with software baselines, using 20,000 hardware-drawn
+samples (Figure 17), demonstrating that analog hardware provides randomness of competitive quality to its
+digital counterpart.
+VI.
+
+CONCLUSIONS
+
+We have introduced Parametrized Stochastic Circuits
+as a gate-based model for programmable stochastic dynamics, together with torx [17], a dierentiable JAX
+framework for building, executing, and training them.
+In this model, local stochastic kernels with tunable settings compose into a circuit operator, the gradient estimators of Section III C make the circuit trainable from
+samples, and a backend species the execution rule. The
+interface supports exact probability-vector simulation,
+sample-based execution, and hardware-sourced randomness while preserving the same logical PSC object.
+The gate library covers directly specied stochastic kernels, generator-derived kernels such as PIsing,
+and Trotterized approximations of local continuous-
+
+[1] J. Ho, A. Jain, and P. Abbeel, Denoising diusion probabilistic models, in Advances in Neural Information Pro-
+
+time Markov generators. The demonstrations use these
+kernels for random walks on graphs, discrete diusion, stochastic graph networks, jump diusion and
+Ising sampling. In the nal demonstration, calibrated
+subthreshold-CMOS pbits on X0 supply Bernoulli randomness to the same Ising sampling task, achieving totalvariation distances consistent with software baselines.
+The logical circuits are unchanged, and the only dierence between them is the randomness source.
+The companion manuscript [20] on the thermalizers
+framework introduces a complementary hardware route,
+in which clamping the input variables of an energybased model and sampling its output variables realizes
+a stochastic kernel directly as physical dynamics. In this
+relation, torx species and trains the logical PSC kernel, while the thermalizers construction implements it
+natively in hardware. Beyond this, several directions remain open: executing PSCs natively on Z1, a general
+theory of synthesizing a target kernel from a xed gate
+set, and scaling the demonstrations beyond the toy sizes
+considered here. We view the PSC framework and torx
+as a concrete starting point for programming probabilistic hardware.
+
+VII.
+
+ACKNOWLEDGMENTS
+
+The authors thank Jack Ceroni and Edward Jiang
+for their contributions to early prototypes of the software, the authors also thank Nahuel Freitas and Andraz
+Jelincic for their valuable feedback.
+
+cessing Systems (2020).
+
+15
+[2] R. M. Neal, MCMC using Hamiltonian dynamics, Handbook of Markov Chain Monte Carlo (2011).
+[3] Y. Choi, A. Vergari, and G. Van den Broeck, Probabilistic circuits: A unifying framework for tractable probabilistic models, UCLA Computer Science Technical Report (2020).
+[4] A. Vergari, Y. Choi, A. Liu, S. Teso, and G. Van den
+Broeck, A compositional atlas of tractable circuit operations:
+From simple transformations to
+complex information-theoretic queries, arXiv preprint
+arXiv:2102.06137 (2021).
+[5] J. D. Hamilton, A new approach to the economic analysis of nonstationary time series and the business cycle,
+Econometrica: Journal of the Econometric Society , 357
+(1989).
+[6] S. Chowdhury, A. Grimaldi, N. A. Aadit, S. Niazi,
+M. Mohseni, S. Kanai, H. Ohno, S. Fukami, L. Theogarajan, G. Finocchio, et al., A full-stack view of probabilistic
+computing with p-bits: Devices, architectures, and algorithms, IEEE Journal on Exploratory Solid-State Computational Devices and Circuits 9, 1 (2023).
+[7] B. Zhang, Y. Liu, T. Gao, J. Yin, Z. Guan, D. Zhang,
+and L. Zeng, Automatic extraction and compensation of
+p-bit device variations in large array utilizing boltzmann
+machine training, Micromachines 16, 133 (2025).
+[8] N. Freitas, G. Massarelli, J. Rothschild, D. Keane,
+E. Dawe, S. Hwang, A. Garlapati, and T. McCourt, Taming nonequilibrium thermal uctuations in subthreshold
+cmos circuits, Phys. Rev. Appl. 25, 034061 (2026).
+[9] A. Jelinčič, O. Lockwood, A. Garlapati, P. Schillinger,
+I. Chuang, G. Verdon, and T. McCourt, An ecient probabilistic hardware architecture for diusion-like models,
+arXiv preprint arXiv:2510.23972 (2025).
+[10] O. Lockwood, J. Béjanin, J. Bus, C. Chamberland,
+P. Huembeli, F. Schäfer, and G. Verdon, A blueprint
+for equilibrium-based dierentiable continuous-variable
+thermodynamic computing (2026), arXiv:2607.16183
+[cs.LG].
+[11] J. Schulman, N. Heess, T. Weber, and P. Abbeel, Gradient estimation using stochastic computation graphs,
+in Advances in Neural Information Processing Systems,
+Vol. 28 (Curran Associates, Inc., 2015).
+[12] E. Bingham, J. P. Chen, M. Jankowiak, F. Obermeyer,
+N. Pradhan, T. Karaletsos, R. Singh, P. Szerlip, P. Horsfall, and N. D. Goodman, Pyro: Deep universal probabilistic programming, Journal of Machine Learning Research 20, 1 (2019).
+[13] D. Phan, N. Pradhan, and M. Jankowiak, Composable
+eects for exible and accelerated probabilistic programming in NumPyro (2019), arXiv:1912.11554 [stat.ML].
+[14] J. Lao, C. Suter, I. Langmore, C. Chimisov, A. Saxena, P. Sountsov, D. Moore, R. A. Saurous, M. D. Homan, and J. V. Dillon, tfp.mcmc: Modern markov chain
+monte carlo tools built for modern hardware (2020),
+arXiv:2002.01184 [stat.CO].
+[15] M. Broughton, G. Verdon, T. McCourt, A. J. Martinez,
+J. H. Yoo, et al., TensorFlow Quantum: A software
+framework for quantum machine learning, arXiv preprint
+arXiv:2003.02989 (2020).
+[16] V. Bergholm, J. Izaac, M. Schuld, C. Gogolin, S. Ahmed,
+V. Ajith, M. S. Alam, G. Alonso-Linaje, B. AkashNarayanan, A. Asadi, et al., PennyLane: Automatic differentiation of hybrid quantum-classical computations,
+arXiv preprint arXiv:1811.04968 (2018).
+
+[17] Extropic AI, Torx, documentation and runnable examples at https://torx-docs.vercel.app/examples.
+html.
+[18] J. Bradbury, R. Frostig, P. Hawkins, M. J. Johnson,
+C. Leary, D. Maclaurin, G. Necula, A. Paszke, J. VanderPlas, S. Wanderman-Milne, and Q. Zhang, JAX: composable transformations of Python+NumPy programs
+(2018).
+[19] P. Kidger and C. Garcia, Equinox: neural networks in
+JAX via callable PyTrees and ltered transformations,
+arXiv preprint arXiv:2111.00254 (2021).
+[20] M. Amico, A. Jelinčič, C. O. Nancarrow, L. Tyrpak,
+D. Roberts, S. Morton, D. Sakthivadivel, A. Gopal, and
+G. Verdon, Thermalizing stochastic programs (2026),
+arXiv:2608.01615 [cs.ET].
+[21] C. Duee, J. Athas, A. Grimaldi, D. Volpe, G. Finocchio, E. Wei, and P. Khalili Amiri, Extended-variable
+probabilistic computing with p-dits, arXiv preprint
+arXiv:2506.00269 (2025).
+[22] J. R. Norris, Markov Chains (Cambridge University
+Press, Cambridge, UK, 1997).
+[23] C. M. Bishop, Pattern Recognition and Machine Learning, Information Science and Statistics (Springer, New
+York, 2006).
+[24] J. E. Johnson, Markov-type Lie groups in GL (n, R),
+Journal of Mathematical Physics 26, 252 (1985).
+[25] D. A. Levin, M. J. Luczak, and Y. Peres, Glauber dynamics for the mean-eld Ising model: cut-o, critical
+power law, and metastability (2007), arXiv:0712.0790
+[math.PR].
+[26] H. F. Trotter, On the product of semi-groups of operators, Proceedings of the American Mathematical Society
+10, 545 (1959).
+[27] G. Strang, On the construction and comparison of dierence schemes, SIAM Journal on Numerical Analysis 5,
+506 (1968).
+[28] M. Suzuki, Fractal decomposition of exponential operators with applications to many-body theories and Monte
+Carlo simulations, Physics Letters A 146, 319 (1990).
+[29] R. J. Williams, Simple statistical gradient-following algorithms for connectionist reinforcement learning, Machine
+Learning 8, 229 (1992).
+[30] E. Greensmith, P. L. Bartlett, and J. Baxter, Variance
+reduction techniques for gradient estimates in reinforcement learning, Journal of Machine Learning Research 5,
+1471 (2004).
+[31] B. Parks, M. Bapna, J. Igbokwe, H. Almasi, W. Wang,
+and S. A. Majetich, Superparamagnetic perpendicular
+magnetic tunnel junctions for true random number generators, AIP Advances 8 (2018).
+[32] D. Vodenicarevic, N. Locatelli, A. Mizrahi, T. Hirtzlin,
+J. S. Friedman, J. Grollier, and D. Querlioz, Circuit-level
+evaluation of the generation of truly random bits with superparamagnetic tunnel junctions, in 2018 IEEE International Symposium on Circuits and Systems (ISCAS)
+(IEEE, 2018) pp. 1–4.
+[33] M. W. Daniels, A. Madhavan, P. Talatchian, A. Mizrahi,
+and M. D. Stiles, Energy-ecient stochastic computing
+with superparamagnetic tunnel junctions, Physical Review Applied 13, 034016 (2020).
+[34] J. Austin, D. D. Johnson, J. Ho, D. Tarlow, and
+R. van den Berg, Structured denoising diusion models in
+discrete state-spaces, in Advances in Neural Information
+Processing Systems, Vol. 34 (2021).
+
+16
+[35] X. Wang, Z. Zheng, F. Ye, D. Xue, S. Huang, and Q. Gu,
+Diusion language models are versatile protein learners,
+arXiv preprint arXiv:2402.18567 (2024).
+[36] S. S. Sahoo, M. Arriola, Y. Schi, A. Gokaslan, E. Marroquin, J. T. Chiu, A. Rush, and V. Kuleshov, Simple and eective masked diusion language models, Advances in Neural Information Processing Systems 37,
+130136 (2024).
+[37] S. Nie, F. Zhu, Z. You, X. Zhang, J. Ou, J. Hu, J. Zhou,
+Y. Lin, J.-R. Wen, and C. Li, Large language diusion
+models, arXiv preprint arXiv:2502.09992 (2025).
+[38] D. T. Gillespie, Approximate accelerated stochastic simulation of chemically reacting systems, The Journal of
+Chemical Physics 115, 1716 (2001).
+[39] O. Ronneberger, P. Fischer, and T. Brox, U-Net: Convolutional networks for biomedical image segmentation,
+in International Conference on Medical image computing
+and computer-assisted intervention (Springer, 2015) pp.
+234–241.
+[40] M. M. Bronstein, J. Bruna, T. Cohen, and P. Veličković,
+Geometric deep learning:
+Grids, groups, graphs,
+geodesics, and gauges, arXiv preprint arXiv:2104.13478
+(2021).
+[41] T. S. Cohen and M. Welling, Group equivariant convolutional networks, in Proceedings of the 33rd International Conference on Machine Learning (ICML) (2016)
+pp. 2990–2999.
+[42] G. Verdon, T. McCourt, E. Luzhnica, V. Singh, S. Leichenauer, and J. Hidary, Quantum graph neural networks, arXiv preprint arXiv:1909.12264 (2019).
+[43] J. Zhou, G. Cui, S. Hu, Z. Zhang, C. Yang, Z. Liu,
+L. Wang, C. Li, and M. Sun, Graph neural networks:
+A review of methods and applications, AI open 1, 57
+(2020).
+[44] M. X. Goemans and D. P. Williamson, Improved approximation algorithms for maximum cut and satisability
+problems using semidenite programming, Journal of the
+ACM 42, 1115 (1995).
+[45] J. Gonzalez, Y. Low, A. Gretton, and C. Guestrin, Parallel Gibbs sampling: From colored elds to thin junction
+trees, in Proceedings of the Fourteenth International Conference on Articial Intelligence and Statistics (PMLR,
+2011) pp. 324–332.
+[46] T. Tieleman, Training restricted Boltzmann machines using approximations to the likelihood gradient, in Proceedings of the 25th International Conference on Machine
+Learning (Helsinki, Finland, 2008).
+[47] D. H. Ackley, G. E. Hinton, and T. J. Sejnowski, A learning algorithm for Boltzmann machines, Cognitive science
+9, 147 (1985).
+[48] N. Metropolis, A. W. Rosenbluth, M. N. Rosenbluth,
+A. H. Teller, and E. Teller, Equation of state calculations
+by fast computing machines, The Journal of Chemical
+Physics 21, 1087 (1953).
+[49] W. K. Hastings, Monte Carlo sampling methods using
+Markov chains and their applications, Biometrika 57, 97
+(1970).
+[50] H. Kahn and T. E. Harris, Estimation of particle transmission by random sampling, National Bureau of Standards Applied Mathematics Series 12, 27 (1951).
+[51] T. Kloek and H. K. Van Dijk, Bayesian estimates of equation system parameters: an application of integration by
+Monte Carlo, Econometrica: Journal of the Econometric
+Society , 1 (1978).
+
+[52] M. Benedetti, E. Lloyd, S. Sack, and M. Fiorentini, Parameterized quantum circuits as machine learning models, Quantum science and technology 4, 043001 (2019).
+[53] G. Verdon, M. Broughton, and J. Biamonte, A quantum
+algorithm to train neural networks using low-depth circuits, arXiv preprint arXiv:1712.05304 (2017).
+[54] G. Verdon, J. Pye, and M. Broughton, A universal training algorithm for quantum deep learning, arXiv preprint
+arXiv:1806.09729 (2018).
+[55] G. Verdon, M. Broughton, J. R. McClean, K. J. Sung,
+R. Babbush, Z. Jiang, H. Neven, and M. Mohseni, Learning to learn with quantum neural networks via classical neural networks, arXiv preprint arXiv:1907.05415
+(2019).
+[56] G. Verdon, J. Marks, S. Nanda, S. Leichenauer, and
+J. Hidary, Quantum Hamiltonian-based models and
+the variational quantum thermalizer algorithm, arXiv
+preprint arXiv:1910.02071 (2019).
+[57] Extropic AI, Inside x0 and xtr-0, https://extropic.ai/
+writing/inside-x0-and-xtr-0 (2025), documentation;
+accessed July 2026.
+
+17
+Appendix A: Additional Gates
+
+Here we list some additional elementary gates that one
+might consider (and are supported by torx). We note
+that all of the following gates we implement can be written as,
+ApplyB(p) = (1 − p)I + pB,
+where ApplyB is the name of the operation and it applies
+B with probability p, otherwise does nothing. Setting
+p  0, 1 in the following gates leads to deterministic
+gate.
+a. PReset Sets the pbit to 0 with probability p, otherwise does nothing.
+
+
+1 p
+PReset(p) =
+0 1−p
+b. PCNOT
+probability p.
+
+Flips the second pbit if the rst is 1, with
+
+
+1 0 0
+0
+0 
+0 1 0
+PCNOT(p) = 
+0 0 1−p p 
+0 0 p 1−p
+
+
+c. PSWAP Swaps two pbits with probability p, otherwise does nothing.
+
+1 0
+0 0
+ 0 1 − p p 0
+PSWAP(p) = 
+0 p 1 − p 0
+0 0
+0 1
+
+
+d. PJUMP
+probability p.
+
+Moves probability from 10) to 01) with
+
+
+1 0 0 0
+ 0 1 p 0
+PJUMP(p) = 
+0 0 1 − p 0
+0 0 0 1
+
+
+e. PDEMUX Copies rst pbit to second pbit and resets input to 0 with probability p, otherwise does nothing
+(a probabilistic demultiplexor).
+
+
+
+1 p
+0
+0
+p 
+0 1 − p p
+PDEMUX(p) = 
+0 0 1−p 0 
+0 0
+0 1−p
+f. PCopy Copies rst pbit to second pbit with probability p, otherwise does nothing.
+
+1 p
+0 0
+ 0 1 − p 0 0
+PCopy(p) = 
+0 0 1 − p 0
+0 0
+p 1
+
+
+g. PditShift Shifts a k-dimensional pdit cyclically
+i → (i − 1) mod k with probability p. For k = 3:
+
+
+1−p p
+0
+PditShift(p) =  0 1 − p p 
+p
+0 1−p
+
+h. PditSWAP Swaps two k-dimensional pdits with
+probability p. The k 2 ×k 2 matrix permutes (i, j) ↔ (j, i):
+PditSWAP(p) = (1 − p)I + pS
+where S is the swap permutation matrix.
+Appendix B: Guide for readers from Quantum
+Information
+
+The visual similarity of PSCs to Parametrized Quantum Circuits (PQCs) [52], composition of basic gates to
+create circuits, hides several substantive distinctions in
+data encoding, circuit-run accounting, and gradient estimation. The variational loop of Figure 5 is deliberately the stochastic analog of the parametrized-quantumcircuit training loops developed in the quantum machine
+learning literature [15, 53, 54], where a parametrized unitary is sampled, a classical optimizer evaluates a scalar
+loss, and the circuit parameters are updated. Indeed,
+several of the constructions we use have direct precursors in that body of work: variational training of a
+parametrized circuit [53, 54], classical meta-optimizers
+that warm-start the circuit parameters [55], symmetrytied gates on a graph [42, 43], and the preparation of
+thermal (Gibbs) states by a variational procedure [56].
+Software frameworks such as TensorFlow-Quantum [15]
+and PennyLane [16] were built to express exactly such hybrid quantum-classical loops and to dierentiate through
+them, and the PSC software model can be read as a
+stochastic-matrix counterpart to them. The remainder
+of this section makes the distinctions precise.
+In quantum information, computations are encoded
+as unitary matrices, whereas in Parametrized Stochastic Circuits computations are encoded as stochastic matrices. These two classes of objects dier in fundamental ways, which constrain the sorts of computations that
+quantum and stochastic computers can perform. First,
+a stochastic matrix need not have an inverse, unlike a
+unitary. The deterministic reset of one bit to 0 is
+
+
+1 1
+Kreset =
+,
+Kreset 0) = Kreset 1) = 0); (B1)
+0 0
+which has rank 1 and therefore no inverse. Mixing,
+marginalization, and coarse-graining are likewise valid
+stochastic circuit operations that generally cannot be inverted. Second, the two models dier in how information is read out. The state of a quantum register is a
+vector of complex amplitudes, so a readout requires the
+choice of a measurement basis, and the measurement collapses the state, such that subsequent operations act on
+
+18
+the post-measurement state rather than on the original
+one. In contrast, the state of a PSC register is a classical probability distribution, and a readout is simply a
+sample drawn from it. Drawing a sample does not alter
+the distribution, so one can take measurements at any
+point in the circuit without aecting the remainder of
+the computation.
+Appendix C: Pmode Gate Library and
+Constructions
+
+This appendix collects the detailed gate library for
+(pmode) introduced in Section III A.
+1.
+
+Gaussian Stochastic Maps
+
+A pmode transformation T : P(RN ) → P(RN ) is
+Gaussian if it sends every Gaussian density to a Gaussian density. Equivalently, it is ane in moments: there
+exist M  RN ×N , d  RN , ∆  Sym≥0
+N (R) with
+µ −→ µ′ = M µ + d,
+
+Σ −→ Σ′ = M ΣM ⊤ + ∆
+(C1)
+
+Collecting the data of a Gaussian stochastic map as a
+triple (M, d, ∆) and equipping it with the composition
+law
+
+(M2 , d2 , ∆2 ) ◦ (M1 , d1 , ∆1 ) = M2 M1 , M2 d1 + d2 ,
+
+M2 ∆1 M2⊤ + ∆2
+(C2)
+gives a semigroup of Gaussian stochastic maps, denoted
+here by SN . Composition is associative, the identity is
+(I, 0, 0), and (M, d, ∆) has a two-sided inverse only when
+∆ = 0 and M is invertible; any nonzero noise injection
+is irreversible at the level of Markov kernels. Classical
+stochastic systems live on conguration space alone, not
+on phase space, so the symplectic form does not appear
+and three independent ingredients, linear map A, drift
+b, and noise injection D, replace the single Hamiltonian
+generator of the CV-quantum case.
+The nite-time propagator of a linear SDE dXt =
+(AXt +b) dt+B dWt is the one-parameter sub-semigroup
+of SN given by
+M (t) = eAt ,
+ t
+eA(t−s) b ds,
+d(t) =
+0
+ t
+⊤
+∆(t) =
+eAs D eA s ds,
+
+(C3)
+
+0
+
+with D = BB ⊤ . The moments of a Gaussian initial
+condition obey µ̇t = Aµt + b and the dierential Lyapunov equation Σ̇t = AΣt + Σt A⊤ + D; Gaussian pmode
+calculations therefore reduce to nite-dimensional linear
+algebra.
+
+a. SVD-based Gaussian-channel factorization.
+(M, d, ∆)  SN with invertible M factors as
+
+Any
+
+(M, d, ∆) = (I, d2 , ∆2 ) ◦ (U2 , 0, 0)
+
+◦ (ΣS , 0, ∆S ) ◦ (V ⊤ , 0, 0) ◦ (I, d1 , 0), (C4)
+
+where M = U2 ΣS V ⊤ is the SVD with U2 , V  O(N ),
+ΣS = diag(σ1 ,    , σN ), ∆S is diagonal in the singularvector basis, and ∆2 absorbs residual cross-mode noise
+when such a decomposition of the noise covariance is
+available. Each orthogonal factor can be decomposed
+into planar two-mode rotations. This gives a factorization of linear Gaussian stochastic maps in terms of rotations, scalings, drifts, and noise injections. Unlike Bloch–
+Messiah decompositions in continuous-variable quantum
+optics, this factorization does not use a symplectic structure.
+
+2.
+
+Gaussian Gate Library
+
+a. PDisp() Shifts the mean by : N (µ, σ 2 ) →
+N (µ + , σ 2 ). Triple (1, , 0).
+b. PScale(r) Scales mean and variance: N (µ, σ 2 ) →
+N (er µ, e2r σ 2 ). Triple (er , 0, 0). Reversible; no noise injection.
+c. PMixij (θ) Planar rotation on two modes:
+(Xi , Xj ) → (cos θ Xi − sin θ Xj , sin θ Xi + cos θ Xj ).
+Triple (R(θ), 0, 0) with R(θ)  SO(2).
+d. P2Sqij (r) Hyperbolic rotation on two modes:
+(Xi , Xj ) → (cosh r Xi + sinh r Xj , sinh r Xi + cosh r Xj ).
+Induces Cov(Xi′ , Xj′ ) = sinh(2r) for independent N (0, 1)
+inputs.
+Together with interferometer decompositions, these
+gates realize every element of SN with ∆ = 0 at depth
+O(N ).
+
+3.
+
+Generator-derived gates: Fokker–Planck
+building blocks
+
+a. Backward vs forward generators. The Fokker–
+Planck (forward) generator L† acts on densities; the
+backward (Kolmogorov) generator L is its formal adjoint
+and acts on observables:
+
+
+
+
+
+L† p = −· µ(x) p + 12
+∂i ∂j Dij (x) p ,
+(C5)
+Lf = µ(x)·f + 12
+
+
+
+ij
+
+Dij (x) ∂i ∂j f,
+
+(C6)
+
+ij
+
+related by ⟨f, L† p⟩ = ⟨Lf, p⟩. The nite-time propagator
+is Pt = exp(tL† ) on densities and exp(tL) on observables;
+we report L for each gate below. For linear drift and
+constant diusion, L† preserves the Gaussian manifold
+and the SN -triple of Eq. (C3) is the propagator data.
+
+19
+b. Drift gate PDrift(v, t). L = v ∂x ; SDE dXt =
+v dt; propagator p(x) → p(x − vt); triple (1, vt, 0).
+A generator-time-parametrized form of PDisp suited to
+Trotter schedules.
+c. Diusion
+gate PDi(D, t). L = D ∂x2 ; SDE
+√
+dXt = 2D dWt ; Gaussian convolution kernel Kt (y 
+x) = N (y; x, 2Dt); triple (1, 0, 2Dt). No stationary distribution on R; the canonical noise-injection generator
+gate.
+d. Ornstein–Uhlenbeck gate POU(,
+√ D, t). L =
+− x ∂x + D ∂x2 ; SDE dXt = −Xt dt + 2D dWt ; kernel
+
+
+
+−2γt
+;
+(C7)
+Kt (y  x0 ) = N y; x0 e−γt , D
+γ 1−e
+
+
+
+−2γt
+) ; stationary distribution
+triple e−γt , 0, D
+γ (1 − e
+N (0, D). A non-trivial element of S1 with both deterministic contraction (M = e−γt < 1) and noise injection (∆ > 0); the pmode generator-derived example
+analogous to PIsing for pbit dynamics.
+e. Geometric Brownian motion gate PGBM(µ, σ, t).
+2 2
+L = µx ∂x + σ 2x ∂x2 on x > 0; SDE dXt =
+µXt dt + σXt dWt (multiplicative noise); closed form
+Xt = X0 exp((µ − σ 2 2)t + σWt ). Generally not in S1
+due to state-dependent diusion.
+f. Cox–Ingersoll–Ross gate PCIR(κ, θ, σ, t). L =
+2
+κ(θ − x) ∂x + σ2x ∂x2 on x ≥ 0 with Feller condition
+√
+2κθ ≥ σ 2 ; SDE dXt = κ(θ − Xt ) dt + σ Xt dWt ; stationary distribution in the Gamma or non-central-χ2 family.
+g. Exchange generator. Lexch = (xj − xi )∂xi +
+(xi − xj )∂xj + D(∂x2i + ∂x2j ) drives two coupled OU processes conserving xi + xj .
+h. Correlated-noise generator. Lcorr = D∂x2i +
+D∂x2j + 2ρD∂xi ∂xj is pure noise injection with covariance
+ 
+D ρ1 ρ1 per unit time.
+i. Disjoint-support tensor identity. If LA , LB are
+Fokker–Planck operators with disjoint mode supports,
+then
+
+
+exp (LA ⊗ IB + IA ⊗ LB ) t = exp(LA t) ⊗ exp(LB t),
+(C8)
+the continuous-variable analog of the disjoint-support
+identity used throughout Sections III–III B and the basis
+for parallel scheduling of pmode gates.
+j. Hamiltonian–Langevin and BAOAB decomposition. Underdamped Langevin dynamics in (q, p)-space
+with potential U (q),
+dq = (pm) dt,
+dp = −U (q) dt − p dt +
+
+
+
+2mkB T dW ,
+
+(C9)
+
+has Fokker–Planck generator L = Ldrift + Lfric + Ldi
+with
+Ldrift = −(pm)·q + U (q)·p ,
+Lfric =  p ·(p ·),
+Ldi = mkB T 2p 
+
+(C10)
+(C11)
+(C12)
+
+Each generator maps to a gate: Lfric gives a PScale
+(momentum contraction), Ldi gives a PDi with D =
+mkB T , and Ldrift gives a symplectic step. The BAOAB
+Strang integrator applies these in order: momentum
+half-step (B), position half-step (A), OU step (O), position half-step (A), momentum half-step (B). The sampler compiles to an alternating sequence of PDrift, PScale,
+and PDi gates, with Tier-3 CFunc[−U ] gates when U
+is non-quadratic.
+4.
+
+Tier hierarchy of non-Gaussian primitives
+
+We organize pmode constructions into tiers by the
+resources they consume: Tier 1 comprises the noiseless Gaussian gates of C 2; Tier 2 adds prepared-anddiscarded ancillas, continuous (2a) or discrete (2b); Tier
+3 adds measurement and classical feedback.
+a. Tier 2a: noise via auxiliary pmodes. For input
+2
+X ∼ N (µ, σ 2 ) and independent ancilla A ∼ N (0, σA
+),
+applying PMix(θ) and discarding A gives
+
+
+2
+X ′ ∼ N cos θ · µ, cos2 θ σ 2 + sin2 θ σA
+
+(C13)
+
+Correlated multi-mode noise is realized by correlating
+auxiliaries with P2Sq(r) before mode-by-mode
+
+ mixing;
+2 cosh 2r sinh 2r
+the resulting covariance sin2 θ σA
+realizes
+sinh 2r cosh 2r
+any 2 × 2 noise injection by tuning (θ, r, σA ).
+b. Tier 2b: Gaussian mixtures via auxiliary pdits.
+The controlled-shift gate is
+CShift(α) : k) ⊗ p(x) −→ k) ⊗ p(x − k ),
+α = (0 ,    , d−1 )
+
+(C14)
+
+Preparing a pdit with PMF π = (π0 ,    , πd−1 ), applying
+CShift(α) to (K, X) with X ∼ N (µ, σ 2 ), and marginalizing K yields
+pX ′ (x) =
+
+d−1
+
+
+k=0
+
+πk N (x; µ + k , σ 2 ),
+
+(C15)
+
+a Gaussian mixture with shared variance.
+The
+companion controlled-scale gate CScale(r) : k) ⊗
+−rk
+p(x)
+p(e−rk x) gives heteroscedastic mixtures
+ → k)⊗e
+rk
+2rk 2
+σ ). Finite Gaussian mixtures can apk πk N (e µ, e
+proximate broad classes of continuous densities, including compactly supported densities in L1 under standard
+regularity assumptions. Tier-2b therefore gives a practical density-approximation route by adding one type of
+discrete ancilla and one controlled gate.
+c. Tier 3: measurement-feedback for arbitrary nonlinearities. For state-dependent nonlinearities the measurement gate Meas : pmode → real samples x0 ∼ p(x)
+and produces a classical real; CFunc[f ] : real → real
+evaluates an arbitrary measurable f on a classical coprocessor; and FeedbackDisp : (real, pmode) → pmode
+treats the classical value as a deterministic displacement on the live pmode. The composition Meas →
+
+20
+CFunc[ϕ] → Inject realizes the pushforward ϕ∗ pX ; inserting a PDi step recovers an overdamped
+Langevin
+√
+update Xt+∆t = Xt − ∆t V (Xt ) + 2∆t ξt that samples from the Gibbs distribution π(x) ∝ e−V (x) . Tier 3
+incurs the round-trip latency cost of each measurement
+and classical evaluation; this compilation strategy is reserved for state-dependent nonlinearities that cannot be
+approximated by a nite mixture within the application
+accuracy budget.
+
+5.
+
+Hybrid pdit/pmode gates and jump-diusion
+
+The general jump-diusion process
+dXt = µNt (Xt ) dt + σNt (Xt ) dWt ,
+Nt : i → j at rate λji (Xt ),
+
+(C16)
+
+FIG. 18: Measured operating characteristic of an X0
+pbit. The probability of observing state 1 is
+approximately sigmoidal in the control parameter (left);
+output waveforms at three bias settings show the
+corresponding telegraph signals (right). Data digitized
+from the published gure in the public X0/XTR-0
+description.
+
+has joint generator
+LJD =
+
+
+i
+
+(di)
+
+i)(i⊗Li
+
++
+
+
+i̸=j
+
+
+
+λji (x) j)(i⊗Kji −i)(i⊗I ,
+
+(C17)
+Assuming constant rates and no reset, the Strang split
+
+(di)
+with diusion piece Li
+
+P∆t ≈ eL
+
+(diff)
+
+= µi (x)∂x + 12 σi2 (x)∂x2 .
+
+∆t2 L(jump) ∆t L(diff) ∆t2
+
+e
+
+e
+
+(C18)
+
+has local error O(∆t3 ) and global error O(∆t2 ); the corresponding circuit alternates CtrlOU (half-step), a pditonly jump layer (full step), and CtrlOU (half-step). Statedependent rates λji (x) require a Tier-3 measurement of
+the pmode before each jump layer, and this hybrid Tier2/Tier-3 schedule is a compilation for regime-switching
+dynamics with state-dependent rates that appear in nancial, biophysical, and chemical models.
+
+Appendix D: X0 sampling circuits and the XTR-0
+platform
+
+This appendix summarizes the X0 test chip and the
+XTR-0 platform used to host it in the hardware demonstration of Section V F, complementing the backend description of Section IV B. The device physics of the X0
+primitives is developed in Ref. [8], and the platform is
+described in the documentation materials [57]. Here we
+collect the facts relevant to their use as a randomness
+source for PSCs.
+a. Platform. XTR-0 is a desktop development platform consisting of a digital host, an FPGA, and two
+daughterboard sockets, each of which can receive a chip
+carrying probabilistic primitives. The socketed construction allows the same platform to host future chips without modication. The test chip currently hosted on the
+platform, the X0 chip, was fabricated in an advanced
+FinFET CMOS process [8] with the goal of validating
+
+transistor-level noise models and probabilistic circuit designs. Control parameters are set through on-chip 8bit digital-to-analog converters, while the output signals,
+which are weak because the circuits operate in the subthreshold regime, are routed o-chip through a dedicated
+amplication chain and digitized on the daughterboard
+before reaching the host [8]. In this way, the host observes the analog dynamics of every primitive directly
+and can update parameters in a closed loop.
+b. Sampling model. Each primitive outputs a
+continuous-time random voltage signal whose stationary
+statistics realize a target distribution, such that observing the signal at intervals long compared to the relaxation time of the circuit yields approximately independent draws. For the pbit, the memory between observations separated by a lag τ is quantied by the normalized
+autocorrelation
+rxx (τ ) ≈ e−τ τ0 ,
+
+(D1)
+
+with τ0 ≈ 100 ns for the device used here [9], while pbit
+designs on the X0 process span relaxation times from
+roughly 1 ns to 1 ms. For a representative Gaussian
+primitive, Ref. [8] reports correlation times down to τ ≈
+1 ns and an energy per independent sample, dened as
+the product of the DC power and the correlation time,
+of E ≈ 15 aJ. These gures anchor the energy and rate
+ranges quoted in Section IV B. It is important to note
+that extreme values of the controls recover deterministic
+behavior: for example, the pbit becomes a constant 0 or
+1 source.
+c. Probabilistic primitives. The X0 primitives supply hardware draws for the wire types of Table I, and
+are summarized in Table II. The pbit outputs a two-level
+random telegraph signal whose bias is approximately sigmoidal in a single control voltage, as shown by the measurements of Figure 18. The pdit generalizes this behavior to a k-level signal, where normalization leaves
+
+21
+TABLE II: X0 sampling circuits exposed by XTR-0.
+Circuit Output signal
+
+Distribution
+
+Controls
+
+pbit
+2-level telegraph Bernoulli
+1 (bias)
+pdit
+k-level telegraph categorical
+k − 1 (weights)
+pmode continuous
+Gaussian
+σ (1D); ρ (2D)
+pMoG multi-level
+Gaussian mixture πj , µj , Σj (bounded)
+
+k − 1 independent controls. Furthermore, XTR-0 exposes a one-dimensional pmode with programmable standard deviation and a two-dimensional pmode with pro-
+
+grammable correlation between its two output voltages.
+The pmode electronic circuit is a network of capacitively
+coupled CMOS inverters, referred to in Ref. [8] as a
+non-equilibrium adjustable-temperature resistor network
+(NEAT-RN) and identied there as the rst electronic
+implementation of a Brownian gyrator using CMOS circuits. The pmode wire of Section II A is the software abstraction of this device. Finally, the mixture-ofGaussians circuit (pMoG) jumps between levels whose
+positions, spreads, and weights are programmable within
+bounds.
+
+

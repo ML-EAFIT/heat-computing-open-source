@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 700" role="img" aria-label="Classical computer blocks next to their thermodynamic counterparts and the Verilog file of each" font-family="IBM Plex Sans, system-ui, sans-serif">
+<style>
+svg{--bg:#faf9f6;--ink:#1d2329;--mut:#66707a;--line:#8f99a3;--warm:#c4501d;--warmf:#fbe5d8;
+--cool:#16708a;--coolf:#dbeef3;--ok:#2c8a4b;--okf:#ddf0e3;--bad:#b9b5ac;--badf:#efede8;--panel:#f1efea}
+@media (prefers-color-scheme:dark){svg{--bg:#14181c;--ink:#e5e8eb;--mut:#9aa4ae;--line:#64707b;
+--warm:#f08a5c;--warmf:#3b2418;--cool:#5cc1d9;--coolf:#12303a;--ok:#6dca8b;--okf:#163322;--bad:#6d6a64;
+--badf:#24272a;--panel:#1b2025}}
+
+.bg{fill:var(--bg)} .panel{fill:var(--panel)}
+.t{fill:var(--ink);font:13px 'IBM Plex Sans',system-ui,sans-serif}
+.ts{fill:var(--mut);font:11px 'IBM Plex Sans',system-ui,sans-serif}
+.tm{fill:var(--ink);font:11.5px 'IBM Plex Mono',ui-monospace,monospace}
+.tms{fill:var(--mut);font:10.5px 'IBM Plex Mono',ui-monospace,monospace}
+.th{fill:var(--ink);font:600 15px 'IBM Plex Sans',system-ui,sans-serif}
+.tb{fill:var(--ink);font:600 13px 'IBM Plex Sans',system-ui,sans-serif}
+.tw{fill:var(--warm)} .tc{fill:var(--cool)} .tok{fill:var(--ok)}
+.warm{fill:var(--warmf);stroke:var(--warm);stroke-width:1.4}
+.cool{fill:var(--coolf);stroke:var(--cool);stroke-width:1.4}
+.ok{fill:var(--okf);stroke:var(--ok);stroke-width:1.4}
+.bad{fill:var(--badf);stroke:var(--bad);stroke-width:1.2}
+.plain{fill:var(--bg);stroke:var(--line);stroke-width:1.2}
+.ln{stroke:var(--line);stroke-width:1.4;fill:none}
+.lw{stroke:var(--warm);stroke-width:1.6;fill:none}
+.lc{stroke:var(--cool);stroke-width:1.6;fill:none}
+.lk{stroke:var(--ink);stroke-width:1.6;fill:none}
+.dash{stroke-dasharray:4 4}
+.fw{fill:var(--warm)} .fc{fill:var(--cool)} .fk{fill:var(--ink)} .fl{fill:var(--line)}
+</style>
+<rect width="980" height="700" class="bg"/>
+<text x="24.0" y="34.0" class="th" text-anchor="start" >Classical computer</text>
+<text x="24.0" y="54.0" class="ts" text-anchor="start" >output = f(input): the same answer every time</text>
+<text x="420.0" y="34.0" class="th tw" text-anchor="start" >Thermodynamic / probabilistic computer</text>
+<text x="420.0" y="54.0" class="ts" text-anchor="start" >P(state) ∝ exp(−β·E(state)): answers are samples</text>
+<text x="800.0" y="34.0" class="th tc" text-anchor="start" >Our Verilog</text>
+<text x="800.0" y="54.0" class="ts" text-anchor="start" >rtl/ on the Tang Nano 9K</text>
+<rect x="24.0" y="72.0" width="150.0" height="54.0" rx="4" class="panel"/>
+<polyline points="34.0,118.0 99.0,118.0 99.0,80.0 164.0,80.0" class="lk"/>
+<text x="184.0" y="96.0" class="ts" text-anchor="start" >step: input decides</text>
+<text x="184.0" y="110.0" class="ts" text-anchor="start" >the output exactly</text>
+<rect x="420.0" y="72.0" width="150.0" height="54.0" rx="4" class="panel"/>
+<polyline points="430.0,117.0 432.2,116.9 434.3,116.7 436.5,116.6 438.7,116.4 440.8,116.2 443.0,116.0 445.2,115.7 447.3,115.5 449.5,115.2 451.7,114.8 453.8,114.5 456.0,114.1 458.2,113.6 460.3,113.1 462.5,112.6 464.7,112.0 466.8,111.4 469.0,110.7 471.2,110.0 473.3,109.2 475.5,108.4 477.7,107.5 479.8,106.5 482.0,105.6 484.2,104.5 486.3,103.5 488.5,102.4 490.7,101.3 492.8,100.1 495.0,99.0 497.2,97.9 499.3,96.7 501.5,95.6 503.7,94.5 505.8,93.5 508.0,92.4 510.2,91.5 512.3,90.5 514.5,89.6 516.7,88.8 518.8,88.0 521.0,87.3 523.2,86.6 525.3,86.0 527.5,85.4 529.7,84.9 531.8,84.4 534.0,83.9 536.2,83.5 538.3,83.2 540.5,82.8 542.7,82.5 544.8,82.3 547.0,82.0 549.2,81.8 551.3,81.6 553.5,81.4 555.7,81.3 557.8,81.1 560.0,81.0" class="lw dash"/>
+<polyline points="430.0,118.0 432.2,118.0 434.3,118.0 436.5,118.0 438.7,118.0 440.8,118.0 443.0,118.0 445.2,118.0 447.3,117.9 449.5,117.9 451.7,117.9 453.8,117.9 456.0,117.8 458.2,117.8 460.3,117.7 462.5,117.6 464.7,117.4 466.8,117.2 469.0,117.0 471.2,116.6 473.3,116.2 475.5,115.6 477.7,114.8 479.8,113.9 482.0,112.6 484.2,111.1 486.3,109.2 488.5,107.0 490.7,104.5 492.8,101.8 495.0,99.0 497.2,96.2 499.3,93.5 501.5,91.0 503.7,88.8 505.8,86.9 508.0,85.4 510.2,84.1 512.3,83.2 514.5,82.4 516.7,81.8 518.8,81.4 521.0,81.0 523.2,80.8 525.3,80.6 527.5,80.4 529.7,80.3 531.8,80.2 534.0,80.2 536.2,80.1 538.3,80.1 540.5,80.1 542.7,80.1 544.8,80.0 547.0,80.0 549.2,80.0 551.3,80.0 553.5,80.0 555.7,80.0 557.8,80.0 560.0,80.0" class="lw"/>
+<text x="580.0" y="96.0" class="ts" text-anchor="start" >sigmoid: input tilts the</text>
+<text x="580.0" y="110.0" class="ts" text-anchor="start" >odds (dashed = hotter, low β)</text>
+<rect x="24.0" y="150.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="174.0" class="tb" text-anchor="middle" >Transistor</text>
+<text x="262.0" y="175.0" class="ts" text-anchor="start" >switch: on / off</text>
+<line x1="400.0" y1="170.0" x2="416.0" y2="170.0" class="ln"/>
+<polygon points="416.0,170.0 408.0,174.0 408.0,166.0" class="fl"/>
+<rect x="420.0" y="150.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="175.0" class="tb" text-anchor="start" >Noise source</text>
+<text x="560.0" y="175.0" class="ts" text-anchor="start" >shot noise / LFSR bits</text>
+<rect x="800.0" y="150.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="175.0" class="tms" text-anchor="start" >lfsr.v  noise_bank.v</text>
+<rect x="24.0" y="202.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="226.0" class="tb" text-anchor="middle" >Logic gate</text>
+<text x="262.0" y="227.0" class="ts" text-anchor="start" >AND / OR / NOT</text>
+<line x1="400.0" y1="222.0" x2="416.0" y2="222.0" class="ln"/>
+<polygon points="416.0,222.0 408.0,226.0 408.0,218.0" class="fl"/>
+<rect x="420.0" y="202.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="227.0" class="tb" text-anchor="start" >p-gate</text>
+<text x="560.0" y="227.0" class="ts" text-anchor="start" >J, h whose ground states = truth table</text>
+<rect x="800.0" y="202.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="227.0" class="tms" text-anchor="start" >pgates.v</text>
+<rect x="24.0" y="254.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="278.0" class="tb" text-anchor="middle" >Comparator</text>
+<text x="262.0" y="279.0" class="ts" text-anchor="start" >V &gt; Vref</text>
+<line x1="400.0" y1="274.0" x2="416.0" y2="274.0" class="ln"/>
+<polygon points="416.0,274.0 408.0,278.0 408.0,270.0" class="fl"/>
+<rect x="420.0" y="254.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="279.0" class="tb" text-anchor="start" >p-bit</text>
+<text x="560.0" y="279.0" class="ts" text-anchor="start" >P(1) = σ(2β·field)</text>
+<rect x="800.0" y="254.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="279.0" class="tms" text-anchor="start" >pbit.v</text>
+<rect x="24.0" y="306.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="330.0" class="tb" text-anchor="middle" >Adder / ALU</text>
+<text x="262.0" y="331.0" class="ts" text-anchor="start" >sums numbers</text>
+<line x1="400.0" y1="326.0" x2="416.0" y2="326.0" class="ln"/>
+<polygon points="416.0,326.0 408.0,330.0 408.0,322.0" class="fl"/>
+<rect x="420.0" y="306.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="331.0" class="tb" text-anchor="start" >Synapse MAC</text>
+<text x="560.0" y="331.0" class="ts" text-anchor="start" >field = h + Σ J·x</text>
+<rect x="800.0" y="306.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="331.0" class="tms" text-anchor="start" >weight_mac.v</text>
+<rect x="24.0" y="358.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="382.0" class="tb" text-anchor="middle" >Flip-flop</text>
+<text x="262.0" y="383.0" class="ts" text-anchor="start" >holds a bit</text>
+<line x1="400.0" y1="378.0" x2="416.0" y2="378.0" class="ln"/>
+<polygon points="416.0,378.0 408.0,382.0 408.0,374.0" class="fl"/>
+<rect x="420.0" y="358.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="383.0" class="tb" text-anchor="start" >Latched spin</text>
+<text x="560.0" y="383.0" class="ts" text-anchor="start" >latches on clock edge</text>
+<rect x="800.0" y="358.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="383.0" class="tms" text-anchor="start" >pbit_array.v (s[i])</text>
+<rect x="24.0" y="410.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="434.0" class="tb" text-anchor="middle" >Clock + PC</text>
+<text x="262.0" y="435.0" class="ts" text-anchor="start" >next instruction</text>
+<line x1="400.0" y1="430.0" x2="416.0" y2="430.0" class="ln"/>
+<polygon points="416.0,430.0 408.0,434.0 408.0,426.0" class="fl"/>
+<rect x="420.0" y="410.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="435.0" class="tb" text-anchor="start" >Gibbs scheduler</text>
+<text x="560.0" y="435.0" class="ts" text-anchor="start" >colour block 0, 1, 0, 1 …</text>
+<rect x="800.0" y="410.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="435.0" class="tms" text-anchor="start" >pbit_array.v (FSM)</text>
+<rect x="24.0" y="462.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="486.0" class="tb" text-anchor="middle" >Clock / voltage</text>
+<text x="262.0" y="487.0" class="ts" text-anchor="start" >speed knob</text>
+<line x1="400.0" y1="482.0" x2="416.0" y2="482.0" class="ln"/>
+<polygon points="416.0,482.0 408.0,486.0 408.0,478.0" class="fl"/>
+<rect x="420.0" y="462.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="487.0" class="tb" text-anchor="start" >β annealing</text>
+<text x="560.0" y="487.0" class="ts" text-anchor="start" >temperature knob</text>
+<rect x="800.0" y="462.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="487.0" class="tms" text-anchor="start" >schedule_ctrl.v</text>
+<rect x="24.0" y="514.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="538.0" class="tb" text-anchor="middle" >RAM / ROM</text>
+<text x="262.0" y="539.0" class="ts" text-anchor="start" >program + data</text>
+<line x1="400.0" y1="534.0" x2="416.0" y2="534.0" class="ln"/>
+<polygon points="416.0,534.0 408.0,538.0 408.0,530.0" class="fl"/>
+<rect x="420.0" y="514.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="539.0" class="tb" text-anchor="start" >J / h memory</text>
+<text x="560.0" y="539.0" class="ts" text-anchor="start" >the program is energy</text>
+<rect x="800.0" y="514.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="539.0" class="tms" text-anchor="start" >BSRAM in pbit_array.v</text>
+<rect x="24.0" y="566.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="590.0" class="tb" text-anchor="middle" >Bus / wires</text>
+<text x="262.0" y="591.0" class="ts" text-anchor="start" >connect units</text>
+<line x1="400.0" y1="586.0" x2="416.0" y2="586.0" class="ln"/>
+<polygon points="416.0,586.0 408.0,590.0 408.0,582.0" class="fl"/>
+<rect x="420.0" y="566.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="591.0" class="tb" text-anchor="start" >Coupling graph</text>
+<text x="560.0" y="591.0" class="ts" text-anchor="start" >who feels whom (J ≠ 0)</text>
+<rect x="800.0" y="566.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="591.0" class="tms" text-anchor="start" >weight RAM {i, j}</text>
+<rect x="24.0" y="618.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="642.0" class="tb" text-anchor="middle" >Output port</text>
+<text x="262.0" y="643.0" class="ts" text-anchor="start" >reads one answer</text>
+<line x1="400.0" y1="638.0" x2="416.0" y2="638.0" class="ln"/>
+<polygon points="416.0,638.0 408.0,642.0 408.0,634.0" class="fl"/>
+<rect x="420.0" y="618.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="643.0" class="tb" text-anchor="start" >Readout</text>
+<text x="560.0" y="643.0" class="ts" text-anchor="start" >counts samples → histogram</text>
+<rect x="800.0" y="618.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="643.0" class="tms" text-anchor="start" >readout_counter.v</text>
+<text x="24.0" y="684.0" class="ts" text-anchor="start" >Every right-hand unit is built from the p-bit: noise + bias + comparator + latch (see 02_pbit_anatomy).</text>
+</svg>

@@ -1,0 +1,1420 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head>
+<body>
+<title>Thermal Computer on a Tang Nano</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one lab-notebook column; each section = claim + live instrument + drawing.
+   Warm = physics / heat / randomness, cool = digital FPGA. */
+:root{
+  --bg:#f5f6f4; --fg:#1d2329; --ink:#1d2329; --mut:#5d6871; --line:#c7ced3; --panel:#eceeea; --card:#fbfbfa;
+  --warm:#c4501d; --warmf:#fbe5d8; --cool:#16708a; --coolf:#dbeef3; --ok:#2c8a4b; --okf:#ddf0e3;
+  --bad:#b9b5ac; --badf:#efede8;
+  --f-display:'IBM Plex Sans Condensed','Arial Narrow',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#13171b; --fg:#e5e8eb; --ink:#e5e8eb; --mut:#98a2ac; --line:#3a444d; --panel:#1b2025; --card:#171c20;
+  --warm:#f08a5c; --warmf:#3b2418; --cool:#5cc1d9; --coolf:#12303a; --ok:#6dca8b; --okf:#163322;
+  --bad:#6d6a64; --badf:#24272a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13171b; --fg:#e5e8eb; --ink:#e5e8eb; --mut:#98a2ac; --line:#3a444d; --panel:#1b2025; --card:#171c20;
+  --warm:#f08a5c; --warmf:#3b2418; --cool:#5cc1d9; --coolf:#12303a; --ok:#6dca8b; --okf:#163322;
+  --bad:#6d6a64; --badf:#24272a; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 64px;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,5vw,50px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(22px,3vw,30px);font-weight:600}
+h3{font-size:17px;font-weight:600}
+p{margin:0;max-width:68ch}
+.lede{font-size:17px;color:var(--mut);max-width:70ch}
+.eyebrow{font:500 11.5px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.eyebrow b{color:var(--warm);font-weight:500}
+code,.mono{font-family:var(--f-mono);font-size:.9em}
+section{display:flex;flex-direction:column;gap:16px}
+.sec-head{display:flex;flex-direction:column;gap:8px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.inst{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.fig{overflow-x:auto;border-radius:10px;background:var(--panel)}
+.fig svg{display:block;width:100%;min-width:720px;height:auto}
+figure{margin:0;display:flex;flex-direction:column;gap:8px}
+figcaption{font-size:13px;color:var(--mut);max-width:90ch}
+.controls{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+label.sl{display:flex;flex-direction:column;gap:2px;font:12px var(--f-mono);color:var(--mut);min-width:150px;flex:1}
+label.sl span b{color:var(--fg);font-weight:500}
+input[type=range]{width:100%;accent-color:var(--warm)}
+button,.seg button{font:500 13px var(--f-body);border:1px solid var(--line);background:var(--bg);color:var(--fg);
+  border-radius:6px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--mut)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cool);outline-offset:2px}
+button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.seg{display:inline-flex;gap:0}
+.seg button{border-radius:0;margin-left:-1px}
+.seg button:first-child{border-radius:6px 0 0 6px;margin-left:0}
+.seg button:last-child{border-radius:0 6px 6px 0}
+.stat{font:500 13px var(--f-mono);color:var(--mut)}
+.stat b{color:var(--fg);font-weight:500}
+.coins{display:grid;grid-template-columns:repeat(32,1fr);gap:3px}
+.coin{aspect-ratio:1;border-radius:50%;background:var(--badf);border:1px solid var(--bad)}
+.coin.up{background:var(--warm);border-color:var(--warm)}
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;align-items:center}
+@media (max-width:820px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero-inst{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+canvas{display:block;width:100%;height:auto;max-width:100%}
+.rows{display:flex;flex-direction:column;gap:4px;font:12.5px var(--f-mono)}
+.row{display:grid;grid-template-columns:7.5em minmax(0,1fr) 4em;gap:8px;align-items:center}
+.bar{height:12px;border-radius:2px;background:var(--bad);transition:width .15s}
+.row.ok .bar{background:var(--ok)}
+.row .lab{white-space:nowrap}
+.row.ok .lab{color:var(--ok)}
+.row .v{text-align:right;font-variant-numeric:tabular-nums}
+.nodebtn{font:12px var(--f-mono);padding:4px 8px}
+.clamps{display:flex;flex-wrap:wrap;gap:8px}
+.clamp{display:flex;align-items:center;gap:6px;font:12px var(--f-mono)}
+.big{font:600 28px var(--f-display);font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font:500 12px var(--f-mono);padding:2px 8px;border-radius:99px;background:var(--okf);color:var(--ok);border:1px solid var(--ok)}
+.pill.no{background:var(--badf);color:var(--mut);border-color:var(--bad)}
+.table{width:100%;border-collapse:collapse;font-size:13.5px}
+.table td,.table th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.table th{font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.tscroll{overflow-x:auto}
+pre.cmd{background:var(--panel);border-radius:8px;padding:12px 14px;overflow-x:auto;font:12.5px/1.55 var(--f-mono);margin:0}
+.key{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--mut)}
+.key i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.note{font-size:12.5px;color:var(--mut)}
+/* graph svgs drawn by JS */
+.gnode{stroke-width:1.6;transition:fill .08s}
+.gnode.s1{fill:var(--warm);stroke:var(--warm)} .gnode.s0{fill:var(--card);stroke:var(--mut)}
+.gnode.cl{stroke-width:4;stroke:var(--cool)}
+.glab{font:600 12px var(--f-mono);text-anchor:middle;pointer-events:none}
+.glab.s1{fill:#fff} .glab.s0{fill:var(--fg)}
+.gedge{stroke-width:1.6}
+.gedge.pos{stroke:var(--warm)} .gedge.neg{stroke:var(--cool);stroke-dasharray:4 3}
+.gedge.mid{stroke:var(--line)} .gedge.cut{stroke:var(--warm);stroke-width:2.6}
+.gw{font:10.5px var(--f-mono);fill:var(--mut);text-anchor:middle}
+@media (prefers-reduced-motion: reduce){.bar,.gnode{transition:none}}
+
+.bg{fill:var(--bg)} .panel{fill:var(--panel)}
+.t{fill:var(--ink);font:13px 'IBM Plex Sans',system-ui,sans-serif}
+.ts{fill:var(--mut);font:11px 'IBM Plex Sans',system-ui,sans-serif}
+.tm{fill:var(--ink);font:11.5px 'IBM Plex Mono',ui-monospace,monospace}
+.tms{fill:var(--mut);font:10.5px 'IBM Plex Mono',ui-monospace,monospace}
+.th{fill:var(--ink);font:600 15px 'IBM Plex Sans',system-ui,sans-serif}
+.tb{fill:var(--ink);font:600 13px 'IBM Plex Sans',system-ui,sans-serif}
+.tw{fill:var(--warm)} .tc{fill:var(--cool)} .tok{fill:var(--ok)}
+.warm{fill:var(--warmf);stroke:var(--warm);stroke-width:1.4}
+.cool{fill:var(--coolf);stroke:var(--cool);stroke-width:1.4}
+.ok{fill:var(--okf);stroke:var(--ok);stroke-width:1.4}
+.bad{fill:var(--badf);stroke:var(--bad);stroke-width:1.2}
+.plain{fill:var(--bg);stroke:var(--line);stroke-width:1.2}
+.ln{stroke:var(--line);stroke-width:1.4;fill:none}
+.lw{stroke:var(--warm);stroke-width:1.6;fill:none}
+.lc{stroke:var(--cool);stroke-width:1.6;fill:none}
+.lk{stroke:var(--ink);stroke-width:1.6;fill:none}
+.dash{stroke-dasharray:4 4}
+.fw{fill:var(--warm)} .fc{fill:var(--cool)} .fk{fill:var(--ink)} .fl{fill:var(--line)}
+
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="sec-head">
+    <div class="eyebrow">Reverse-engineered from Extropic's papers · built in Verilog · Tang Nano 9K</div>
+    <h1>A computer made of biased coins</h1>
+    <p class="lede">A thermodynamic computer does not compute answers. It samples them. Its gate is the <b>p-bit</b>, a bit that flips at random with odds you program. Wire p-bits together with couplings J and biases h, let them flip, and the states they visit most are the low-energy ones, which is where the answers are. This page shows each basic unit, how the units connect, and how this repo runs them on a $20 FPGA.</p>
+    <div class="key"><span><i style="background:var(--warm)"></i>physical / thermodynamic side</span><span><i style="background:var(--cool)"></i>our FPGA emulation</span><span><i style="background:var(--ok)"></i>valid answer</span></div>
+  </div>
+  <div class="hero-inst" aria-label="64 independent p-bits flipping live">
+    <div class="eyebrow">Live: 64 p-bits, same bias h</div>
+    <div class="coins" id="coins"></div>
+    <div class="controls">
+      <label class="sl" for="heroH"><span>bias h = <b id="heroHv">0.00</b></span><input id="heroH" type="range" min="-2" max="2" step="0.05" value="0"></label>
+      <div class="stat">ones: <b id="heroFrac">50%</b> · expected σ(2βh) = <b id="heroExp">50%</b></div>
+    </div>
+    <p class="note">β = 1. Every coin redraws on every frame. Move h and the crowd tilts. No single coin is predictable, but the fraction is.</p>
+  </div>
+</header>
+
+<section id="units">
+  <div class="sec-head">
+    <div class="eyebrow"><b>1</b> · the basic units</div>
+    <h2>Every classical block has a thermal twin</h2>
+    <p>In a CPU, noise is the enemy and every block is deterministic. In a thermodynamic computer, noise is the fuel and every block is a sampler. All the right-hand units are built from one primitive, the p-bit.</p>
+  </div>
+  <figure>
+    <div class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 700" role="img" aria-label="Classical computer blocks next to their thermodynamic counterparts and the Verilog file of each" font-family="IBM Plex Sans, system-ui, sans-serif">
+
+<rect width="980" height="700" class="bg"/>
+<text x="24.0" y="34.0" class="th" text-anchor="start" >Classical computer</text>
+<text x="24.0" y="54.0" class="ts" text-anchor="start" >output = f(input): the same answer every time</text>
+<text x="420.0" y="34.0" class="th tw" text-anchor="start" >Thermodynamic / probabilistic computer</text>
+<text x="420.0" y="54.0" class="ts" text-anchor="start" >P(state) ∝ exp(−β·E(state)): answers are samples</text>
+<text x="800.0" y="34.0" class="th tc" text-anchor="start" >Our Verilog</text>
+<text x="800.0" y="54.0" class="ts" text-anchor="start" >rtl/ on the Tang Nano 9K</text>
+<rect x="24.0" y="72.0" width="150.0" height="54.0" rx="4" class="panel"/>
+<polyline points="34.0,118.0 99.0,118.0 99.0,80.0 164.0,80.0" class="lk"/>
+<text x="184.0" y="96.0" class="ts" text-anchor="start" >step: input decides</text>
+<text x="184.0" y="110.0" class="ts" text-anchor="start" >the output exactly</text>
+<rect x="420.0" y="72.0" width="150.0" height="54.0" rx="4" class="panel"/>
+<polyline points="430.0,117.0 432.2,116.9 434.3,116.7 436.5,116.6 438.7,116.4 440.8,116.2 443.0,116.0 445.2,115.7 447.3,115.5 449.5,115.2 451.7,114.8 453.8,114.5 456.0,114.1 458.2,113.6 460.3,113.1 462.5,112.6 464.7,112.0 466.8,111.4 469.0,110.7 471.2,110.0 473.3,109.2 475.5,108.4 477.7,107.5 479.8,106.5 482.0,105.6 484.2,104.5 486.3,103.5 488.5,102.4 490.7,101.3 492.8,100.1 495.0,99.0 497.2,97.9 499.3,96.7 501.5,95.6 503.7,94.5 505.8,93.5 508.0,92.4 510.2,91.5 512.3,90.5 514.5,89.6 516.7,88.8 518.8,88.0 521.0,87.3 523.2,86.6 525.3,86.0 527.5,85.4 529.7,84.9 531.8,84.4 534.0,83.9 536.2,83.5 538.3,83.2 540.5,82.8 542.7,82.5 544.8,82.3 547.0,82.0 549.2,81.8 551.3,81.6 553.5,81.4 555.7,81.3 557.8,81.1 560.0,81.0" class="lw dash"/>
+<polyline points="430.0,118.0 432.2,118.0 434.3,118.0 436.5,118.0 438.7,118.0 440.8,118.0 443.0,118.0 445.2,118.0 447.3,117.9 449.5,117.9 451.7,117.9 453.8,117.9 456.0,117.8 458.2,117.8 460.3,117.7 462.5,117.6 464.7,117.4 466.8,117.2 469.0,117.0 471.2,116.6 473.3,116.2 475.5,115.6 477.7,114.8 479.8,113.9 482.0,112.6 484.2,111.1 486.3,109.2 488.5,107.0 490.7,104.5 492.8,101.8 495.0,99.0 497.2,96.2 499.3,93.5 501.5,91.0 503.7,88.8 505.8,86.9 508.0,85.4 510.2,84.1 512.3,83.2 514.5,82.4 516.7,81.8 518.8,81.4 521.0,81.0 523.2,80.8 525.3,80.6 527.5,80.4 529.7,80.3 531.8,80.2 534.0,80.2 536.2,80.1 538.3,80.1 540.5,80.1 542.7,80.1 544.8,80.0 547.0,80.0 549.2,80.0 551.3,80.0 553.5,80.0 555.7,80.0 557.8,80.0 560.0,80.0" class="lw"/>
+<text x="580.0" y="96.0" class="ts" text-anchor="start" >sigmoid: input tilts the</text>
+<text x="580.0" y="110.0" class="ts" text-anchor="start" >odds (dashed = hotter, low β)</text>
+<rect x="24.0" y="150.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="174.0" class="tb" text-anchor="middle" >Transistor</text>
+<text x="262.0" y="175.0" class="ts" text-anchor="start" >switch: on / off</text>
+<line x1="400.0" y1="170.0" x2="416.0" y2="170.0" class="ln"/>
+<polygon points="416.0,170.0 408.0,174.0 408.0,166.0" class="fl"/>
+<rect x="420.0" y="150.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="175.0" class="tb" text-anchor="start" >Noise source</text>
+<text x="560.0" y="175.0" class="ts" text-anchor="start" >shot noise / LFSR bits</text>
+<rect x="800.0" y="150.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="175.0" class="tms" text-anchor="start" >lfsr.v  noise_bank.v</text>
+<rect x="24.0" y="202.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="226.0" class="tb" text-anchor="middle" >Logic gate</text>
+<text x="262.0" y="227.0" class="ts" text-anchor="start" >AND / OR / NOT</text>
+<line x1="400.0" y1="222.0" x2="416.0" y2="222.0" class="ln"/>
+<polygon points="416.0,222.0 408.0,226.0 408.0,218.0" class="fl"/>
+<rect x="420.0" y="202.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="227.0" class="tb" text-anchor="start" >p-gate</text>
+<text x="560.0" y="227.0" class="ts" text-anchor="start" >J, h whose ground states = truth table</text>
+<rect x="800.0" y="202.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="227.0" class="tms" text-anchor="start" >pgates.v</text>
+<rect x="24.0" y="254.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="278.0" class="tb" text-anchor="middle" >Comparator</text>
+<text x="262.0" y="279.0" class="ts" text-anchor="start" >V &gt; Vref</text>
+<line x1="400.0" y1="274.0" x2="416.0" y2="274.0" class="ln"/>
+<polygon points="416.0,274.0 408.0,278.0 408.0,270.0" class="fl"/>
+<rect x="420.0" y="254.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="279.0" class="tb" text-anchor="start" >p-bit</text>
+<text x="560.0" y="279.0" class="ts" text-anchor="start" >P(1) = σ(2β·field)</text>
+<rect x="800.0" y="254.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="279.0" class="tms" text-anchor="start" >pbit.v</text>
+<rect x="24.0" y="306.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="330.0" class="tb" text-anchor="middle" >Adder / ALU</text>
+<text x="262.0" y="331.0" class="ts" text-anchor="start" >sums numbers</text>
+<line x1="400.0" y1="326.0" x2="416.0" y2="326.0" class="ln"/>
+<polygon points="416.0,326.0 408.0,330.0 408.0,322.0" class="fl"/>
+<rect x="420.0" y="306.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="331.0" class="tb" text-anchor="start" >Synapse MAC</text>
+<text x="560.0" y="331.0" class="ts" text-anchor="start" >field = h + Σ J·x</text>
+<rect x="800.0" y="306.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="331.0" class="tms" text-anchor="start" >weight_mac.v</text>
+<rect x="24.0" y="358.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="382.0" class="tb" text-anchor="middle" >Flip-flop</text>
+<text x="262.0" y="383.0" class="ts" text-anchor="start" >holds a bit</text>
+<line x1="400.0" y1="378.0" x2="416.0" y2="378.0" class="ln"/>
+<polygon points="416.0,378.0 408.0,382.0 408.0,374.0" class="fl"/>
+<rect x="420.0" y="358.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="383.0" class="tb" text-anchor="start" >Latched spin</text>
+<text x="560.0" y="383.0" class="ts" text-anchor="start" >latches on clock edge</text>
+<rect x="800.0" y="358.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="383.0" class="tms" text-anchor="start" >pbit_array.v (s[i])</text>
+<rect x="24.0" y="410.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="434.0" class="tb" text-anchor="middle" >Clock + PC</text>
+<text x="262.0" y="435.0" class="ts" text-anchor="start" >next instruction</text>
+<line x1="400.0" y1="430.0" x2="416.0" y2="430.0" class="ln"/>
+<polygon points="416.0,430.0 408.0,434.0 408.0,426.0" class="fl"/>
+<rect x="420.0" y="410.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="435.0" class="tb" text-anchor="start" >Gibbs scheduler</text>
+<text x="560.0" y="435.0" class="ts" text-anchor="start" >colour block 0, 1, 0, 1 …</text>
+<rect x="800.0" y="410.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="435.0" class="tms" text-anchor="start" >pbit_array.v (FSM)</text>
+<rect x="24.0" y="462.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="486.0" class="tb" text-anchor="middle" >Clock / voltage</text>
+<text x="262.0" y="487.0" class="ts" text-anchor="start" >speed knob</text>
+<line x1="400.0" y1="482.0" x2="416.0" y2="482.0" class="ln"/>
+<polygon points="416.0,482.0 408.0,486.0 408.0,478.0" class="fl"/>
+<rect x="420.0" y="462.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="487.0" class="tb" text-anchor="start" >β annealing</text>
+<text x="560.0" y="487.0" class="ts" text-anchor="start" >temperature knob</text>
+<rect x="800.0" y="462.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="487.0" class="tms" text-anchor="start" >schedule_ctrl.v</text>
+<rect x="24.0" y="514.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="538.0" class="tb" text-anchor="middle" >RAM / ROM</text>
+<text x="262.0" y="539.0" class="ts" text-anchor="start" >program + data</text>
+<line x1="400.0" y1="534.0" x2="416.0" y2="534.0" class="ln"/>
+<polygon points="416.0,534.0 408.0,538.0 408.0,530.0" class="fl"/>
+<rect x="420.0" y="514.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="539.0" class="tb" text-anchor="start" >J / h memory</text>
+<text x="560.0" y="539.0" class="ts" text-anchor="start" >the program is energy</text>
+<rect x="800.0" y="514.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="539.0" class="tms" text-anchor="start" >BSRAM in pbit_array.v</text>
+<rect x="24.0" y="566.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="590.0" class="tb" text-anchor="middle" >Bus / wires</text>
+<text x="262.0" y="591.0" class="ts" text-anchor="start" >connect units</text>
+<line x1="400.0" y1="586.0" x2="416.0" y2="586.0" class="ln"/>
+<polygon points="416.0,586.0 408.0,590.0 408.0,582.0" class="fl"/>
+<rect x="420.0" y="566.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="591.0" class="tb" text-anchor="start" >Coupling graph</text>
+<text x="560.0" y="591.0" class="ts" text-anchor="start" >who feels whom (J ≠ 0)</text>
+<rect x="800.0" y="566.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="591.0" class="tms" text-anchor="start" >weight RAM {i, j}</text>
+<rect x="24.0" y="618.0" width="230.0" height="40.0" rx="6" class="plain"/>
+<text x="139.0" y="642.0" class="tb" text-anchor="middle" >Output port</text>
+<text x="262.0" y="643.0" class="ts" text-anchor="start" >reads one answer</text>
+<line x1="400.0" y1="638.0" x2="416.0" y2="638.0" class="ln"/>
+<polygon points="416.0,638.0 408.0,642.0 408.0,634.0" class="fl"/>
+<rect x="420.0" y="618.0" width="360.0" height="40.0" rx="6" class="warm"/>
+<text x="434.0" y="643.0" class="tb" text-anchor="start" >Readout</text>
+<text x="560.0" y="643.0" class="ts" text-anchor="start" >counts samples → histogram</text>
+<rect x="800.0" y="618.0" width="160.0" height="40.0" rx="6" class="cool"/>
+<text x="810.0" y="643.0" class="tms" text-anchor="start" >readout_counter.v</text>
+<text x="24.0" y="684.0" class="ts" text-anchor="start" >Every right-hand unit is built from the p-bit: noise + bias + comparator + latch (see 02_pbit_anatomy).</text>
+</svg></div>
+    <figcaption>Classical block → thermodynamic counterpart → the Verilog file that emulates it (rtl/). Source table: docs/02_building_blocks.md.</figcaption>
+  </figure>
+</section>
+
+<section id="pbit">
+  <div class="sec-head">
+    <div class="eyebrow"><b>2</b> · the p-bit</div>
+    <h2>One p-bit: weigh the neighbours, add noise, compare, latch</h2>
+    <p>The neighbours' states, weighted by J, plus the bias h give a <i>field</i>. The field shifts noise in front of a comparator, so P(1) = σ(2β·field) [DTM p.5 Eq. 11]. β is the inverse temperature: high β means sharp, almost deterministic; low β means hot and random.</p>
+  </div>
+  <div class="grid2">
+    <div class="inst">
+      <h3>p-bit playground</h3>
+      <canvas id="sigC" width="520" height="260" aria-label="Sigmoid P(1) versus field with the current operating point"></canvas>
+      <div class="controls">
+        <label class="sl" for="pbF"><span>field ℓ = Σ J·x + h = <b id="pbFv">0.50</b></span><input id="pbF" type="range" min="-3" max="3" step="0.05" value="0.5"></label>
+        <label class="sl" for="pbB"><span>β (inverse temperature) = <b id="pbBv">1.00</b></span><input id="pbB" type="range" min="0.1" max="4" step="0.05" value="1"></label>
+      </div>
+      <div class="stat">P(1) = <b id="pbP">—</b> · sampled: <b id="pbS">—</b> of the last <b id="pbN">0</b> draws</div>
+      <canvas id="pbStrip" width="520" height="34" aria-label="Recent random bits drawn by the p-bit"></canvas>
+    </div>
+    <div class="inst">
+      <h3>The same p-bit on the FPGA</h3>
+      <div class="tscroll"><table class="table">
+        <tr><th>stage</th><th>chip (papers)</th><th>Verilog</th></tr>
+        <tr><td>weigh + sum</td><td>XOR + resistor network on node V_b</td><td><code>weight_mac.v</code>: acc ± J, N cycles</td></tr>
+        <tr><td>to probability</td><td>bias voltage shifts shot noise</td><td><code>pbit.v</code>: ×β shift-add, 1024×16 σ table</td></tr>
+        <tr><td>random decision</td><td>comparator: noise &gt; threshold</td><td><code>rand16 &lt; p16</code>, LFSR noise</td></tr>
+        <tr><td>hold</td><td>latch on clock edge</td><td>spin register <code>s[i]</code></td></tr>
+      </table></div>
+      <p class="note">The RTL equals the Python model bit for bit over 200,000 sweeps, and its histograms equal the exact Boltzmann law within the noise of independent samples (docs/06).</p>
+    </div>
+  </div>
+  <figure>
+    <div class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" role="img" aria-label="Anatomy of one p-bit: the physical sampling cell above, the FPGA emulation below, with matching stages aligned" font-family="IBM Plex Sans, system-ui, sans-serif">
+
+<rect width="1000" height="520" class="bg"/>
+<text x="24.0" y="32.0" class="th" text-anchor="start" >One p-bit, two implementations</text>
+<text x="24.0" y="52.0" class="ts" text-anchor="start" >Same five stages. Top: the analog cell the DTM paper describes (Fig. 10, App. K). Bottom: rtl/pbit_array.v + rtl/pbit.v.</text>
+<text x="24.0" y="84.0" class="ts" text-anchor="start" letter-spacing="1">1 INPUTS</text>
+<text x="196.0" y="84.0" class="ts" text-anchor="start" letter-spacing="1">2 WEIGH + SUM</text>
+<text x="390.0" y="84.0" class="ts" text-anchor="start" letter-spacing="1">3 TO PROBABILITY</text>
+<text x="590.0" y="84.0" class="ts" text-anchor="start" letter-spacing="1">4 RANDOM DECISION</text>
+<text x="790.0" y="84.0" class="ts" text-anchor="start" letter-spacing="1">5 HOLD + BROADCAST</text>
+<rect x="14.0" y="96.0" width="972.0" height="170.0" rx="10" class="panel"/>
+<text x="24.0" y="114.0" class="ts tw" text-anchor="start" letter-spacing="1">PHYSICAL (thermodynamic chip)</text>
+<circle cx="46.0" cy="138.0" r="13" class="warm"/>
+<text x="46.0" y="142.0" class="tm" text-anchor="middle" >x1</text>
+<circle cx="98.0" cy="138.0" r="11" class="plain"/>
+<text x="98.0" y="142.0" class="t" text-anchor="middle" >⊕</text>
+<line x1="59.0" y1="138.0" x2="86.0" y2="138.0" class="lw"/>
+<polygon points="86.0,138.0 78.0,142.0 78.0,134.0" class="fw"/>
+<text x="98.0" y="123.0" class="tms" text-anchor="middle" >s1</text>
+<polyline points="120.0,138.0 128.0,133.0 136.0,143.0 144.0,133.0 152.0,143.0 160.0,133.0 168.0,143.0 184.0,138.0" class="lw"/>
+<text x="152.0" y="128.0" class="tms" text-anchor="middle" >G1</text>
+<line x1="184.0" y1="138.0" x2="250.0" y2="176.0" class="lw"/>
+<circle cx="46.0" cy="176.0" r="13" class="warm"/>
+<text x="46.0" y="180.0" class="tm" text-anchor="middle" >x2</text>
+<circle cx="98.0" cy="176.0" r="11" class="plain"/>
+<text x="98.0" y="180.0" class="t" text-anchor="middle" >⊕</text>
+<line x1="59.0" y1="176.0" x2="86.0" y2="176.0" class="lw"/>
+<polygon points="86.0,176.0 78.0,180.0 78.0,172.0" class="fw"/>
+<text x="98.0" y="161.0" class="tms" text-anchor="middle" >s2</text>
+<polyline points="120.0,176.0 128.0,171.0 136.0,181.0 144.0,171.0 152.0,181.0 160.0,171.0 168.0,181.0 184.0,176.0" class="lw"/>
+<text x="152.0" y="166.0" class="tms" text-anchor="middle" >G2</text>
+<line x1="184.0" y1="176.0" x2="250.0" y2="176.0" class="lw"/>
+<circle cx="46.0" cy="214.0" r="13" class="warm"/>
+<text x="46.0" y="218.0" class="tm" text-anchor="middle" >xn</text>
+<circle cx="98.0" cy="214.0" r="11" class="plain"/>
+<text x="98.0" y="218.0" class="t" text-anchor="middle" >⊕</text>
+<line x1="59.0" y1="214.0" x2="86.0" y2="214.0" class="lw"/>
+<polygon points="86.0,214.0 78.0,218.0 78.0,210.0" class="fw"/>
+<text x="98.0" y="199.0" class="tms" text-anchor="middle" >sn</text>
+<polyline points="120.0,214.0 128.0,209.0 136.0,219.0 144.0,209.0 152.0,219.0 160.0,209.0 168.0,219.0 184.0,214.0" class="lw"/>
+<text x="152.0" y="204.0" class="tms" text-anchor="middle" >Gn</text>
+<line x1="184.0" y1="214.0" x2="250.0" y2="176.0" class="lw"/>
+<circle cx="256.0" cy="176.0" r="7" class="warm"/>
+<text x="256.0" y="202.0" class="ts" text-anchor="middle" >V_b node</text>
+<line x1="256.0" y1="183.0" x2="256.0" y2="216.0" class="ln"/>
+<line x1="244.0" y1="216.0" x2="268.0" y2="216.0" class="lk"/>
+<line x1="244.0" y1="222.0" x2="268.0" y2="222.0" class="lk"/>
+<text x="276.0" y="226.0" class="tms" text-anchor="start" >C</text>
+<line x1="263.0" y1="176.0" x2="400.0" y2="176.0" class="lw"/>
+<polygon points="400.0,176.0 392.0,180.0 392.0,172.0" class="fw"/>
+<text x="331.5" y="170.0" class="ts" text-anchor="middle" >bias voltage</text>
+<rect x="404.0" y="144.0" width="150.0" height="64.0" rx="6" class="warm"/>
+<text x="479.0" y="173.0" class="tb" text-anchor="middle" >noise shifted</text>
+<text x="479.0" y="188.0" class="ts" text-anchor="middle" >Gaussian shot noise</text>
+<text x="479.0" y="201.0" class="ts" text-anchor="middle" >+ bias voltage</text>
+<line x1="554.0" y1="176.0" x2="600.0" y2="176.0" class="lw"/>
+<polygon points="600.0,176.0 592.0,180.0 592.0,172.0" class="fw"/>
+<rect x="604.0" y="144.0" width="150.0" height="64.0" rx="6" class="warm"/>
+<text x="679.0" y="173.0" class="tb" text-anchor="middle" >comparator</text>
+<text x="679.0" y="188.0" class="ts" text-anchor="middle" >noise &gt; threshold ?</text>
+<line x1="754.0" y1="176.0" x2="800.0" y2="176.0" class="lw"/>
+<polygon points="800.0,176.0 792.0,180.0 792.0,172.0" class="fw"/>
+<text x="777.0" y="170.0" class="ts" text-anchor="middle" >0/1</text>
+<rect x="804.0" y="144.0" width="150.0" height="64.0" rx="6" class="warm"/>
+<text x="879.0" y="173.0" class="tb" text-anchor="middle" >latch</text>
+<text x="879.0" y="188.0" class="ts" text-anchor="middle" >freezes on clock</text>
+<line x1="879.0" y1="208.0" x2="879.0" y2="244.0" class="lw"/>
+<polyline points="879.0,244.0 46.0,244.0 46.0,229.0" class="lw dash"/>
+<polygon points="46.0,229.0 50.0,237.0 42.0,237.0" class="fw"/>
+<text x="470.0" y="240.0" class="ts" text-anchor="middle" >x_i to all neighbours</text>
+<text x="879.0" y="134.0" class="tms" text-anchor="middle" >clock</text>
+<line x1="879.0" y1="138.0" x2="879.0" y2="144.0" class="ln"/>
+<polygon points="879.0,144.0 875.0,136.0 883.0,136.0" class="fl"/>
+<rect x="14.0" y="292.0" width="972.0" height="170.0" rx="10" class="panel"/>
+<text x="24.0" y="310.0" class="ts tc" text-anchor="start" letter-spacing="1">FPGA EMULATION (this repo)</text>
+<rect x="24.0" y="330.0" width="150.0" height="84.0" rx="6" class="cool"/>
+<text x="99.0" y="369.0" class="tb" text-anchor="middle" >spins s[ ] + J row</text>
+<text x="99.0" y="384.0" class="ts" text-anchor="middle" >J RAM row i (BSRAM)</text>
+<text x="99.0" y="397.0" class="ts" text-anchor="middle" >h RAM entry h_i</text>
+<line x1="174.0" y1="372.0" x2="196.0" y2="372.0" class="lc"/>
+<polygon points="196.0,372.0 188.0,376.0 188.0,368.0" class="fc"/>
+<rect x="200.0" y="330.0" width="170.0" height="84.0" rx="6" class="cool"/>
+<text x="285.0" y="369.0" class="tb" text-anchor="middle" >weight MAC</text>
+<text x="285.0" y="384.0" class="ts" text-anchor="middle" >acc += s_j ? +J : −J</text>
+<text x="285.0" y="397.0" class="ts" text-anchor="middle" >N cycles, no multiplier</text>
+<text x="285.0" y="410.0" class="ts" text-anchor="middle" >field ℓ (AW bits)</text>
+<line x1="370.0" y1="372.0" x2="400.0" y2="372.0" class="lc"/>
+<polygon points="400.0,372.0 392.0,376.0 392.0,368.0" class="fc"/>
+<text x="385.0" y="366.0" class="ts" text-anchor="middle" >ℓ</text>
+<rect x="404.0" y="330.0" width="150.0" height="84.0" rx="6" class="cool"/>
+<text x="479.0" y="369.0" class="tb" text-anchor="middle" >× β, σ LUT</text>
+<text x="479.0" y="384.0" class="ts" text-anchor="middle" >shift-add 8 cycles</text>
+<text x="479.0" y="397.0" class="ts" text-anchor="middle" >1024×16 ROM</text>
+<text x="479.0" y="410.0" class="ts" text-anchor="middle" >p = 65536·σ(2βℓ)</text>
+<line x1="554.0" y1="372.0" x2="600.0" y2="372.0" class="lc"/>
+<polygon points="600.0,372.0 592.0,376.0 592.0,368.0" class="fc"/>
+<text x="577.0" y="366.0" class="ts" text-anchor="middle" >p16</text>
+<rect x="604.0" y="330.0" width="150.0" height="84.0" rx="6" class="cool"/>
+<text x="679.0" y="369.0" class="tb" text-anchor="middle" >rand16 &lt; p16</text>
+<text x="679.0" y="384.0" class="ts" text-anchor="middle" >LFSR32 draws 16 bits</text>
+<text x="679.0" y="397.0" class="ts" text-anchor="middle" >fresh every update</text>
+<line x1="754.0" y1="372.0" x2="800.0" y2="372.0" class="lc"/>
+<polygon points="800.0,372.0 792.0,376.0 792.0,368.0" class="fc"/>
+<text x="777.0" y="366.0" class="ts" text-anchor="middle" >bit</text>
+<rect x="804.0" y="330.0" width="150.0" height="84.0" rx="6" class="cool"/>
+<text x="879.0" y="369.0" class="tb" text-anchor="middle" >spin register</text>
+<text x="879.0" y="384.0" class="ts" text-anchor="middle" >s[i] ← bit</text>
+<text x="879.0" y="397.0" class="ts" text-anchor="middle" >read by next MAC</text>
+<polyline points="879.0,414.0 879.0,440.0 99.0,440.0 99.0,414.0" class="lc dash"/>
+<polygon points="99.0,414.0 103.0,422.0 95.0,422.0" class="fc"/>
+<text x="470.0" y="436.0" class="ts" text-anchor="middle" >next update reads the new s[i]</text>
+<line x1="99.0" y1="264.0" x2="99.0" y2="294.0" class="ln dash"/>
+<line x1="285.0" y1="264.0" x2="285.0" y2="294.0" class="ln dash"/>
+<line x1="479.0" y1="264.0" x2="479.0" y2="294.0" class="ln dash"/>
+<line x1="679.0" y1="264.0" x2="679.0" y2="294.0" class="ln dash"/>
+<line x1="879.0" y1="264.0" x2="879.0" y2="294.0" class="ln dash"/>
+<text x="24.0" y="482.0" class="ts" text-anchor="start" >Stage 3 + 4 together: P(x_i = 1) = σ(2β(Σ_j J_ij x_j + h_i))  [DTM p.5 Eq. 11]. The comparator on noise is what makes the bit random; the bias only tilts the odds.</text>
+<text x="24.0" y="500.0" class="ts" text-anchor="start" >Physical: one cell per node, all cells of a colour flip at once (~100 ns). FPGA: one engine visits nodes in turn, N + 18 cycles per update.</text>
+</svg></div>
+    <figcaption>Physical cell (top, DTM Fig. 10 + App. K) and FPGA emulation (bottom) side by side, stage by stage.</figcaption>
+  </figure>
+</section>
+
+<section id="gates">
+  <div class="sec-head">
+    <div class="eyebrow"><b>3</b> · p-gates</div>
+    <h2>AND, OR, NOT as energy landscapes, and they run backwards</h2>
+    <p>Pick J and h so that the truth-table rows are the lowest-energy states. A free-running p-gate then visits only (almost only) valid rows. <b>Clamp</b> a p-bit (pin it with a huge bias) to choose the direction: clamp the inputs for a normal gate, or clamp the output and watch it find inputs that produce it.</p>
+  </div>
+  <div class="grid2">
+    <div class="inst">
+      <div class="controls">
+        <div class="seg" role="group" aria-label="choose gate" id="gateSel"></div>
+        <label class="sl" for="gB" style="max-width:220px"><span>β = <b id="gBv">1.00</b></span><input id="gB" type="range" min="0.2" max="3" step="0.05" value="1"></label>
+      </div>
+      <svg id="gateSvg" viewBox="0 0 300 220" role="img" aria-label="p-gate graph; nodes light up when they are 1"></svg>
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px">clamp each p-bit</div>
+        <div class="clamps" id="gateClamps"></div>
+      </div>
+    </div>
+    <div class="inst">
+      <h3>Truth table, as visited by the sampler</h3>
+      <div class="rows" id="gateRows"></div>
+      <div class="stat">P(valid row) = <b id="gateValid">—</b> over <b id="gateN">0</b> sweeps</div>
+      <p class="note" id="gateNote">Free run: all 4 valid rows equally likely. Try clamping Y = 1 on AND: only A = B = 1 survives.</p>
+    </div>
+  </div>
+  <figure>
+    <div class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 500" role="img" aria-label="p-gates NOT, AND, OR and XOR as small Ising graphs with their biases, couplings and exact truth-table probabilities" font-family="IBM Plex Sans, system-ui, sans-serif">
+
+<rect width="1260" height="500" class="bg"/>
+<text x="24.0" y="32.0" class="th" text-anchor="start" >p-gates: Boolean gates as energy landscapes</text>
+<text x="24.0" y="52.0" class="ts" text-anchor="start" >Circles are p-bits (blue = input, orange = output, grey = auxiliary). Edge = coupling J (solid +: wants equal, dashed −: wants opposite). The truth-table rows are the lowest-energy states, so a free-running sampler mostly visits them.</text>
+<rect x="24.0" y="76.0" width="300.0" height="360.0" rx="10" class="panel"/>
+<text x="40.0" y="102.0" class="th" text-anchor="start" >p-NOT</text>
+<text x="40.0" y="120.0" class="ts" text-anchor="start" >1 coupling, J = −1</text>
+<line x1="94.0" y1="196.0" x2="254.0" y2="196.0" class="lc dash"/>
+<rect x="159.0" y="187.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="174.0" y="200.0" class="tms" text-anchor="middle" >-1</text>
+<circle cx="94.0" cy="196.0" r="17" class="cool"/>
+<text x="94.0" y="200.0" class="tb" text-anchor="middle" >A</text>
+<text x="70.0" y="200.0" class="tms" text-anchor="end" >h=0</text>
+<circle cx="254.0" cy="196.0" r="17" class="warm"/>
+<text x="254.0" y="200.0" class="tb" text-anchor="middle" >Y</text>
+<text x="278.0" y="200.0" class="tms" text-anchor="start" >h=0</text>
+<text x="40.0" y="282.0" class="tms" text-anchor="start" >A → Y</text>
+<text x="308.0" y="282.0" class="tms" text-anchor="end" >P at β=1</text>
+<rect x="36.0" y="294.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="46.0" y="306.0" class="tm" text-anchor="start" >0  →  1</text>
+<rect x="144.0" y="297.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="308.0" y="306.0" class="tm" text-anchor="end" >0.440</text>
+<rect x="36.0" y="313.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="46.0" y="325.0" class="tm" text-anchor="start" >1  →  0</text>
+<rect x="144.0" y="316.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="308.0" y="325.0" class="tm" text-anchor="end" >0.440</text>
+<rect x="36.0" y="332.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="46.0" y="344.0" class="tm" text-anchor="start" >0  →  0</text>
+<rect x="144.0" y="335.0" width="14.9" height="10.0" rx="2" class="bad"/>
+<text x="308.0" y="344.0" class="tm" text-anchor="end" >0.060</text>
+<rect x="36.0" y="351.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="46.0" y="363.0" class="tm" text-anchor="start" >1  →  1</text>
+<rect x="144.0" y="354.0" width="14.9" height="10.0" rx="2" class="bad"/>
+<text x="308.0" y="363.0" class="tm" text-anchor="end" >0.060</text>
+<text x="40.0" y="420.0" class="ts" text-anchor="start" >P(valid row) = 0.881</text>
+<text x="308.0" y="420.0" class="ts" text-anchor="end" >grey: 2 likeliest invalid rows</text>
+<rect x="334.0" y="76.0" width="300.0" height="360.0" rx="10" class="panel"/>
+<text x="350.0" y="102.0" class="th" text-anchor="start" >p-AND</text>
+<text x="350.0" y="120.0" class="ts" text-anchor="start" >3 p-bits, gap 4 between valid and invalid</text>
+<line x1="394.0" y1="166.0" x2="394.0" y2="236.0" class="lc dash"/>
+<rect x="379.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="394.0" y="205.0" class="tms" text-anchor="middle" >-1</text>
+<line x1="394.0" y1="166.0" x2="564.0" y2="201.0" class="lw"/>
+<rect x="464.0" y="174.5" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="479.0" y="187.5" class="tms" text-anchor="middle" >+2</text>
+<line x1="394.0" y1="236.0" x2="564.0" y2="201.0" class="lw"/>
+<rect x="464.0" y="209.5" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="479.0" y="222.5" class="tms" text-anchor="middle" >+2</text>
+<circle cx="394.0" cy="166.0" r="17" class="cool"/>
+<text x="394.0" y="170.0" class="tb" text-anchor="middle" >A</text>
+<text x="370.0" y="170.0" class="tms" text-anchor="end" >h=+1</text>
+<circle cx="394.0" cy="236.0" r="17" class="cool"/>
+<text x="394.0" y="240.0" class="tb" text-anchor="middle" >B</text>
+<text x="370.0" y="240.0" class="tms" text-anchor="end" >h=+1</text>
+<circle cx="564.0" cy="201.0" r="17" class="warm"/>
+<text x="564.0" y="205.0" class="tb" text-anchor="middle" >Y</text>
+<text x="588.0" y="205.0" class="tms" text-anchor="start" >h=-2</text>
+<text x="350.0" y="282.0" class="tms" text-anchor="start" >A B → Y</text>
+<text x="618.0" y="282.0" class="tms" text-anchor="end" >P at β=1</text>
+<rect x="346.0" y="294.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="356.0" y="306.0" class="tm" text-anchor="start" >0 0  →  0</text>
+<rect x="454.0" y="297.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="618.0" y="306.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="346.0" y="313.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="356.0" y="325.0" class="tm" text-anchor="start" >0 1  →  0</text>
+<rect x="454.0" y="316.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="618.0" y="325.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="346.0" y="332.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="356.0" y="344.0" class="tm" text-anchor="start" >1 0  →  0</text>
+<rect x="454.0" y="335.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="618.0" y="344.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="346.0" y="351.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="356.0" y="363.0" class="tm" text-anchor="start" >1 1  →  1</text>
+<rect x="454.0" y="354.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="618.0" y="363.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="346.0" y="370.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="356.0" y="382.0" class="tm" text-anchor="start" >0 1  →  1</text>
+<rect x="454.0" y="373.0" width="2.0" height="10.0" rx="2" class="bad"/>
+<text x="618.0" y="382.0" class="tm" text-anchor="end" >0.005</text>
+<rect x="346.0" y="389.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="356.0" y="401.0" class="tm" text-anchor="start" >1 0  →  1</text>
+<rect x="454.0" y="392.0" width="2.0" height="10.0" rx="2" class="bad"/>
+<text x="618.0" y="401.0" class="tm" text-anchor="end" >0.005</text>
+<text x="350.0" y="420.0" class="ts" text-anchor="start" >P(valid row) = 0.986</text>
+<text x="618.0" y="420.0" class="ts" text-anchor="end" >grey: 2 likeliest invalid rows</text>
+<rect x="644.0" y="76.0" width="300.0" height="360.0" rx="10" class="panel"/>
+<text x="660.0" y="102.0" class="th" text-anchor="start" >p-OR</text>
+<text x="660.0" y="120.0" class="ts" text-anchor="start" >AND with every bias negated</text>
+<line x1="704.0" y1="166.0" x2="704.0" y2="236.0" class="lc dash"/>
+<rect x="689.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="704.0" y="205.0" class="tms" text-anchor="middle" >-1</text>
+<line x1="704.0" y1="166.0" x2="874.0" y2="201.0" class="lw"/>
+<rect x="774.0" y="174.5" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="789.0" y="187.5" class="tms" text-anchor="middle" >+2</text>
+<line x1="704.0" y1="236.0" x2="874.0" y2="201.0" class="lw"/>
+<rect x="774.0" y="209.5" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="789.0" y="222.5" class="tms" text-anchor="middle" >+2</text>
+<circle cx="704.0" cy="166.0" r="17" class="cool"/>
+<text x="704.0" y="170.0" class="tb" text-anchor="middle" >A</text>
+<text x="680.0" y="170.0" class="tms" text-anchor="end" >h=-1</text>
+<circle cx="704.0" cy="236.0" r="17" class="cool"/>
+<text x="704.0" y="240.0" class="tb" text-anchor="middle" >B</text>
+<text x="680.0" y="240.0" class="tms" text-anchor="end" >h=-1</text>
+<circle cx="874.0" cy="201.0" r="17" class="warm"/>
+<text x="874.0" y="205.0" class="tb" text-anchor="middle" >Y</text>
+<text x="898.0" y="205.0" class="tms" text-anchor="start" >h=+2</text>
+<text x="660.0" y="282.0" class="tms" text-anchor="start" >A B → Y</text>
+<text x="928.0" y="282.0" class="tms" text-anchor="end" >P at β=1</text>
+<rect x="656.0" y="294.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="666.0" y="306.0" class="tm" text-anchor="start" >0 0  →  0</text>
+<rect x="764.0" y="297.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="928.0" y="306.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="656.0" y="313.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="666.0" y="325.0" class="tm" text-anchor="start" >0 1  →  1</text>
+<rect x="764.0" y="316.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="928.0" y="325.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="656.0" y="332.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="666.0" y="344.0" class="tm" text-anchor="start" >1 0  →  1</text>
+<rect x="764.0" y="335.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="928.0" y="344.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="656.0" y="351.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="666.0" y="363.0" class="tm" text-anchor="start" >1 1  →  1</text>
+<rect x="764.0" y="354.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="928.0" y="363.0" class="tm" text-anchor="end" >0.247</text>
+<rect x="656.0" y="370.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="666.0" y="382.0" class="tm" text-anchor="start" >0 0  →  1</text>
+<rect x="764.0" y="373.0" width="2.0" height="10.0" rx="2" class="bad"/>
+<text x="928.0" y="382.0" class="tm" text-anchor="end" >0.005</text>
+<rect x="656.0" y="389.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="666.0" y="401.0" class="tm" text-anchor="start" >0 1  →  0</text>
+<rect x="764.0" y="392.0" width="2.0" height="10.0" rx="2" class="bad"/>
+<text x="928.0" y="401.0" class="tm" text-anchor="end" >0.005</text>
+<text x="660.0" y="420.0" class="ts" text-anchor="start" >P(valid row) = 0.986</text>
+<text x="928.0" y="420.0" class="ts" text-anchor="end" >grey: 2 likeliest invalid rows</text>
+<rect x="954.0" y="76.0" width="300.0" height="360.0" rx="10" class="panel"/>
+<text x="970.0" y="102.0" class="th" text-anchor="start" >p-XOR</text>
+<text x="970.0" y="120.0" class="ts" text-anchor="start" >needs 1 auxiliary p-bit X</text>
+<line x1="1014.0" y1="161.0" x2="1014.0" y2="241.0" class="lc dash"/>
+<rect x="999.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1014.0" y="205.0" class="tms" text-anchor="middle" >-1</text>
+<line x1="1014.0" y1="161.0" x2="1194.0" y2="161.0" class="lc dash"/>
+<rect x="1089.0" y="152.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1104.0" y="165.0" class="tms" text-anchor="middle" >-1</text>
+<line x1="1014.0" y1="241.0" x2="1194.0" y2="161.0" class="lc dash"/>
+<rect x="1089.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1104.0" y="205.0" class="tms" text-anchor="middle" >-1</text>
+<line x1="1014.0" y1="161.0" x2="1194.0" y2="241.0" class="lc dash"/>
+<rect x="1089.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1104.0" y="205.0" class="tms" text-anchor="middle" >-2</text>
+<line x1="1014.0" y1="241.0" x2="1194.0" y2="241.0" class="lc dash"/>
+<rect x="1089.0" y="232.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1104.0" y="245.0" class="tms" text-anchor="middle" >-2</text>
+<line x1="1194.0" y1="161.0" x2="1194.0" y2="241.0" class="lc dash"/>
+<rect x="1179.0" y="192.0" width="30.0" height="17.0" rx="8" class="plain"/>
+<text x="1194.0" y="205.0" class="tms" text-anchor="middle" >-2</text>
+<circle cx="1014.0" cy="161.0" r="17" class="cool"/>
+<text x="1014.0" y="165.0" class="tb" text-anchor="middle" >A</text>
+<text x="990.0" y="165.0" class="tms" text-anchor="end" >h=-1</text>
+<circle cx="1014.0" cy="241.0" r="17" class="cool"/>
+<text x="1014.0" y="245.0" class="tb" text-anchor="middle" >B</text>
+<text x="990.0" y="245.0" class="tms" text-anchor="end" >h=-1</text>
+<circle cx="1194.0" cy="161.0" r="17" class="warm"/>
+<text x="1194.0" y="165.0" class="tb" text-anchor="middle" >Y</text>
+<text x="1218.0" y="165.0" class="tms" text-anchor="start" >h=-1</text>
+<circle cx="1194.0" cy="241.0" r="17" class="plain"/>
+<text x="1194.0" y="245.0" class="tb" text-anchor="middle" >X</text>
+<text x="1218.0" y="245.0" class="tms" text-anchor="start" >h=-2</text>
+<text x="970.0" y="282.0" class="tms" text-anchor="start" >A B → Y</text>
+<text x="1238.0" y="282.0" class="tms" text-anchor="end" >P at β=1.5</text>
+<rect x="966.0" y="294.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="976.0" y="306.0" class="tm" text-anchor="start" >0 0  →  0</text>
+<rect x="1074.0" y="297.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="1238.0" y="306.0" class="tm" text-anchor="end" >0.230</text>
+<rect x="966.0" y="313.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="976.0" y="325.0" class="tm" text-anchor="start" >0 1  →  1</text>
+<rect x="1074.0" y="316.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="1238.0" y="325.0" class="tm" text-anchor="end" >0.230</text>
+<rect x="966.0" y="332.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="976.0" y="344.0" class="tm" text-anchor="start" >1 0  →  1</text>
+<rect x="1074.0" y="335.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="1238.0" y="344.0" class="tm" text-anchor="end" >0.230</text>
+<rect x="966.0" y="351.0" width="276.0" height="16.0" rx="3" class="ok"/>
+<text x="976.0" y="363.0" class="tm" text-anchor="start" >1 1  →  0</text>
+<rect x="1074.0" y="354.0" width="110.0" height="10.0" rx="2" class="ok"/>
+<text x="1238.0" y="363.0" class="tm" text-anchor="end" >0.230</text>
+<rect x="966.0" y="370.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="976.0" y="382.0" class="tm" text-anchor="start" >0 0  →  1</text>
+<rect x="1074.0" y="373.0" width="11.0" height="10.0" rx="2" class="bad"/>
+<text x="1238.0" y="382.0" class="tm" text-anchor="end" >0.023</text>
+<rect x="966.0" y="389.0" width="276.0" height="16.0" rx="3" class="bad"/>
+<text x="976.0" y="401.0" class="tm" text-anchor="start" >0 1  →  0</text>
+<rect x="1074.0" y="392.0" width="11.0" height="10.0" rx="2" class="bad"/>
+<text x="1238.0" y="401.0" class="tm" text-anchor="end" >0.023</text>
+<text x="970.0" y="420.0" class="ts" text-anchor="start" >P(valid row) = 0.920</text>
+<text x="1238.0" y="420.0" class="ts" text-anchor="end" >grey: 2 likeliest invalid rows</text>
+<text x="24.0" y="464.0" class="ts" text-anchor="start" >E(s) = −Σ J_ij s_i s_j − Σ h_i s_i, logic 1 = spin +1. Probabilities: exact Boltzmann law from model/pgates.py; the RTL reproduces them (docs/05).</text>
+<text x="24.0" y="482.0" class="ts" text-anchor="start" >Coefficients: standard Ising gadgets [NOT IN SOURCES]. The papers only say gates can be built by composing energies [BP p.3].</text>
+</svg></div>
+    <figcaption>Coefficients of every p-gate and their exact Boltzmann truth-table probabilities (model/pgates.py). These are standard Ising gadgets; the papers only say gates can be built by composing energies [BP p.3].</figcaption>
+  </figure>
+</section>
+
+<section id="factor">
+  <div class="sec-head">
+    <div class="eyebrow"><b>4</b> · connecting units</div>
+    <h2>Wire gates into a multiplier, clamp the product, get the factors</h2>
+    <p>A wire between two gates is one shared p-bit, and the circuit's energy is the sum of the gates' energies. Six p-ANDs and two p-XORs make a 2×2-bit multiplier of 14 p-bits. Clamp the product bits and the sampler hunts for a and b. This is the same hardware and the same J; only four bias words change.</p>
+  </div>
+  <div class="inst">
+    <div class="controls">
+      <div class="seg" role="group" aria-label="product to factor" id="prodSel"></div>
+      <label class="sl" for="fB" style="max-width:220px"><span>β = <b id="fBv">2.00</b></span><input id="fB" type="range" min="0.2" max="3" step="0.05" value="2"></label>
+      <button id="fShake">Reheat (randomise)</button>
+    </div>
+    <div class="grid2">
+      <svg id="multSvg" viewBox="0 0 580 360" role="img" aria-label="2 by 2 bit multiplier graph; output p-bits clamped"></svg>
+      <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div><span class="big" id="fNow">a = ? · b = ?</span> <span class="pill no" id="fOk">searching</span></div>
+        <canvas id="fGrid" width="320" height="320" aria-label="Probability of each (a, b) pair over recent sweeps" style="max-width:320px"></canvas>
+        <p class="note" id="fMeas"></p>
+      </div>
+    </div>
+  </div>
+  <figure>
+    <div class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 600" role="img" aria-label="How p-gates compose: shared wires merge into one p-bit and their energies add; the 2 by 2 multiplier built this way runs backwards to factor 6" font-family="IBM Plex Sans, system-ui, sans-serif">
+
+<rect width="1180" height="600" class="bg"/>
+<text x="24.0" y="32.0" class="th" text-anchor="start" >Composition: wire = shared p-bit, circuit energy = sum of gate energies</text>
+<rect x="14.0" y="50.0" width="400.0" height="250.0" rx="10" class="panel"/>
+<text x="28.0" y="74.0" class="tb" text-anchor="start" >a) Two gates share wire t</text>
+<circle cx="70.0" cy="120.0" r="15" class="cool"/>
+<text x="70.0" y="124.0" class="tb" text-anchor="middle" >a</text>
+<circle cx="70.0" cy="180.0" r="15" class="cool"/>
+<text x="70.0" y="184.0" class="tb" text-anchor="middle" >b</text>
+<circle cx="190.0" cy="150.0" r="17" class="warm"/>
+<text x="190.0" y="154.0" class="tb" text-anchor="middle" >t</text>
+<circle cx="300.0" cy="120.0" r="15" class="cool"/>
+<text x="300.0" y="124.0" class="tb" text-anchor="middle" >c</text>
+<circle cx="300.0" cy="200.0" r="15" class="warm"/>
+<text x="300.0" y="204.0" class="tb" text-anchor="middle" >y</text>
+<line x1="85.0" y1="122.0" x2="173.0" y2="147.0" class="lc"/>
+<line x1="85.0" y1="178.0" x2="173.0" y2="153.0" class="lc"/>
+<line x1="82.0" y1="132.0" x2="82.0" y2="168.0" class="lc"/>
+<line x1="207.0" y1="147.0" x2="285.0" y2="122.0" class="lw"/>
+<line x1="204.0" y1="160.0" x2="287.0" y2="192.0" class="lw"/>
+<line x1="300.0" y1="135.0" x2="300.0" y2="185.0" class="lw"/>
+<text x="110.0" y="222.0" class="ts tc" text-anchor="middle" >gate 1 (teal)</text>
+<text x="260.0" y="236.0" class="ts tw" text-anchor="middle" >gate 2 (orange)</text>
+<text x="28.0" y="262.0" class="tm" text-anchor="start" >h_t = h_t(gate 1) + h_t(gate 2)</text>
+<text x="28.0" y="280.0" class="ts" text-anchor="start" >J adds the same way. Nothing else is needed.</text>
+<rect x="14.0" y="316.0" width="400.0" height="270.0" rx="10" class="panel"/>
+<text x="28.0" y="340.0" class="tb" text-anchor="start" >b) Clamping chooses the direction</text>
+<text x="28.0" y="360.0" class="ts" text-anchor="start" >clamp = extreme bias ±8 on a p-bit (h RAM write)</text>
+<rect x="40.0" y="380.0" width="110.0" height="44.0" rx="6" class="cool"/>
+<text x="95.0" y="399.0" class="tb" text-anchor="middle" >inputs</text>
+<text x="95.0" y="414.0" class="ts" text-anchor="middle" >a, b</text>
+<rect x="270.0" y="380.0" width="110.0" height="44.0" rx="6" class="warm"/>
+<text x="325.0" y="399.0" class="tb" text-anchor="middle" >outputs</text>
+<text x="325.0" y="414.0" class="ts" text-anchor="middle" >p = a·b</text>
+<line x1="150.0" y1="394.0" x2="270.0" y2="394.0" class="lc"/>
+<polygon points="270.0,394.0 262.0,398.0 262.0,390.0" class="fc"/>
+<text x="210.0" y="387.0" class="ts" text-anchor="middle" >forward: clamp a, b</text>
+<line x1="270.0" y1="414.0" x2="150.0" y2="414.0" class="lw"/>
+<polygon points="150.0,414.0 158.0,410.0 158.0,418.0" class="fw"/>
+<text x="210.0" y="432.0" class="ts" text-anchor="middle" >backward: clamp p</text>
+<text x="28.0" y="470.0" class="ts" text-anchor="start" >Forward = an ordinary (noisy) circuit.</text>
+<text x="28.0" y="488.0" class="ts" text-anchor="start" >Backward = the sampler searches for inputs that</text>
+<text x="28.0" y="504.0" class="ts" text-anchor="start" >produce the clamped output: factoring, SAT,</text>
+<text x="28.0" y="520.0" class="ts" text-anchor="start" >inversion. A deterministic circuit cannot do this.</text>
+<text x="28.0" y="548.0" class="tb" text-anchor="start" >Same hardware, same J; only 4 bias words change.</text>
+<rect x="430.0" y="50.0" width="736.0" height="536.0" rx="10" class="panel"/>
+<text x="446.0" y="74.0" class="tb" text-anchor="start" >c) 2 × 2-bit multiplier = 6 AND + 2 XOR = 14 p-bits (model/pgates.mult2x2)</text>
+<line x1="498.0" y1="140.0" x2="642.0" y2="120.0" class="ln"/>
+<line x1="498.0" y1="280.0" x2="642.0" y2="120.0" class="ln"/>
+<line x1="498.0" y1="140.0" x2="642.0" y2="200.0" class="ln"/>
+<line x1="498.0" y1="340.0" x2="642.0" y2="200.0" class="ln"/>
+<line x1="498.0" y1="200.0" x2="642.0" y2="280.0" class="ln"/>
+<line x1="498.0" y1="280.0" x2="642.0" y2="280.0" class="ln"/>
+<line x1="498.0" y1="200.0" x2="642.0" y2="370.0" class="ln"/>
+<line x1="498.0" y1="340.0" x2="642.0" y2="370.0" class="ln"/>
+<line x1="678.0" y1="200.0" x2="832.0" y2="220.0" class="ln"/>
+<line x1="678.0" y1="280.0" x2="832.0" y2="220.0" class="ln"/>
+<line x1="678.0" y1="200.0" x2="832.0" y2="300.0" class="ln"/>
+<line x1="678.0" y1="280.0" x2="832.0" y2="300.0" class="ln"/>
+<line x1="678.0" y1="370.0" x2="992.0" y2="320.0" class="ln"/>
+<line x1="868.0" y1="300.0" x2="992.0" y2="320.0" class="ln"/>
+<line x1="678.0" y1="370.0" x2="992.0" y2="400.0" class="ln"/>
+<line x1="868.0" y1="300.0" x2="992.0" y2="400.0" class="ln"/>
+<circle cx="480.0" cy="140.0" r="17" class="cool"/>
+<text x="480.0" y="144.0" class="tm" text-anchor="middle" >a0</text>
+<circle cx="480.0" cy="200.0" r="17" class="cool"/>
+<text x="480.0" y="204.0" class="tm" text-anchor="middle" >a1</text>
+<circle cx="480.0" cy="280.0" r="17" class="cool"/>
+<text x="480.0" y="284.0" class="tm" text-anchor="middle" >b0</text>
+<circle cx="480.0" cy="340.0" r="17" class="cool"/>
+<text x="480.0" y="344.0" class="tm" text-anchor="middle" >b1</text>
+<circle cx="660.0" cy="120.0" r="17" class="warm"/>
+<text x="660.0" y="124.0" class="tm" text-anchor="middle" >p0</text>
+<text x="660.0" y="97.0" class="tms" text-anchor="middle" >AND</text>
+<rect x="682.0" y="110.0" width="46.0" height="20.0" rx="10" class="warm"/>
+<text x="705.0" y="124.0" class="tm" text-anchor="middle" >= 0</text>
+<circle cx="660.0" cy="200.0" r="17" class="plain"/>
+<text x="660.0" y="204.0" class="tm" text-anchor="middle" >q01</text>
+<text x="660.0" y="177.0" class="tms" text-anchor="middle" >AND</text>
+<circle cx="660.0" cy="280.0" r="17" class="plain"/>
+<text x="660.0" y="284.0" class="tm" text-anchor="middle" >q10</text>
+<text x="660.0" y="257.0" class="tms" text-anchor="middle" >AND</text>
+<circle cx="660.0" cy="370.0" r="17" class="plain"/>
+<text x="660.0" y="374.0" class="tm" text-anchor="middle" >q11</text>
+<text x="660.0" y="347.0" class="tms" text-anchor="middle" >AND</text>
+<circle cx="850.0" cy="220.0" r="17" class="warm"/>
+<text x="850.0" y="224.0" class="tm" text-anchor="middle" >p1</text>
+<text x="850.0" y="197.0" class="tms" text-anchor="middle" >XOR (+aux)</text>
+<rect x="872.0" y="210.0" width="46.0" height="20.0" rx="10" class="warm"/>
+<text x="895.0" y="224.0" class="tm" text-anchor="middle" >= 1</text>
+<circle cx="850.0" cy="300.0" r="17" class="plain"/>
+<text x="850.0" y="304.0" class="tm" text-anchor="middle" >c1</text>
+<text x="850.0" y="277.0" class="tms" text-anchor="middle" >AND</text>
+<circle cx="1010.0" cy="320.0" r="17" class="warm"/>
+<text x="1010.0" y="324.0" class="tm" text-anchor="middle" >p2</text>
+<text x="1010.0" y="297.0" class="tms" text-anchor="middle" >XOR (+aux)</text>
+<rect x="1032.0" y="310.0" width="46.0" height="20.0" rx="10" class="warm"/>
+<text x="1055.0" y="324.0" class="tm" text-anchor="middle" >= 1</text>
+<circle cx="1010.0" cy="400.0" r="17" class="warm"/>
+<text x="1010.0" y="404.0" class="tm" text-anchor="middle" >p3</text>
+<text x="1010.0" y="377.0" class="tms" text-anchor="middle" >AND</text>
+<rect x="1032.0" y="390.0" width="46.0" height="20.0" rx="10" class="warm"/>
+<text x="1055.0" y="404.0" class="tm" text-anchor="middle" >= 0</text>
+<text x="480.0" y="380.0" class="ts" text-anchor="middle" >inputs</text>
+<text x="1100.0" y="160.0" class="ts tw" text-anchor="middle" >product clamped to 6 = 0110</text>
+<text x="1100.0" y="176.0" class="tms" text-anchor="middle" >(p3 p2 p1 p0)</text>
+<text x="446.0" y="450.0" class="ts" text-anchor="start" >Measured on the RTL (tb_pgates.v, β = 2, 1800 sweeps after burn-in per product):</text>
+<rect x="446.0" y="462.0" width="168.0" height="96.0" rx="8" class="plain"/>
+<text x="458.0" y="484.0" class="tb" text-anchor="start" >clamp p = 6</text>
+<text x="458.0" y="506.0" class="tm" text-anchor="start" >a=3 b=2</text>
+<text x="602.0" y="506.0" class="tm tok" text-anchor="end" >0.45</text>
+<text x="458.0" y="524.0" class="tm" text-anchor="start" >a=2 b=3</text>
+<text x="602.0" y="524.0" class="tm tok" text-anchor="end" >0.44</text>
+<text x="458.0" y="548.0" class="ts" text-anchor="start" >P(a·b = p) = 0.89</text>
+<rect x="626.0" y="462.0" width="168.0" height="96.0" rx="8" class="plain"/>
+<text x="638.0" y="484.0" class="tb" text-anchor="start" >clamp p = 3</text>
+<text x="638.0" y="506.0" class="tm" text-anchor="start" >a=1 b=3</text>
+<text x="782.0" y="506.0" class="tm tok" text-anchor="end" >0.96</text>
+<text x="638.0" y="524.0" class="tm" text-anchor="start" >a=3 b=1</text>
+<text x="782.0" y="524.0" class="tm tok" text-anchor="end" >0.02</text>
+<text x="638.0" y="548.0" class="ts" text-anchor="start" >P(a·b = p) = 0.98</text>
+<rect x="806.0" y="462.0" width="168.0" height="96.0" rx="8" class="plain"/>
+<text x="818.0" y="484.0" class="tb" text-anchor="start" >clamp p = 9</text>
+<text x="818.0" y="506.0" class="tm" text-anchor="start" >a=3 b=3</text>
+<text x="962.0" y="506.0" class="tm tok" text-anchor="end" >1.00</text>
+<text x="818.0" y="548.0" class="ts" text-anchor="start" >P(a·b = p) = 1.00</text>
+<rect x="986.0" y="462.0" width="168.0" height="96.0" rx="8" class="plain"/>
+<text x="998.0" y="484.0" class="tb" text-anchor="start" >clamp p = 4</text>
+<text x="998.0" y="506.0" class="tm" text-anchor="start" >a=2 b=2</text>
+<text x="1142.0" y="506.0" class="tm tok" text-anchor="end" >0.89</text>
+<text x="998.0" y="524.0" class="tm" text-anchor="start" >a=0 b=2</text>
+<text x="1142.0" y="524.0" class="tm" text-anchor="end" >0.02</text>
+<text x="998.0" y="548.0" class="ts" text-anchor="start" >P(a·b = p) = 0.89</text>
+</svg></div>
+    <figcaption>Composition rule, direction by clamping, and the multiplier with the product clamped. The four boxes are measured on the RTL (tb/tb_pgates.v).</figcaption>
+  </figure>
+</section>
+
+<section id="anneal">
+  <div class="sec-head">
+    <div class="eyebrow"><b>5</b> · programs as energies</div>
+    <h2>Annealing: start hot, cool slowly, land in a deep valley</h2>
+    <p>Max-Cut on the built-in 16-node graph (case maxcut16, the board's power-on program). Antiferromagnetic couplings J = −1 make neighbours want to disagree, so a low energy means many cut edges. The schedule raises β from 0.25 to 4. The optimum cut is 20 of 24 edges.</p>
+  </div>
+  <div class="grid2">
+    <div class="inst">
+      <svg id="mcSvg" viewBox="0 0 320 320" role="img" aria-label="Max-Cut graph; colour = spin, thick orange edges are cut"></svg>
+      <div class="controls">
+        <button id="mcRun" class="on">Run anneal</button>
+        <button id="mcHot">Hold hot (β = 0.25)</button>
+        <div class="stat">β = <b id="mcB">0.25</b> · cut = <b id="mcCut">0</b> / 24 · best = <b id="mcBest">0</b> (optimum 20)</div>
+      </div>
+    </div>
+    <div class="inst">
+      <h3>Cut size over sweeps</h3>
+      <canvas id="mcPlot" width="520" height="260" aria-label="Cut size and beta over sweeps"></canvas>
+      <p class="note">The RTL schedule is 16 β steps × 8 sweeps. In the Python mirror of the bit-exact RTL, 96 % of anneals reach the optimum (docs/06).</p>
+    </div>
+  </div>
+  <figure>
+    <div class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" role="img" aria-label="Layers of the thermodynamic computer from noise up to the host program, with the classical analogue and the Verilog file for each layer" font-family="IBM Plex Sans, system-ui, sans-serif">
+
+<rect width="1000" height="580" class="bg"/>
+<text x="24.0" y="32.0" class="th" text-anchor="start" >How the units stack into a computer</text>
+<text x="24.0" y="52.0" class="ts" text-anchor="start" >Read bottom-up: each layer is made only of the layer below it.</text>
+<rect x="150.0" y="96.0" width="560.0" height="48.0" rx="8" class="plain"/>
+<text x="166.0" y="116.0" class="tb" text-anchor="start" >Host program</text>
+<text x="166.0" y="133.0" class="ts" text-anchor="start" >anneal · sample · denoise · factor</text>
+<text x="24.0" y="124.0" class="ts" text-anchor="start" >software</text>
+<text x="976.0" y="124.0" class="tms" text-anchor="end" >fpga/host.py over UART</text>
+<line x1="430.0" y1="158.0" x2="430.0" y2="146.0" class="ln"/>
+<polygon points="430.0,146.0 434.0,154.0 426.0,154.0" class="fl"/>
+<text x="438.0" y="156.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="160.0" width="560.0" height="48.0" rx="8" class="plain"/>
+<text x="166.0" y="180.0" class="tb" text-anchor="start" >Instruction set</text>
+<text x="166.0" y="197.0" class="ts" text-anchor="start" >W H O T B R S C D U Q X P</text>
+<text x="24.0" y="188.0" class="ts" text-anchor="start" >ISA / bus</text>
+<text x="976.0" y="188.0" class="tms" text-anchor="end" >top.v command FSM</text>
+<line x1="430.0" y1="222.0" x2="430.0" y2="210.0" class="ln"/>
+<polygon points="430.0,210.0 434.0,218.0 426.0,218.0" class="fl"/>
+<text x="438.0" y="220.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="224.0" width="560.0" height="48.0" rx="8" class="plain"/>
+<text x="166.0" y="244.0" class="tb" text-anchor="start" >Programs as energies</text>
+<text x="166.0" y="261.0" class="ts" text-anchor="start" >Max-Cut · p-gate circuits · denoising chain</text>
+<text x="24.0" y="252.0" class="ts" text-anchor="start" >compiled code</text>
+<text x="976.0" y="252.0" class="tms" text-anchor="end" >model/cases.py → hex</text>
+<line x1="430.0" y1="286.0" x2="430.0" y2="274.0" class="ln"/>
+<polygon points="430.0,274.0 434.0,282.0 426.0,282.0" class="fl"/>
+<text x="438.0" y="284.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="288.0" width="560.0" height="48.0" rx="8" class="cool"/>
+<text x="166.0" y="308.0" class="tb" text-anchor="start" >Sweep + schedule</text>
+<text x="166.0" y="325.0" class="ts" text-anchor="start" >colour blocks in turn; β rises over time</text>
+<text x="24.0" y="316.0" class="ts" text-anchor="start" >clock + PC</text>
+<text x="976.0" y="316.0" class="tms" text-anchor="end" >pbit_array.v · schedule_ctrl.v</text>
+<line x1="430.0" y1="350.0" x2="430.0" y2="338.0" class="ln"/>
+<polygon points="430.0,338.0 434.0,346.0 426.0,346.0" class="fl"/>
+<text x="438.0" y="348.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="352.0" width="560.0" height="48.0" rx="8" class="cool"/>
+<text x="166.0" y="372.0" class="tb" text-anchor="start" >Ising array</text>
+<text x="166.0" y="389.0" class="ts" text-anchor="start" >N p-bits + coupling graph J, biases h</text>
+<text x="24.0" y="380.0" class="ts" text-anchor="start" >datapath + RAM</text>
+<text x="976.0" y="380.0" class="tms" text-anchor="end" >pbit_array.v · coupling_row.v</text>
+<line x1="430.0" y1="414.0" x2="430.0" y2="402.0" class="ln"/>
+<polygon points="430.0,402.0 434.0,410.0 426.0,410.0" class="fl"/>
+<text x="438.0" y="412.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="416.0" width="560.0" height="48.0" rx="8" class="warm"/>
+<text x="166.0" y="436.0" class="tb" text-anchor="start" >p-bit</text>
+<text x="166.0" y="453.0" class="ts" text-anchor="start" >field → σ → compare with noise → latch</text>
+<text x="24.0" y="444.0" class="ts" text-anchor="start" >gate + flip-flop</text>
+<text x="976.0" y="444.0" class="tms" text-anchor="end" >pbit.v · weight_mac.v · sigmoid_lut.v</text>
+<line x1="430.0" y1="478.0" x2="430.0" y2="466.0" class="ln"/>
+<polygon points="430.0,466.0 434.0,474.0 426.0,474.0" class="fl"/>
+<text x="438.0" y="476.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="480.0" width="560.0" height="48.0" rx="8" class="warm"/>
+<text x="166.0" y="500.0" class="tb" text-anchor="start" >Noise</text>
+<text x="166.0" y="517.0" class="ts" text-anchor="start" >fresh random bits every update</text>
+<text x="24.0" y="508.0" class="ts" text-anchor="start" >transistor</text>
+<text x="976.0" y="508.0" class="tms" text-anchor="end" >lfsr.v · noise_bank.v</text>
+<text x="24.0" y="88.0" class="ts" text-anchor="start" letter-spacing="1">CLASSICAL ANALOGUE</text>
+<text x="976.0" y="88.0" class="ts" text-anchor="end" letter-spacing="1">WHERE IT LIVES</text>
+<text x="24.0" y="558.0" class="ts" text-anchor="start" >Orange = units with a physical counterpart in the papers; teal = control the papers describe at system level; neutral = our host interface.</text>
+</svg></div>
+    <figcaption>The stack: each layer is built only from the one below, like transistors → gates → ALU → instructions.</figcaption>
+  </figure>
+  <figure>
+    <div class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 470" role="img" aria-label="Timing of one p-bit update, N plus 18 clock cycles, and of a chromatic Gibbs sweep over a 4 by 4 grid" font-family="IBM Plex Sans, system-ui, sans-serif">
+
+<rect width="1060" height="470" class="bg"/>
+<text x="24.0" y="32.0" class="th" text-anchor="start" >Time: one update = N + 18 cycles, one sweep = N updates</text>
+<text x="24.0" y="52.0" class="ts" text-anchor="start" >Phases of the update FSM in rtl/pbit_array.v, drawn to scale for N = 16 (34 cycles = 1.26 µs at 27 MHz).</text>
+<rect x="24.0" y="80.0" width="29.8" height="40.0" rx="3" class="plain"/>
+<text x="24.0" y="138.0" class="ts" text-anchor="start" >ORD: read order[k]</text>
+<rect x="53.8" y="80.0" width="29.8" height="40.0" rx="3" class="plain"/>
+<text x="53.8" y="152.0" class="ts" text-anchor="start" >BIAS: read h_i</text>
+<rect x="83.5" y="80.0" width="29.8" height="40.0" rx="3" class="plain"/>
+<text x="83.5" y="166.0" class="ts" text-anchor="start" >MAC: start</text>
+<rect x="113.3" y="80.0" width="535.8" height="40.0" rx="3" class="cool"/>
+<text x="381.2" y="98.0" class="tb" text-anchor="middle" >MACW</text>
+<text x="381.2" y="113.0" class="ts" text-anchor="middle" >18 cycles</text>
+<text x="381.2" y="138.0" class="ts" text-anchor="middle" >Σ ±J_ij over j</text>
+<rect x="649.1" y="80.0" width="357.2" height="40.0" rx="3" class="cool"/>
+<text x="827.6" y="98.0" class="tb" text-anchor="middle" >PBW</text>
+<text x="827.6" y="113.0" class="ts" text-anchor="middle" >12 cycles</text>
+<text x="827.6" y="138.0" class="ts" text-anchor="middle" >×β (8) · round · σ · compare</text>
+<rect x="1006.2" y="80.0" width="29.8" height="40.0" rx="3" class="plain"/>
+<text x="1036.0" y="138.0" class="ts" text-anchor="end" >WR: s[i] ← bit</text>
+<line x1="24.0" y1="124.0" x2="24.0" y2="130.0" class="ln"/>
+<line x1="53.8" y1="124.0" x2="53.8" y2="130.0" class="ln"/>
+<line x1="83.5" y1="124.0" x2="83.5" y2="130.0" class="ln"/>
+<line x1="113.3" y1="124.0" x2="113.3" y2="130.0" class="ln"/>
+<line x1="143.1" y1="124.0" x2="143.1" y2="130.0" class="ln"/>
+<line x1="172.8" y1="124.0" x2="172.8" y2="130.0" class="ln"/>
+<line x1="202.6" y1="124.0" x2="202.6" y2="130.0" class="ln"/>
+<line x1="232.4" y1="124.0" x2="232.4" y2="130.0" class="ln"/>
+<line x1="262.1" y1="124.0" x2="262.1" y2="130.0" class="ln"/>
+<line x1="291.9" y1="124.0" x2="291.9" y2="130.0" class="ln"/>
+<line x1="321.6" y1="124.0" x2="321.6" y2="130.0" class="ln"/>
+<line x1="351.4" y1="124.0" x2="351.4" y2="130.0" class="ln"/>
+<line x1="381.2" y1="124.0" x2="381.2" y2="130.0" class="ln"/>
+<line x1="410.9" y1="124.0" x2="410.9" y2="130.0" class="ln"/>
+<line x1="440.7" y1="124.0" x2="440.7" y2="130.0" class="ln"/>
+<line x1="470.5" y1="124.0" x2="470.5" y2="130.0" class="ln"/>
+<line x1="500.2" y1="124.0" x2="500.2" y2="130.0" class="ln"/>
+<line x1="530.0" y1="124.0" x2="530.0" y2="130.0" class="ln"/>
+<line x1="559.8" y1="124.0" x2="559.8" y2="130.0" class="ln"/>
+<line x1="589.5" y1="124.0" x2="589.5" y2="130.0" class="ln"/>
+<line x1="619.3" y1="124.0" x2="619.3" y2="130.0" class="ln"/>
+<line x1="649.1" y1="124.0" x2="649.1" y2="130.0" class="ln"/>
+<line x1="678.8" y1="124.0" x2="678.8" y2="130.0" class="ln"/>
+<line x1="708.6" y1="124.0" x2="708.6" y2="130.0" class="ln"/>
+<line x1="738.4" y1="124.0" x2="738.4" y2="130.0" class="ln"/>
+<line x1="768.1" y1="124.0" x2="768.1" y2="130.0" class="ln"/>
+<line x1="797.9" y1="124.0" x2="797.9" y2="130.0" class="ln"/>
+<line x1="827.6" y1="124.0" x2="827.6" y2="130.0" class="ln"/>
+<line x1="857.4" y1="124.0" x2="857.4" y2="130.0" class="ln"/>
+<line x1="887.2" y1="124.0" x2="887.2" y2="130.0" class="ln"/>
+<line x1="916.9" y1="124.0" x2="916.9" y2="130.0" class="ln"/>
+<line x1="946.7" y1="124.0" x2="946.7" y2="130.0" class="ln"/>
+<line x1="976.5" y1="124.0" x2="976.5" y2="130.0" class="ln"/>
+<line x1="1006.2" y1="124.0" x2="1006.2" y2="130.0" class="ln"/>
+<line x1="1036.0" y1="124.0" x2="1036.0" y2="130.0" class="ln"/>
+<text x="24.0" y="220.0" class="tb" text-anchor="start" >One sweep on the 4 × 4 ferromagnet (case grid16): colour 0 nodes, then colour 1</text>
+<text x="24.0" y="238.0" class="ts" text-anchor="start" >Same-colour nodes never touch, so updating them one by one equals updating them all at once (what the chip does in ~100 ns).</text>
+<text x="40.0" y="266.0" class="ts" text-anchor="start" >phase 1: colour 0 updates</text>
+<line x1="60.0" y1="290.0" x2="104.0" y2="290.0" class="ln"/>
+<line x1="60.0" y1="290.0" x2="60.0" y2="334.0" class="ln"/>
+<circle cx="60.0" cy="290.0" r="13" class="warm"/>
+<text x="60.0" y="294.0" class="tms" text-anchor="middle" >0</text>
+<line x1="104.0" y1="290.0" x2="148.0" y2="290.0" class="ln"/>
+<line x1="104.0" y1="290.0" x2="104.0" y2="334.0" class="ln"/>
+<circle cx="104.0" cy="290.0" r="13" class="plain"/>
+<text x="104.0" y="294.0" class="tms" text-anchor="middle" >1</text>
+<line x1="148.0" y1="290.0" x2="192.0" y2="290.0" class="ln"/>
+<line x1="148.0" y1="290.0" x2="148.0" y2="334.0" class="ln"/>
+<circle cx="148.0" cy="290.0" r="13" class="warm"/>
+<text x="148.0" y="294.0" class="tms" text-anchor="middle" >2</text>
+<line x1="192.0" y1="290.0" x2="192.0" y2="334.0" class="ln"/>
+<circle cx="192.0" cy="290.0" r="13" class="plain"/>
+<text x="192.0" y="294.0" class="tms" text-anchor="middle" >3</text>
+<line x1="60.0" y1="334.0" x2="104.0" y2="334.0" class="ln"/>
+<line x1="60.0" y1="334.0" x2="60.0" y2="378.0" class="ln"/>
+<circle cx="60.0" cy="334.0" r="13" class="plain"/>
+<text x="60.0" y="338.0" class="tms" text-anchor="middle" >4</text>
+<line x1="104.0" y1="334.0" x2="148.0" y2="334.0" class="ln"/>
+<line x1="104.0" y1="334.0" x2="104.0" y2="378.0" class="ln"/>
+<circle cx="104.0" cy="334.0" r="13" class="warm"/>
+<text x="104.0" y="338.0" class="tms" text-anchor="middle" >5</text>
+<line x1="148.0" y1="334.0" x2="192.0" y2="334.0" class="ln"/>
+<line x1="148.0" y1="334.0" x2="148.0" y2="378.0" class="ln"/>
+<circle cx="148.0" cy="334.0" r="13" class="plain"/>
+<text x="148.0" y="338.0" class="tms" text-anchor="middle" >6</text>
+<line x1="192.0" y1="334.0" x2="192.0" y2="378.0" class="ln"/>
+<circle cx="192.0" cy="334.0" r="13" class="warm"/>
+<text x="192.0" y="338.0" class="tms" text-anchor="middle" >7</text>
+<line x1="60.0" y1="378.0" x2="104.0" y2="378.0" class="ln"/>
+<line x1="60.0" y1="378.0" x2="60.0" y2="422.0" class="ln"/>
+<circle cx="60.0" cy="378.0" r="13" class="warm"/>
+<text x="60.0" y="382.0" class="tms" text-anchor="middle" >8</text>
+<line x1="104.0" y1="378.0" x2="148.0" y2="378.0" class="ln"/>
+<line x1="104.0" y1="378.0" x2="104.0" y2="422.0" class="ln"/>
+<circle cx="104.0" cy="378.0" r="13" class="plain"/>
+<text x="104.0" y="382.0" class="tms" text-anchor="middle" >9</text>
+<line x1="148.0" y1="378.0" x2="192.0" y2="378.0" class="ln"/>
+<line x1="148.0" y1="378.0" x2="148.0" y2="422.0" class="ln"/>
+<circle cx="148.0" cy="378.0" r="13" class="warm"/>
+<text x="148.0" y="382.0" class="tms" text-anchor="middle" >10</text>
+<line x1="192.0" y1="378.0" x2="192.0" y2="422.0" class="ln"/>
+<circle cx="192.0" cy="378.0" r="13" class="plain"/>
+<text x="192.0" y="382.0" class="tms" text-anchor="middle" >11</text>
+<line x1="60.0" y1="422.0" x2="104.0" y2="422.0" class="ln"/>
+<circle cx="60.0" cy="422.0" r="13" class="plain"/>
+<text x="60.0" y="426.0" class="tms" text-anchor="middle" >12</text>
+<line x1="104.0" y1="422.0" x2="148.0" y2="422.0" class="ln"/>
+<circle cx="104.0" cy="422.0" r="13" class="warm"/>
+<text x="104.0" y="426.0" class="tms" text-anchor="middle" >13</text>
+<line x1="148.0" y1="422.0" x2="192.0" y2="422.0" class="ln"/>
+<circle cx="148.0" cy="422.0" r="13" class="plain"/>
+<text x="148.0" y="426.0" class="tms" text-anchor="middle" >14</text>
+<circle cx="192.0" cy="422.0" r="13" class="warm"/>
+<text x="192.0" y="426.0" class="tms" text-anchor="middle" >15</text>
+<text x="370.0" y="266.0" class="ts" text-anchor="start" >phase 2: colour 1 updates</text>
+<line x1="390.0" y1="290.0" x2="434.0" y2="290.0" class="ln"/>
+<line x1="390.0" y1="290.0" x2="390.0" y2="334.0" class="ln"/>
+<circle cx="390.0" cy="290.0" r="13" class="plain"/>
+<text x="390.0" y="294.0" class="tms" text-anchor="middle" >0</text>
+<line x1="434.0" y1="290.0" x2="478.0" y2="290.0" class="ln"/>
+<line x1="434.0" y1="290.0" x2="434.0" y2="334.0" class="ln"/>
+<circle cx="434.0" cy="290.0" r="13" class="warm"/>
+<text x="434.0" y="294.0" class="tms" text-anchor="middle" >1</text>
+<line x1="478.0" y1="290.0" x2="522.0" y2="290.0" class="ln"/>
+<line x1="478.0" y1="290.0" x2="478.0" y2="334.0" class="ln"/>
+<circle cx="478.0" cy="290.0" r="13" class="plain"/>
+<text x="478.0" y="294.0" class="tms" text-anchor="middle" >2</text>
+<line x1="522.0" y1="290.0" x2="522.0" y2="334.0" class="ln"/>
+<circle cx="522.0" cy="290.0" r="13" class="warm"/>
+<text x="522.0" y="294.0" class="tms" text-anchor="middle" >3</text>
+<line x1="390.0" y1="334.0" x2="434.0" y2="334.0" class="ln"/>
+<line x1="390.0" y1="334.0" x2="390.0" y2="378.0" class="ln"/>
+<circle cx="390.0" cy="334.0" r="13" class="warm"/>
+<text x="390.0" y="338.0" class="tms" text-anchor="middle" >4</text>
+<line x1="434.0" y1="334.0" x2="478.0" y2="334.0" class="ln"/>
+<line x1="434.0" y1="334.0" x2="434.0" y2="378.0" class="ln"/>
+<circle cx="434.0" cy="334.0" r="13" class="plain"/>
+<text x="434.0" y="338.0" class="tms" text-anchor="middle" >5</text>
+<line x1="478.0" y1="334.0" x2="522.0" y2="334.0" class="ln"/>
+<line x1="478.0" y1="334.0" x2="478.0" y2="378.0" class="ln"/>
+<circle cx="478.0" cy="334.0" r="13" class="warm"/>
+<text x="478.0" y="338.0" class="tms" text-anchor="middle" >6</text>
+<line x1="522.0" y1="334.0" x2="522.0" y2="378.0" class="ln"/>
+<circle cx="522.0" cy="334.0" r="13" class="plain"/>
+<text x="522.0" y="338.0" class="tms" text-anchor="middle" >7</text>
+<line x1="390.0" y1="378.0" x2="434.0" y2="378.0" class="ln"/>
+<line x1="390.0" y1="378.0" x2="390.0" y2="422.0" class="ln"/>
+<circle cx="390.0" cy="378.0" r="13" class="plain"/>
+<text x="390.0" y="382.0" class="tms" text-anchor="middle" >8</text>
+<line x1="434.0" y1="378.0" x2="478.0" y2="378.0" class="ln"/>
+<line x1="434.0" y1="378.0" x2="434.0" y2="422.0" class="ln"/>
+<circle cx="434.0" cy="378.0" r="13" class="warm"/>
+<text x="434.0" y="382.0" class="tms" text-anchor="middle" >9</text>
+<line x1="478.0" y1="378.0" x2="522.0" y2="378.0" class="ln"/>
+<line x1="478.0" y1="378.0" x2="478.0" y2="422.0" class="ln"/>
+<circle cx="478.0" cy="378.0" r="13" class="plain"/>
+<text x="478.0" y="382.0" class="tms" text-anchor="middle" >10</text>
+<line x1="522.0" y1="378.0" x2="522.0" y2="422.0" class="ln"/>
+<circle cx="522.0" cy="378.0" r="13" class="warm"/>
+<text x="522.0" y="382.0" class="tms" text-anchor="middle" >11</text>
+<line x1="390.0" y1="422.0" x2="434.0" y2="422.0" class="ln"/>
+<circle cx="390.0" cy="422.0" r="13" class="warm"/>
+<text x="390.0" y="426.0" class="tms" text-anchor="middle" >12</text>
+<line x1="434.0" y1="422.0" x2="478.0" y2="422.0" class="ln"/>
+<circle cx="434.0" cy="422.0" r="13" class="plain"/>
+<text x="434.0" y="426.0" class="tms" text-anchor="middle" >13</text>
+<line x1="478.0" y1="422.0" x2="522.0" y2="422.0" class="ln"/>
+<circle cx="478.0" cy="422.0" r="13" class="warm"/>
+<text x="478.0" y="426.0" class="tms" text-anchor="middle" >14</text>
+<circle cx="522.0" cy="422.0" r="13" class="plain"/>
+<text x="522.0" y="426.0" class="tms" text-anchor="middle" >15</text>
+<text x="720.0" y="290.0" class="tb" text-anchor="start" >Engine time per sweep</text>
+<text x="720.0" y="316.0" class="tm" text-anchor="start" >N = 16</text>
+<text x="810.0" y="316.0" class="tms" text-anchor="start" >16 × 34 = 544 cycles</text>
+<text x="1036.0" y="316.0" class="tm" text-anchor="end" >20.1 µs</text>
+<text x="720.0" y="342.0" class="tm" text-anchor="start" >N = 64</text>
+<text x="810.0" y="342.0" class="tms" text-anchor="start" >64 × 82 = 5248 cycles</text>
+<text x="1036.0" y="342.0" class="tm" text-anchor="end" >194 µs</text>
+<text x="720.0" y="368.0" class="tm" text-anchor="start" >chip (DTM)</text>
+<text x="810.0" y="368.0" class="tms" text-anchor="start" >2 colour phases × τ0</text>
+<text x="1036.0" y="368.0" class="tm" text-anchor="end" >≈ 0.2 µs</text>
+<text x="720.0" y="410.0" class="ts" text-anchor="start" >FPGA is ~100× slower per sweep but exact</text>
+<text x="720.0" y="426.0" class="ts" text-anchor="start" >and bit-reproducible (docs/06, docs/08 B.4).</text>
+</svg></div>
+    <figcaption>One p-bit update is N + 18 clock cycles in our engine. A sweep updates colour 0, then colour 1; same-colour nodes are independent, so sequential equals parallel.</figcaption>
+  </figure>
+</section>
+
+<section id="fpga">
+  <div class="sec-head">
+    <div class="eyebrow"><b>6</b> · on the board</div>
+    <h2>The whole machine on the Tang Nano 9K</h2>
+    <p>Orange is the thermodynamic core. Everything around it is plain digital plumbing that plays the role of Extropic's XTR-0 host + FPGA. No DSP blocks are used; the p-bit engine is shifts, adds and a table.</p>
+  </div>
+  <figure>
+    <div class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 560" role="img" aria-label="Tang Nano 9K system: host PC over USB UART into the GW1NR-9 FPGA, the blocks inside it, their memory and the pins, with measured utilisation" font-family="IBM Plex Sans, system-ui, sans-serif">
+
+<rect width="1100" height="560" class="bg"/>
+<text x="24.0" y="32.0" class="th" text-anchor="start" >The thermodynamic computer on the Tang Nano 9K</text>
+<text x="24.0" y="52.0" class="ts" text-anchor="start" >Default build (N = 16, maxcut16 at power-on). Measured: LUT4 2534/8640 (29 %), DFF 1293, BSRAM 10/26, 0 DSP, Fmax 62.67 MHz vs 27 MHz needed.</text>
+<rect x="24.0" y="110.0" width="140.0" height="70.0" rx="6" class="plain"/>
+<text x="94.0" y="142.0" class="tb" text-anchor="middle" >Host PC</text>
+<text x="94.0" y="157.0" class="ts" text-anchor="middle" >fpga/host.py</text>
+<rect x="200.0" y="80.0" width="880.0" height="450.0" rx="14" class="panel"/>
+<text x="216.0" y="102.0" class="ts" text-anchor="start" letter-spacing="1">Tang Nano 9K board</text>
+<rect x="216.0" y="116.0" width="120.0" height="60.0" rx="6" class="plain"/>
+<text x="276.0" y="143.0" class="tb" text-anchor="middle" >BL702</text>
+<text x="276.0" y="158.0" class="ts" text-anchor="middle" >USB ↔ UART</text>
+<line x1="164.0" y1="145.0" x2="216.0" y2="145.0" class="lk"/>
+<polygon points="216.0,145.0 208.0,149.0 208.0,141.0" class="fk"/>
+<text x="190.0" y="138.0" class="ts" text-anchor="middle" >USB-C</text>
+<rect x="216.0" y="420.0" width="120.0" height="50.0" rx="6" class="plain"/>
+<text x="276.0" y="442.0" class="tb" text-anchor="middle" >27 MHz osc</text>
+<text x="276.0" y="457.0" class="ts" text-anchor="middle" >pin 52</text>
+<rect x="216.0" y="300.0" width="120.0" height="80.0" rx="6" class="plain"/>
+<text x="276.0" y="337.0" class="tb" text-anchor="middle" >buttons</text>
+<text x="276.0" y="352.0" class="ts" text-anchor="middle" >pin 4 reset</text>
+<text x="276.0" y="365.0" class="ts" text-anchor="middle" >pin 3 run demo</text>
+<rect x="360.0" y="112.0" width="700.0" height="400.0" rx="12" class="cool"/>
+<text x="376.0" y="134.0" class="tb tc" text-anchor="start" >GW1NR-9 FPGA (rtl/top.v)</text>
+<rect x="380.0" y="150.0" width="130.0" height="50.0" rx="6" class="plain"/>
+<text x="445.0" y="172.0" class="tb" text-anchor="middle" >uart_rx</text>
+<text x="445.0" y="187.0" class="ts" text-anchor="middle" >pin 18, 115200</text>
+<rect x="380.0" y="214.0" width="130.0" height="50.0" rx="6" class="plain"/>
+<text x="445.0" y="236.0" class="tb" text-anchor="middle" >uart_tx</text>
+<text x="445.0" y="251.0" class="ts" text-anchor="middle" >pin 17</text>
+<line x1="336.0" y1="140.0" x2="380.0" y2="168.0" class="lk"/>
+<polygon points="380.0,168.0 371.1,167.1 375.4,160.3" class="fk"/>
+<line x1="380.0" y1="238.0" x2="336.0" y2="156.0" class="lk"/>
+<polygon points="336.0,156.0 343.3,161.2 336.3,164.9" class="fk"/>
+<rect x="540.0" y="150.0" width="160.0" height="114.0" rx="6" class="plain"/>
+<text x="620.0" y="204.0" class="tb" text-anchor="middle" >command FSM</text>
+<text x="620.0" y="219.0" class="ts" text-anchor="middle" >W H O T: program</text>
+<text x="620.0" y="232.0" class="ts" text-anchor="middle" >B Z: schedule</text>
+<text x="620.0" y="245.0" class="ts" text-anchor="middle" >R S: run sweeps</text>
+<text x="620.0" y="258.0" class="ts" text-anchor="middle" >D U Q: read out</text>
+<line x1="510.0" y1="175.0" x2="540.0" y2="175.0" class="lk"/>
+<polygon points="540.0,175.0 532.0,179.0 532.0,171.0" class="fk"/>
+<line x1="540.0" y1="238.0" x2="510.0" y2="238.0" class="lk"/>
+<polygon points="510.0,238.0 518.0,234.0 518.0,242.0" class="fk"/>
+<rect x="380.0" y="290.0" width="470.0" height="200.0" rx="10" class="warm"/>
+<text x="394.0" y="310.0" class="tb tw" text-anchor="start" >pbit_array: the sampler</text>
+<rect x="394.0" y="322.0" width="130.0" height="54.0" rx="6" class="plain"/>
+<text x="459.0" y="346.0" class="tb" text-anchor="middle" >J RAM</text>
+<text x="459.0" y="361.0" class="ts" text-anchor="middle" >N×N × 8 bit (1 BSRAM)</text>
+<rect x="394.0" y="386.0" width="130.0" height="40.0" rx="6" class="plain"/>
+<text x="459.0" y="410.0" class="tb" text-anchor="middle" >h + order RAM</text>
+<rect x="540.0" y="322.0" width="150.0" height="104.0" rx="6" class="plain"/>
+<text x="615.0" y="371.0" class="tb" text-anchor="middle" >p-bit engine</text>
+<text x="615.0" y="386.0" class="ts" text-anchor="middle" >MAC → ×β → σ LUT</text>
+<text x="615.0" y="399.0" class="ts" text-anchor="middle" >→ rand &lt; p</text>
+<text x="615.0" y="412.0" class="ts" text-anchor="middle" >(1 BSRAM LUT)</text>
+<rect x="706.0" y="322.0" width="130.0" height="54.0" rx="6" class="plain"/>
+<text x="771.0" y="346.0" class="tb" text-anchor="middle" >spin reg</text>
+<text x="771.0" y="361.0" class="ts" text-anchor="middle" >s[0..N−1]</text>
+<rect x="540.0" y="436.0" width="150.0" height="44.0" rx="6" class="plain"/>
+<text x="615.0" y="455.0" class="tb" text-anchor="middle" >noise_bank</text>
+<text x="615.0" y="470.0" class="ts" text-anchor="middle" >4 × LFSR32</text>
+<line x1="524.0" y1="349.0" x2="540.0" y2="349.0" class="lk"/>
+<polygon points="540.0,349.0 532.0,353.0 532.0,345.0" class="fk"/>
+<line x1="524.0" y1="406.0" x2="540.0" y2="406.0" class="lk"/>
+<polygon points="540.0,406.0 532.0,410.0 532.0,402.0" class="fk"/>
+<line x1="615.0" y1="436.0" x2="615.0" y2="426.0" class="lk"/>
+<polygon points="615.0,426.0 619.0,434.0 611.0,434.0" class="fk"/>
+<line x1="690.0" y1="349.0" x2="706.0" y2="349.0" class="lk"/>
+<polygon points="706.0,349.0 698.0,353.0 698.0,345.0" class="fk"/>
+<polyline points="771.0,376.0 771.0,400.0 690.0,400.0" class="lk"/>
+<polygon points="690.0,400.0 698.0,396.0 698.0,404.0" class="fk"/>
+<rect x="706.0" y="160.0" width="140.0" height="70.0" rx="6" class="plain"/>
+<text x="776.0" y="192.0" class="tb" text-anchor="middle" >schedule_ctrl</text>
+<text x="776.0" y="207.0" class="ts" text-anchor="middle" >β: const / linear</text>
+<text x="776.0" y="220.0" class="ts" text-anchor="middle" >/ table</text>
+<line x1="776.0" y1="230.0" x2="776.0" y2="290.0" class="lk"/>
+<polygon points="776.0,290.0 772.0,282.0 780.0,282.0" class="fk"/>
+<text x="786.0" y="260.0" class="ts" text-anchor="middle" >β</text>
+<line x1="620.0" y1="264.0" x2="620.0" y2="290.0" class="lk"/>
+<polygon points="620.0,290.0 616.0,282.0 624.0,282.0" class="fk"/>
+<text x="676.0" y="281.0" class="ts" text-anchor="middle" >write J, h; run</text>
+<rect x="870.0" y="290.0" width="170.0" height="110.0" rx="6" class="plain"/>
+<text x="955.0" y="342.0" class="tb" text-anchor="middle" >readout_counter</text>
+<text x="955.0" y="357.0" class="ts" text-anchor="middle" >histogram 4096 × 32</text>
+<text x="955.0" y="370.0" class="ts" text-anchor="middle" >(8 BSRAM)</text>
+<text x="955.0" y="383.0" class="ts" text-anchor="middle" >+ per-spin counters</text>
+<line x1="836.0" y1="349.0" x2="870.0" y2="349.0" class="lk"/>
+<polygon points="870.0,349.0 862.0,353.0 862.0,345.0" class="fk"/>
+<text x="849.0" y="371.0" class="ts" text-anchor="middle" >sweep_done</text>
+<polyline points="955.0,290.0 955.0,140.0 620.0,140.0 620.0,150.0" class="lk"/>
+<polygon points="620.0,150.0 616.0,142.0 624.0,142.0" class="fk"/>
+<text x="965.0" y="220.0" class="ts" text-anchor="start" >histogram dump</text>
+<rect x="870.0" y="420.0" width="170.0" height="60.0" rx="6" class="plain"/>
+<text x="955.0" y="447.0" class="tb" text-anchor="middle" >6 LEDs</text>
+<text x="955.0" y="462.0" class="ts" text-anchor="middle" >spins 0-4 + busy</text>
+<text x="955.0" y="475.0" class="ts" text-anchor="middle" >pins 10-16</text>
+<line x1="836.0" y1="365.0" x2="870.0" y2="440.0" class="lk"/>
+<polygon points="870.0,440.0 863.1,434.4 870.3,431.1" class="fk"/>
+<line x1="336.0" y1="445.0" x2="380.0" y2="445.0" class="lk"/>
+<polygon points="380.0,445.0 372.0,449.0 372.0,441.0" class="fk"/>
+<text x="358.0" y="439.0" class="ts" text-anchor="middle" >clk</text>
+<line x1="336.0" y1="340.0" x2="380.0" y2="340.0" class="lk"/>
+<polygon points="380.0,340.0 372.0,344.0 372.0,336.0" class="fk"/>
+<text x="358.0" y="334.0" class="ts" text-anchor="middle" >reset / run</text>
+<text x="24.0" y="548.0" class="ts" text-anchor="start" >Orange box = the thermodynamic core; everything else is ordinary digital plumbing that plays the role of XTR-0's host + FPGA [SDP p.9 Fig. 6].</text>
+</svg></div>
+    <figcaption>Measured: LUT4 29 %, BSRAM 10/26, Fmax 62.67 MHz (27 MHz needed). The factor6 build: LUT4 27 %, 69.46 MHz.</figcaption>
+  </figure>
+  <div class="grid2">
+    <div class="inst">
+      <h3>Run it</h3>
+<pre class="cmd">source ~/tools/oss-cad-suite/environment
+cd tb  &amp;&amp; make test     # bit-exact RTL vs model
+make pgates             # gates fwd/bwd, factoring
+cd ../fpga &amp;&amp; make      # default bitstream
+make case CASE=factor6  # power-on = factor 6
+make flash-case         # program the board
+python3 host.py pgate --case pgate_and --clamp Y=1</pre>
+    </div>
+    <div class="inst">
+      <h3>What the FPGA does not capture</h3>
+      <p class="note">The noise is a deterministic LFSR, not shot noise; one engine visits p-bits in turn instead of thousands of cells flipping in parallel; there is no analog relaxation, device variation or energy saving. It reproduces the <i>mathematics</i> of the chip exactly, not its physics (docs/08).</p>
+      <p class="note">Bitstreams were built and timed; flashing and <code>host.py</code> were not run because no board was attached.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+const DATA = {"gates":{"NOT":{"nodes":["A","Y"],"J":[[0.0,-1.0],[-1.0,0.0]],"h":[0.0,0.0],"pos":[[60,110],[240,110]],"ins":["A"],"outs":["Y"],"valid":["01","10"]},"AND":{"nodes":["A","B","Y"],"J":[[0.0,-1.0,2.0],[-1.0,0.0,2.0],[2.0,2.0,0.0]],"h":[1.0,1.0,-2.0],"pos":[[60,60],[60,160],[240,110]],"ins":["A","B"],"outs":["Y"],"valid":["000","010","100","111"]},"OR":{"nodes":["A","B","Y"],"J":[[0.0,-1.0,2.0],[-1.0,0.0,2.0],[2.0,2.0,0.0]],"h":[-1.0,-1.0,2.0],"pos":[[60,60],[60,160],[240,110]],"ins":["A","B"],"outs":["Y"],"valid":["000","011","101","111"]},"XOR":{"nodes":["A","B","Y","X"],"J":[[0.0,-1.0,-1.0,-2.0],[-1.0,0.0,-1.0,-2.0],[-1.0,-1.0,0.0,-2.0],[-2.0,-2.0,-2.0,0.0]],"h":[-1.0,-1.0,-1.0,-2.0],"pos":[[60,50],[60,170],[240,50],[240,170]],"ins":["A","B"],"outs":["Y"],"valid":["000","011","101","110"]}},"mult":{"nodes":["a0","a1","b0","b1","p0","q01","q10","q11","p1","p1_aux","c1","p2","p2_aux","p3"],"J":[[0.0,0.0,-1.0,-1.0,2.0,2.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],[0.0,0.0,-1.0,-1.0,0.0,0.0,2.0,2.0,0.0,0.0,0.0,0.0,0.0,0.0],[-1.0,-1.0,0.0,0.0,2.0,0.0,2.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],[-1.0,-1.0,0.0,0.0,0.0,2.0,0.0,2.0,0.0,0.0,0.0,0.0,0.0,0.0],[2.0,0.0,2.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],[2.0,0.0,0.0,2.0,0.0,0.0,-2.0,0.0,-1.0,-2.0,2.0,0.0,0.0,0.0],[0.0,2.0,2.0,0.0,0.0,-2.0,0.0,0.0,-1.0,-2.0,2.0,0.0,0.0,0.0],[0.0,2.0,0.0,2.0,0.0,0.0,0.0,0.0,0.0,0.0,-2.0,-1.0,-2.0,2.0],[0.0,0.0,0.0,0.0,0.0,-1.0,-1.0,0.0,0.0,-2.0,0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0,0.0,-2.0,-2.0,0.0,-2.0,0.0,0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0,0.0,2.0,2.0,-2.0,0.0,0.0,0.0,-1.0,-2.0,2.0],[0.0,0.0,0.0,0.0,0.0,0.0,0.0,-1.0,0.0,0.0,-1.0,0.0,-2.0,0.0],[0.0,0.0,0.0,0.0,0.0,0.0,0.0,-2.0,0.0,0.0,-2.0,-2.0,0.0,0.0],[0.0,0.0,0.0,0.0,0.0,0.0,0.0,2.0,0.0,0.0,2.0,0.0,0.0,0.0]],"h":[2.0,2.0,2.0,2.0,-2.0,-2.0,-2.0,-2.0,-1.0,-2.0,-2.0,-1.0,-2.0,-2.0],"pos":[[40,60],[40,130],[40,220],[40,290],[200,40],[200,125],[200,210],[200,300],[360,150],[360,70],[360,240],[520,250],[520,170],[520,320]],"ins":["a0","a1","b0","b1"],"outs":["p0","p1","p2","p3"],"valid":[]},"maxcut":{"n":16,"edges":[[0,1],[0,9],[0,14],[1,9],[1,11],[2,5],[2,7],[2,8],[3,6],[3,12],[3,15],[4,11],[4,12],[4,14],[5,13],[5,15],[6,7],[6,10],[7,10],[8,13],[8,14],[9,15],[10,11],[12,13]],"optimum":20},"measured":{"pgate_not":[{"label":"free","p_ok":0.8878,"p_ok_exact":0.8808},{"label":"fwd 0","p_ok":0.8933,"p_ok_exact":0.8808},{"label":"fwd 1","p_ok":0.875,"p_ok_exact":0.8808},{"label":"bwd 0","p_ok":0.8789,"p_ok_exact":0.8808},{"label":"bwd 1","p_ok":0.8894,"p_ok_exact":0.8808}],"pgate_and":[{"label":"free","p_ok":0.9906,"p_ok_exact":0.9864},{"label":"fwd 00","p_ok":1.0,"p_ok_exact":1.0},{"label":"fwd 01","p_ok":0.9878,"p_ok_exact":0.982},{"label":"fwd 10","p_ok":0.9844,"p_ok_exact":0.982},{"label":"fwd 11","p_ok":0.98,"p_ok_exact":0.982},{"label":"bwd 0","p_ok":0.9944,"p_ok_exact":0.9939},{"label":"bwd 1","p_ok":0.9689,"p_ok_exact":0.9646}],"pgate_or":[{"label":"free","p_ok":0.9883,"p_ok_exact":0.9864},{"label":"fwd 00","p_ok":0.9778,"p_ok_exact":0.982},{"label":"fwd 01","p_ok":0.9844,"p_ok_exact":0.982},{"label":"fwd 10","p_ok":0.98,"p_ok_exact":0.982},{"label":"fwd 11","p_ok":1.0,"p_ok_exact":1.0},{"label":"bwd 0","p_ok":0.9639,"p_ok_exact":0.9646},{"label":"bwd 1","p_ok":0.9933,"p_ok_exact":0.9939}],"pgate_xor":[{"label":"free","p_ok":0.9233,"p_ok_exact":0.9199},{"label":"fwd 00","p_ok":0.8972,"p_ok_exact":0.9094},{"label":"fwd 01","p_ok":0.8922,"p_ok_exact":0.9094},{"label":"fwd 10","p_ok":0.9228,"p_ok_exact":0.9094},{"label":"fwd 11","p_ok":0.9578,"p_ok_exact":0.9525},{"label":"bwd 0","p_ok":0.9028,"p_ok_exact":0.9094},{"label":"bwd 1","p_ok":0.9161,"p_ok_exact":0.9305}],"fulladder":[{"label":"free","p_ok":0.8461,"p_ok_exact":0.8455},{"label":"fwd 000","p_ok":0.8467,"p_ok_exact":0.833},{"label":"fwd 001","p_ok":0.9017,"p_ok_exact":0.8267},{"label":"fwd 010","p_ok":0.82,"p_ok_exact":0.8294},{"label":"fwd 011","p_ok":0.7989,"p_ok_exact":0.8576},{"label":"fwd 100","p_ok":0.8656,"p_ok_exact":0.8294},{"label":"fwd 101","p_ok":0.9522,"p_ok_exact":0.8576},{"label":"fwd 110","p_ok":0.8494,"p_ok_exact":0.8661},{"label":"fwd 111","p_ok":0.8911,"p_ok_exact":0.8661},{"label":"bwd 00","p_ok":0.6706,"p_ok_exact":0.6543},{"label":"bwd 01","p_ok":0.935,"p_ok_exact":0.9217},{"label":"bwd 10","p_ok":0.8611,"p_ok_exact":0.882},{"label":"bwd 11","p_ok":0.7483,"p_ok_exact":0.784}],"factor6":[{"label":"factor 6","p_ok":0.8937,"p_ok_exact":0.9385},{"label":"factor 3","p_ok":0.9808,"p_ok_exact":0.9799},{"label":"factor 9","p_ok":1.0,"p_ok_exact":0.9998},{"label":"factor 4","p_ok":0.8903,"p_ok_exact":0.748}]}};
+const sig = u => 1 / (1 + Math.exp(-u));
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+function hiDPI(c) { const r = window.devicePixelRatio || 1; const w = c.width, h = c.height;
+  if (!c.dataset.w) { c.dataset.w = w; c.dataset.h = h; c.width = w * r; c.height = h * r; }
+  const g = c.getContext('2d'); g.setTransform(r, 0, 0, r, 0, 0); return [g, +c.dataset.w, +c.dataset.h]; }
+
+/* ---------------- Ising sampler (float mirror of the hardware rule) ---------------- */
+class Ising {
+  constructor(J, h) { this.n = h.length; this.J = J; this.h0 = h.slice(); this.h = h.slice();
+    this.s = Array.from({length: this.n}, () => Math.random() < .5 ? 1 : -1); this.beta = 1;
+    this.order = [...Array(this.n).keys()]; }
+  clamp(map) { this.h = this.h0.slice(); for (const i in map) this.h[i] = map[i] ? 127 / 16 : -8; }
+  sweep() { const {n, J, s, h, beta} = this;
+    for (const i of this.order) { let f = h[i]; const r = J[i];
+      for (let j = 0; j < n; j++) if (r[j]) f += r[j] * s[j];
+      s[i] = Math.random() < sig(2 * beta * f) ? 1 : -1; } }
+  bit(i) { return this.s[i] > 0 ? 1 : 0; }
+}
+
+/* ---------------- hero coins ---------------- */
+(() => { const box = document.getElementById('coins'); const coins = [];
+  for (let k = 0; k < 64; k++) { const d = document.createElement('div'); d.className = 'coin'; box.appendChild(d); coins.push(d); }
+  const H = document.getElementById('heroH'); let avg = .5;
+  function frame() { const h = +H.value, p = sig(2 * h); let ones = 0;
+    for (const c of coins) { const u = Math.random() < p; c.classList.toggle('up', u); ones += u; }
+    avg = .9 * avg + .1 * ones / 64;
+    document.getElementById('heroHv').textContent = h.toFixed(2);
+    document.getElementById('heroFrac').textContent = Math.round(avg * 100) + '%';
+    document.getElementById('heroExp').textContent = Math.round(p * 100) + '%'; }
+  frame(); if (!reduce) setInterval(frame, 140); H.addEventListener('input', frame); })();
+
+/* ---------------- p-bit playground ---------------- */
+(() => { const C = document.getElementById('sigC'), S = document.getElementById('pbStrip');
+  const F = document.getElementById('pbF'), B = document.getElementById('pbB'); const hist = [];
+  function draw() { const [g, w, h] = hiDPI(C); const f = +F.value, b = +B.value, p = sig(2 * b * f);
+    g.clearRect(0, 0, w, h); const L = 36, R = 12, T = 12, Bm = 28, X = u => L + (u + 3) / 6 * (w - L - R), Y = v => T + (1 - v) * (h - T - Bm);
+    g.strokeStyle = css('--line'); g.lineWidth = 1; g.font = '11px ' + css('--f-mono'); g.fillStyle = css('--mut');
+    for (const v of [0, .5, 1]) { g.beginPath(); g.moveTo(L, Y(v)); g.lineTo(w - R, Y(v)); g.stroke(); g.fillText(v.toFixed(1), 6, Y(v) + 4); }
+    for (const u of [-3, -2, -1, 0, 1, 2, 3]) { g.fillText(u, X(u) - 4, h - 10); }
+    g.fillText('field ℓ', w - 60, h - 10); g.fillText('P(1)', L + 4, T + 10);
+    for (const [bb, col, dash] of [[.5, css('--bad'), [4, 3]], [b, css('--warm'), []], [4, css('--bad'), [1, 3]]]) {
+      g.beginPath(); g.setLineDash(dash); g.strokeStyle = col; g.lineWidth = bb === b ? 2.4 : 1.2;
+      for (let k = 0; k <= 120; k++) { const u = -3 + 6 * k / 120; const xx = X(u), yy = Y(sig(2 * bb * u)); k ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
+      g.stroke(); } g.setLineDash([]);
+    g.strokeStyle = css('--cool'); g.beginPath(); g.moveTo(X(f), Y(0)); g.lineTo(X(f), Y(p)); g.lineTo(L, Y(p)); g.stroke();
+    g.fillStyle = css('--warm'); g.beginPath(); g.arc(X(f), Y(p), 5, 0, 7); g.fill();
+    g.fillStyle = css('--mut'); g.fillText('dashed: β = 0.5 (hot) · dotted: β = 4 (cold)', L + 8, T + 28);
+    document.getElementById('pbFv').textContent = f.toFixed(2); document.getElementById('pbBv').textContent = b.toFixed(2);
+    document.getElementById('pbP').textContent = p.toFixed(3); }
+  function tick() { const p = sig(2 * +B.value * +F.value); for (let k = 0; k < 3; k++) hist.push(Math.random() < p ? 1 : 0);
+    while (hist.length > 200) hist.shift();
+    const [g, w, h] = hiDPI(S); g.clearRect(0, 0, w, h); const n = 100, cw = w / n;
+    hist.slice(-n).forEach((b, k) => { g.fillStyle = b ? css('--warm') : css('--badf'); g.fillRect(k * cw + .5, b ? 4 : 18, cw - 1, 12); });
+    document.getElementById('pbS').textContent = (hist.reduce((a, b) => a + b, 0) / hist.length).toFixed(2);
+    document.getElementById('pbN').textContent = hist.length; }
+  F.addEventListener('input', () => { hist.length = 0; draw(); }); B.addEventListener('input', () => { hist.length = 0; draw(); });
+  draw(); tick(); if (!reduce) setInterval(tick, 120); addEventListener('resize', draw);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw); })();
+
+/* ---------------- graph drawing helper ---------------- */
+function drawGraph(svg, circ, opts = {}) { svg.innerHTML = ''; const {nodes, J, pos} = circ; const n = nodes.length;
+  const eg = el('g', {}, svg), ng = el('g', {}, svg); const edges = [];
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) if (J[i][j]) {
+    const [x1, y1] = pos[i], [x2, y2] = pos[j];
+    const line = el('line', {x1, y1, x2, y2, class: 'gedge ' + (opts.neutral ? 'mid' : (J[i][j] > 0 ? 'pos' : 'neg'))}, eg);
+    if (opts.weights) { const t = el('text', {x: (x1 + x2) / 2, y: (y1 + y2) / 2 - 4, class: 'gw'}, eg);
+      t.textContent = (J[i][j] > 0 ? '+' : '') + J[i][j]; }
+    edges.push({i, j, line}); }
+  const R = opts.r || 16; const cs = [], ls = [];
+  for (let i = 0; i < n; i++) { const [x, y] = pos[i];
+    const c = el('circle', {cx: x, cy: y, r: nodes[i].includes('aux') ? R * .7 : R, class: 'gnode s0'}, ng);
+    const t = el('text', {x, y: y + 4, class: 'glab s0'}, ng); t.textContent = opts.label ? opts.label(nodes[i]) : nodes[i];
+    cs.push(c); ls.push(t); }
+  return {edges, set(sim, clamped = {}) { for (let i = 0; i < n; i++) { const b = sim.bit(i);
+      cs[i].setAttribute('class', 'gnode s' + b + (i in clamped ? ' cl' : '')); ls[i].setAttribute('class', 'glab s' + b); } }}; }
+
+/* ---------------- p-gate lab ---------------- */
+(() => { const sel = document.getElementById('gateSel'), svg = document.getElementById('gateSvg');
+  const clampBox = document.getElementById('gateClamps'), rowsBox = document.getElementById('gateRows');
+  const B = document.getElementById('gB'); let kind = 'AND', sim, view, clamps = {}, counts = {}, total = 0, rowEls = {};
+  const notes = {AND: 'Try clamping Y = 1: only A = B = 1 survives. Clamp Y = 0: the three other rows share the time.',
+    OR: 'Clamp Y = 0 and the sampler forces A = B = 0.', NOT: 'Two p-bits that prefer to disagree.',
+    XOR: 'X is a hidden auxiliary p-bit. It is not part of the truth table, but XOR cannot be built without it.'};
+  for (const k of ['AND', 'OR', 'NOT', 'XOR']) { const b = document.createElement('button'); b.textContent = 'p-' + k; b.id = 'g_' + k;
+    b.onclick = () => setGate(k); sel.appendChild(b); }
+  function wires(c) { return c.ins.concat(c.outs); }
+  function setGate(k) { kind = k; const c = DATA.gates[k];
+    [...sel.children].forEach(b => b.classList.toggle('on', b.id === 'g_' + k));
+    sim = new Ising(c.J, c.h); sim.beta = +B.value; clamps = {};
+    view = drawGraph(svg, c, {weights: true});
+    clampBox.innerHTML = ''; c.nodes.forEach((nm, i) => { if (nm === 'X') return;
+      const d = document.createElement('div'); d.className = 'clamp'; d.innerHTML = '<span>' + nm + '</span>';
+      const sg = document.createElement('div'); sg.className = 'seg';
+      for (const [lab, v] of [['free', null], ['0', 0], ['1', 1]]) { const b = document.createElement('button');
+        b.className = 'nodebtn' + (v === null ? ' on' : ''); b.textContent = lab; b.id = 'cl_' + nm + '_' + lab;
+        b.onclick = () => { if (v === null) delete clamps[i]; else clamps[i] = v; sim.clamp(clamps);
+          [...sg.children].forEach(x => x.classList.toggle('on', x === b)); reset(); };
+        sg.appendChild(b); } d.appendChild(sg); clampBox.appendChild(d); });
+    rowsBox.innerHTML = ''; rowEls = {}; const w = wires(c), nin = c.ins.length;
+    for (let r = 0; r < (1 << w.length); r++) { const key = w.map((_, k) => (r >> (w.length - 1 - k)) & 1).join('');
+      const div = document.createElement('div'); div.className = 'row' + (c.valid.includes(key) ? ' ok' : '');
+      div.innerHTML = '<span class="lab">' + key.slice(0, nin).split('').join(' ') + ' → ' + key.slice(nin) + '</span><div><div class="bar" style="width:0"></div></div><span class="v">0.00</span>';
+      rowsBox.appendChild(div); rowEls[key] = div; }
+    document.getElementById('gateNote').textContent = notes[k]; reset(); }
+  function reset() { counts = {}; total = 0; }
+  function frame() { const c = DATA.gates[kind], idx = wires(c).map(w => c.nodes.indexOf(w));
+    for (let k = 0; k < 6; k++) { sim.sweep(); const key = idx.map(i => sim.bit(i)).join('');
+      counts[key] = (counts[key] || 0) + 1; total++; }
+    view.set(sim, clamps); let pv = 0;
+    for (const key in rowEls) { const p = (counts[key] || 0) / total; if (c.valid.includes(key)) pv += p;
+      rowEls[key].querySelector('.bar').style.width = (100 * p) + '%'; rowEls[key].querySelector('.v').textContent = p.toFixed(2); }
+    document.getElementById('gateValid').textContent = pv.toFixed(3); document.getElementById('gateN').textContent = total; }
+  B.addEventListener('input', () => { sim.beta = +B.value; document.getElementById('gBv').textContent = (+B.value).toFixed(2); reset(); });
+  setGate('AND'); frame(); setInterval(frame, reduce ? 600 : 90); })();
+
+/* ---------------- factoring ---------------- */
+(() => { const c = DATA.mult, svg = document.getElementById('multSvg'), B = document.getElementById('fB');
+  const sim = new Ising(c.J, c.h); sim.beta = 2; const view = drawGraph(svg, c, {neutral: true, r: 17});
+  const ix = w => c.nodes.indexOf(w); let prod = 6, clamps = {}, grid = new Float64Array(16), tot = 0;
+  const sel = document.getElementById('prodSel');
+  for (const p of [6, 3, 4, 9, 2]) { const b = document.createElement('button'); b.textContent = 'p = ' + p; b.id = 'prod_' + p;
+    b.onclick = () => setProd(p); sel.appendChild(b); }
+  function setProd(p) { prod = p; clamps = {}; c.outs.forEach((w, k) => clamps[ix(w)] = (p >> k) & 1); sim.clamp(clamps);
+    [...sel.children].forEach(b => b.classList.toggle('on', b.id === 'prod_' + p)); grid.fill(0); tot = 0;
+    const m = DATA.measured && DATA.measured.factor6 && DATA.measured.factor6.find(s => s.label === 'factor ' + p);
+    document.getElementById('fMeas').textContent = m ? `On the RTL (tb_pgates.v, β = 2): P(a·b = ${p}) = ${m.p_ok.toFixed(2)}; exact law of the quantized chip: ${m.p_ok_exact.toFixed(2)}.`
+      : `p = ${p} was not in the RTL test script; this panel is the in-browser float sampler only.`; }
+  document.getElementById('fShake').onclick = () => { sim.s = sim.s.map(() => Math.random() < .5 ? 1 : -1); grid.fill(0); tot = 0; };
+  B.addEventListener('input', () => { sim.beta = +B.value; document.getElementById('fBv').textContent = (+B.value).toFixed(2); });
+  function drawGrid() { const C = document.getElementById('fGrid'); const [g, w, h] = hiDPI(C); g.clearRect(0, 0, w, h);
+    const L = 34, T = 10, cs = (w - L - 10) / 4; g.font = '12px ' + css('--f-mono');
+    for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) { const p = tot ? grid[a * 4 + b] / tot : 0;
+      g.fillStyle = css('--panel'); g.fillRect(L + b * cs + 1, T + a * cs + 1, cs - 2, cs - 2);
+      g.globalAlpha = Math.min(1, p * 1.6); g.fillStyle = a * b === prod ? css('--ok') : css('--warm');
+      g.fillRect(L + b * cs + 1, T + a * cs + 1, cs - 2, cs - 2); g.globalAlpha = 1;
+      g.fillStyle = css('--fg'); g.textAlign = 'center';
+      g.fillText(a + '×' + b, L + b * cs + cs / 2, T + a * cs + cs / 2 - 2);
+      if (p > .005) g.fillText(p.toFixed(2), L + b * cs + cs / 2, T + a * cs + cs / 2 + 14); }
+    g.textAlign = 'left'; g.fillStyle = css('--mut'); g.fillText('a', 8, T + 2 * cs); g.fillText('b →', L, h - 2); }
+  function frame() { for (let k = 0; k < 4; k++) { sim.sweep();
+      const a = sim.bit(ix('a0')) + 2 * sim.bit(ix('a1')), b = sim.bit(ix('b0')) + 2 * sim.bit(ix('b1'));
+      grid[a * 4 + b]++; tot++; if (tot > 1500) { for (let q = 0; q < 16; q++) grid[q] *= .999; tot *= .999; } }
+    view.set(sim, clamps);
+    const a = sim.bit(ix('a0')) + 2 * sim.bit(ix('a1')), b = sim.bit(ix('b0')) + 2 * sim.bit(ix('b1'));
+    document.getElementById('fNow').textContent = `a = ${a} · b = ${b}`;
+    const ok = a * b === prod, pill = document.getElementById('fOk');
+    pill.textContent = ok ? `${a} × ${b} = ${prod}` : `${a} × ${b} = ${a * b} ≠ ${prod}`; pill.classList.toggle('no', !ok); drawGrid(); }
+  setProd(6); frame(); setInterval(frame, reduce ? 600 : 110); })();
+
+/* ---------------- Max-Cut anneal ---------------- */
+(() => { const {n, edges} = DATA.maxcut; const J = Array.from({length: n}, () => new Array(n).fill(0));
+  edges.forEach(([i, j]) => { J[i][j] = J[j][i] = -1; });
+  const pos = [...Array(n).keys()].map(k => [160 + 130 * Math.cos(2 * Math.PI * k / n - Math.PI / 2), 160 + 130 * Math.sin(2 * Math.PI * k / n - Math.PI / 2)]);
+  const circ = {nodes: [...Array(n).keys()].map(String), J, pos};
+  const svg = document.getElementById('mcSvg'), view = drawGraph(svg, circ, {neutral: true, r: 13});
+  const sim = new Ising(J, new Array(n).fill(0)); const table = [...Array(16).keys()].map(k => .25 * Math.pow(16, k / 15));
+  let t = 0, mode = 'run', best = 0, trace = [];
+  const cut = () => edges.reduce((a, [i, j]) => a + (sim.s[i] !== sim.s[j] ? 1 : 0), 0);
+  function restart() { t = 0; trace = []; sim.s = sim.s.map(() => Math.random() < .5 ? 1 : -1); }
+  document.getElementById('mcRun').onclick = () => { mode = 'run'; restart(); best = 0; toggle(); };
+  document.getElementById('mcHot').onclick = () => { mode = 'hot'; restart(); toggle(); };
+  function toggle() { document.getElementById('mcRun').classList.toggle('on', mode === 'run'); document.getElementById('mcHot').classList.toggle('on', mode === 'hot'); }
+  function plot() { const C = document.getElementById('mcPlot'); const [g, w, h] = hiDPI(C); g.clearRect(0, 0, w, h);
+    const L = 34, R = 34, T = 10, Bm = 24, X = k => L + k / 200 * (w - L - R), Y = v => T + (1 - v / 24) * (h - T - Bm);
+    g.font = '11px ' + css('--f-mono'); g.strokeStyle = css('--line'); g.fillStyle = css('--mut');
+    for (const v of [0, 12, 20, 24]) { g.beginPath(); g.moveTo(L, Y(v)); g.lineTo(w - R, Y(v)); g.stroke(); g.fillText(v, 8, Y(v) + 4); }
+    g.fillText('sweeps →', w - R - 60, h - 6); g.fillStyle = css('--ok'); g.fillText('optimum', L + 4, Y(20) - 4);
+    g.strokeStyle = css('--cool'); g.setLineDash([4, 3]); g.beginPath();
+    trace.forEach((p, k) => { const yy = T + (1 - Math.log(p.b / .25) / Math.log(16)) * (h - T - Bm); k ? g.lineTo(X(k), yy) : g.moveTo(X(k), yy); }); g.stroke(); g.setLineDash([]);
+    g.strokeStyle = css('--warm'); g.lineWidth = 2; g.beginPath(); trace.forEach((p, k) => k ? g.lineTo(X(k), Y(p.c)) : g.moveTo(X(k), Y(p.c))); g.stroke(); g.lineWidth = 1;
+    g.fillStyle = css('--cool'); g.fillText('β (log, right)', w - R - 92, T + 12); g.fillStyle = css('--warm'); g.fillText('cut', L + 4, T + 12); }
+  function frame() { const b = mode === 'hot' ? .25 : table[Math.min(15, Math.floor(t / 8))]; sim.beta = b; sim.sweep(); t++;
+    const c = cut(); if (mode === 'run') best = Math.max(best, c); trace.push({c, b}); if (trace.length > 200) { if (mode === 'run') { restart(); } else trace.shift(); }
+    view.set(sim); view.edges.forEach(e => e.line.setAttribute('class', 'gedge ' + (sim.s[e.i] !== sim.s[e.j] ? 'cut' : 'mid')));
+    document.getElementById('mcB').textContent = b.toFixed(2); document.getElementById('mcCut').textContent = c;
+    document.getElementById('mcBest').textContent = best; plot(); }
+  restart(); frame(); setInterval(frame, reduce ? 500 : 70); })();
+</script>
+
+</body>
+</html>

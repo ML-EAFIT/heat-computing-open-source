@@ -1,0 +1,1973 @@
+An integer factorization algorithm which uses diffusion as a
+computational engine
+
+arXiv:2104.11616v2 [quant-ph] 23 Jan 2023
+
+Carlos A. Cadavid,
+Paulina Hoyos,
+Jay Jorgenson
+Lejla Smajlović,
+Juan D. Vélez
+January 24, 2023
+Abstract
+In this article we develop an algorithm which computes a divisor of an integer N , which is
+assumed to be neither prime nor the power of a prime. The algorithm uses discrete time
+heat diffusion on a finite graph. If N has m distinct prime factors, then the probability
+that our algorithm runs successfully is at least p(m) = 1 − (m + 1)/2m . We compute the
+computational complexity of the algorithm in terms of classical, or digital, steps and in
+terms of diffusion steps, which is a concept that we define here. As we will discuss below,
+we assert that a diffusion step can and should be considered as being comparable to a
+quantum step for an algorithm which runs on a quantum computer. With this, we prove
+that our factorization algorithm uses at most O((log N )2 ) deterministic steps and at most
+O((log N )2 ) diffusion steps with an implied constant which is effective. By comparison,
+Shor’s algorithm is known to use at most O((log N )2 log(log N ) log(log log N )) quantum
+steps on a quantum computer.
+As an example of our algorithm, we simulate the diffusion computer algorithm on a
+desktop computer and obtain factorizations of N = 33 and N = 1363.
+
+1
+
+Introduction
+
+Scientists continue to uncover ways in which nature manages and organizes itself. For example,
+the findings in the article [Hig21] have been described as “the first time we are seeing biology
+actively exploiting quantum effects.”1 Whereas mathematics is sometimes developed to study
+the physical world, there are times when the physical world provides a guide for machine
+development. In [Cu17], the authors cite the article [Ad94] as the foundational work on DNA
+computation and, furthermore, assert that DNA computing can be viewed as a means to
+obtain the first physical design of a non-deterministic universal Turing machine. We refer the
+interested reader to the discussion in section 3 of [Cu17] where the authors given an intriguing,
+albeit brief, description of molecular computing going back more than sixty years, beginning
+with [Fey60].
+In this article we continue the theme of mathematically replicating the means by which nature
+can be seen as a computational engine. Specifically, we are interested in the manner in which
+certain aspects of diffusion are simultaneously, not sequentially, observable. For instance, we
+offer the following self-evident observation.
+Assume that a heat source, such as a flame or a welding torch, is applied to the center of
+a circular disc of uniform thickness and material composition. Then two observers who are
+1
+
+Bacteria Know How to Exploit Quantum Mechanics to Steer Energy, SciTechDaily, March 29, 2021.
+
+1
+
+2
+measuring temperatures at different points on the perimeter will detect a change of temperature
+at their points of contact at the same rate.
+The diffusion in the above setting is that of heat. In this paper we study a diffusion process
+which admits a different visualization which we will call a diffusion ring, or simply a ring.
+Within a circular ring, imagine a beam of light B (or some type of focused energy) emanating
+from a source at a perimeter point P0 . Upon contact with another perimeter point P1 on the
+ring, the beam B splits into M sub-beams of equal magnitude in a prescribed set of directions
+toward perimeter points P2,1 , · · · P2,M . Let each sub-beam upon contact with some P2,k split
+in manner as similar to the reflection of B at P1 , and so on. Then after n such splittings,
+what portion of the original amount energy has returned to P0 ?
+The analysis in this article involves the mathematical understanding of the imagery of a beam
+reflecting and splitting within a diffusion ring. In this setting, we will count a single diffusion
+step as one instance of contact, reflecting and subsequent splitting. To be precise, the count
+will be mathematically captured as one iteration of a symmetric matrix on a finite dimensional
+vector space. If each contact involves the splitting of a single beam into M sub-beams, then
+after n diffusion steps, one will have M n paths of light traversing the ring. Though at this
+point we are solely interested in the mathematical aspects of our set-up, one cannot help but
+imagine the visualization of the diffusion ring. Indeed, if such a ring were 1 kilometer in
+diameter, and if the beam were to travel at the speed of light, then after 0.01 seconds one
+would expect to have more than M 3000 sub-beams crossing various chords of the ring since
+in almost all circumstances more than 3000 diffusion steps would have taken place.
+Having established our definition of a diffusion step, we now can state the first main result of
+this article.
+Theorem 1. Let N ≥ 2 be a positive integer which is assumed to be neither a prime nor a
+prime power. Let b denote an integer which is co-prime to N , and assume that the order of
+b modulo N is odd. Then the order of b modulo N can be computed in at most O((log N )2 )
+diffusion steps.
+As it turns out, there is an effective bound for the number of diffusion steps in Theorem 1.
+Indeed, we prove that the number of diffusion steps n which are needed in Theorem 1 satisfies
+the bound
+n < 4 log N (blog2 N c + 2),
+(1)
+where b·c is the floor function, log is the natural logarithm function, and log2 is the logarithm
+with base 2.
+Our second result stems from an application of Theorem 1 to the problem of integer factorization. Again, we assume that N is neither a prime nor a prime power. So, there is an integer
+m ≥ 2 such that
+m
+Y
+N=
+pei i
+i=1
+
+where the primes p1 , · · · , pm are distinct and the exponents e1 , · · · , ek are strictly positive.
+Also, we will use the phrase digital steps to signify the term used to describe the computational
+complexity of an algorithm which is implemented on a classical Turing machine. With this,
+
+3
+we can differentiate between digital steps and diffusion steps which quantify the complexity of
+algorithms which are carried out on either a digital computer or the above described diffusion
+machine.
+Theorem 2. Let N be a positive integer with m ≥ 2 distinct prime factors. Then with
+probability p(m) ≥ 1 − (m + 1)/2m we can compute a non-trivial factor of N in at most
+O((log N )2 )) digital steps and at most O((log N )2 ) diffusion steps.
+As with Theorem 1, the bound (1) applies for the number of diffusion steps in Theorem 2.
+It is entirely possible that the number of digital steps can be effectively bounded as well;
+however, for the sake of brevity of this article, we choose not to study the effectiveness of the
+bound for the number of digital steps.
+In case the algorithm terminates with no answer, one can simply repeat the computations.
+Under the usual assumptions of uniform random selection, if we execute the algorithm t times,
+then the probability of failing is less than
+(1 − p(m))t = ((m + 1)/2m )t .
+In other words, the probability of success becomes arbitrarily close to 1 with sufficiently many
+implementations of the algorithm behind Theorem 2.
+There exist deterministic algorithms which ascertain if N is either a prime or the power of
+a prime; see, for example, [AKS04], [Be07], or [Ra80]. In the two problems, the best known
+algorithms have (classical) complexity of order O((log N )a ) for some constant a. With this, we
+do not view the assumption that N is neither a prime nor a prime power as being restrictive,
+at least from the point of view of theoretical computability.
+It is noteworthy that Shor’s algorithm, which is the well-known method for factoring using
+a quantum computer, takes at most O((log N )2 log(log N ) log(log log N )) quantum steps. As
+with Shor’s algorithm, Theorem 2 has a certain probability which is less than one of a successful completion. Initially, the probability of success for Shor’s algorithm was determined
+to be at least 2/3, and more recent studies have sought to optimize the probability of success; see, for example, [Za13]. Again, we will leave for elsewhere the problem of optimizing
+the probability of success of Theorem 2. In that regard, the methodology of [Za13] seems
+applicable.
+There is current research into simulating Shor’s algorithm on a digital computer; see, for
+example, [Mo16], [Pol09], [WHH17]. In that vein, we are able to readily simulate the diffusion
+computer behind Theorem 2, and we provide two examples. In the first, we take N = 33,
+and in the second we take N = 1363. The description of Theorem 2 for these examples is
+given below, and the computer code which was written in Maple is provided in an Appendix
+to this paper.
+Our approach to proving Theorem 1 is as follows. Let r denote the order of b modulo N , which
+we write as r = ord N b. Let V denote the set of powers of b modulo N , so the cardinality of
+V is r. As the notation suggests, the set V is viewed as the set of vertices of a graph. The
+j
+edges of the graph are formed by connecting each bk with points of the form bk2 where j
+ranges over positive and negative integers from −(blog2 N c + 1) to blog2 N c + 1. We consider
+the diffusion process on the resulting graph associated to the so-called half-lazy random walk;
+see section 2.2 for details. From [Ba79] and [Lo75], we can express the eigenvalues of the
+
+4
+associated Laplacian in terms of certain exponential sums. As it turns out, optimal bounds
+for these exponential bounds are known; see [KM12] as well as [Va09]. When combining these
+results, we show that after O((log N )2 ) diffusion steps one determines the cardinality of V ,
+thus the order of b modulo N .
+As we will discuss, the bounds we employ for such exponential sums are worst-case scenarios.
+As such, we expect that in practice fewer diffusion steps may suffice to obtain some information
+about r.
+Regarding Theorem 2, we follow the method which is used in Shor’s algorithm and replace
+the quantum computation step with a diffusion computation. In doing so, it is necessary to
+choose an integer a whose order modulo N is even. For this, we prove how to reduce the
+problem, with sufficiently high probability, to an implementation of Theorem 1.
+The outline of this paper is as follows. In section 2 we establish notation and recall necessary
+background material, including results from spectral graph theory and discrete time heat
+kernels, which are used elsewhere. Additionally, we formalize the concept of diffusion process
+computing, which stems from the ideas first presented in [HoRe20]. In section 3 we obtain
+results using modular arithmetic which are necessary in order to apply Theorem 1 to prove
+Theorem 2. The computations in section 3 appeal to known deterministic algorithms, such as
+the Euclidean algorithm. In section 4 we proof Theorem 1. Specifically, we construct the graph
+which is the mathematical realization of the above-described beam-splitting reflection ring.
+As stated, the bound on the number of diffusion steps in Theorem 1 is obtained by certain
+eigenvalue bounds which in this case are equivalent to bounds for exponential sums. In section
+5 we combine the results from previous sections and complete the proof of Theorem 2. In
+section 6 we describe the digital implementation of Theorem 2 and obtain the factorization
+of N = 33 and N = 1363, and in section 7 we present a number of concluding remarks.
+Finally, it is important to note that the ideas and methods of this paper were motivated by
+the Master’s Degree thesis [HoRe20] written by one of the authors (P. H.) of this article. In
+[HoRe20] the phrase heat computer was coined, and the idea formed our motivation for a
+diffusion computer. Additionally, in [HoRe20] it is shown how to construct heat computers
+which solve Simon’s problem and the Deutsch-Jozsa problem, and in each case the number
+of heat steps coincides with the number of quantum steps for the known quantum algorithm
+solutions of these problems. In other words, the conceptualization of a diffusion computer
+began with [HoRe20], and this article can be considered as a furtherance of the initial ideas
+step forth in [HoRe20]
+
+2
+
+Preliminaries
+
+2.1
+
+Basic notation
+
+Any graph X we consider in this article is finite, undirected and connected. The set of vertices
+V is finite, and the set of edges E consists of a collection of two-element subsets of V ; we
+allow an edge to connect a vertex to itself, which may be called a self-loop. We let k = |V |
+denote the number of vertices of X. Additionally, we assume X has a real-valued weight
+function w : V × V → R satisfying the following properties.
+(i) Symmetry: For all x, y ∈ V , w(x, y) = w(y, x).
+
+5
+(ii) Semi-positivity: For all x, y ∈ V , w(x, y) ≥ 0.
+(iii) Positivity for Edges: For all x, y ∈ V , w(x, y) > 0 if and only if {x, y} ∈ E.
+The weight function generalizes the cases when there are multiple edges joining two vertices
+or self-loops.
+Choose any ordering of the vertices. The corresponding adjacency matrix A of X is a k × k
+matrix whose (x, y)-entry is given by the weight function, meaning that A(x, y) = w(x, y).
+From the above properties for the weight function, the adjacency matrix A is symmetric with
+non-negative real entries. The degree of a vertex x ∈ V is defined as
+X
+d(x) =
+w(x, y).
+y∈V
+
+A weighted graph X is said to be regular of degree d if d(x) = d for all vertices x ∈ V .
+
+2.2
+
+Random walks and the discrete time heat kernel
+
+We now assume that X is a regular weighted graph of degree d. A half-lazy random walk on
+X is a Markov chain with state space (V, P(V )) with arbitrary initial probability distribution
+p0 : V → R, and transition probability matrix given by
+
+
+1
+1
+W :=
+I+ A .
+(2)
+2
+d
+The matrix W is called the half-lazy walk matrix of X. Intuitively, the half-lazy random walk
+is a process that starts with a single particle at some vertex, and at each step the particle
+either stays put at its current vertex with probability 1/2 or moves randomly to a neighbor
+with probability 1/2. In the second case, the particle moves from vertex x to vertex y with
+probability w(x, y)/(2d).
+Let pn : V → R denote the probability distribution at time n, meaning after n steps of the
+half-lazy random walk on X. Starting with an arbitrary probability distribution p0 on V ,
+then pn is given inductively by
+1
+1 X w(x, y)
+pn (x) = pn−1 (x) +
+pn−1 (y).
+2
+2
+d
+y∈V
+
+Equivalently, we can view pn as a column vector from Rk , so this equation can be written in
+matrix form as
+
+
+1
+1
+pn =
+I + A pn−1 = W pn−1 = W n p0 .
+2
+d
+Let us denote the (x, y)-entry of W n by wn (x, y), which can be interpreted as the probability
+that a particle which follows the half-lazy random walk on X and starts at y is at vertex x
+after n steps.
+The function wn (x, y) is called the discrete time heat kernel of X because the random walk
+provides a probabilistic interpretation of heat diffusion in X, where the temperature at a
+vertex x is considered to be a manifestation of “heat particles” which spread randomly in all
+
+6
+directions. As such, one can view pn as the distribution of these heat particles at time n.
+That is, if one starts with my units
+P of heat at each vertex y ∈ V , then the temperature at
+vertex x after n steps is pn (x) = y∈V my wn (x, y).
+Under this interpretation, the physical principle of conservation of energy can be stated as
+pn+1 − pn = (W − I)pn .
+The difference ∂n pn := pn+1 − pn is called the discrete time derivative, and the operator
+∆ := W − I is referred to as the discrete Laplacian. With this notation the above equation
+reads
+∂n pn = ∆pn ,
+(3)
+which is known as the discrete heat equation on X.
+The standard solution of the discrete heat equation with initial condition p0 is pn = W n p0 ,
+and the solution can be expressed by diagonalizing the symmetric matrix W . Specifically,
+let λ0 , . . . , λk−1 be the eigenvalues of W with corresponding eigenvectors ψ0 , . . . , ψk−1 which
+form an orthonormal basis for Rk . Then, using elementary linear algebra, one obtains that
+pn =
+
+k−1
+k−1
+k−1
+X
+X
+X
+hψj , pn iψj =
+hψj , W n p0 iψj =
+hψj , p0 iλnj ψj ,
+j=0
+
+j=0
+
+j=0
+
+where h·, ·i denotes the standard scalar product of vectors in Rk , meaning that if ψj (x) denotes
+the x-entry of ψj , then
+X
+hψj , p0 i =
+ψj (x)p0 (x).
+x∈V
+
+In our notation, λ0 = 1 and |λj | < 1 for all j = 1, · · · , k − 1. Also, ψ0 (x) = 1/k for all
+x ∈ V . As a result, if n goes to infinity, the solution pn converges to the uniform probability
+distribution on the set V regardless of the initial condition p0 . More precisely, we have the
+following proposition.
+Proposition 3. With the notation as above, let λ1 be the largest eigenvalue of W less than 1.
+Assume that the initial condition p0 is a probability distribution, meaning it is semi-positive
+and has `1 norm equal to one. Then for all x ∈ V and all n ≥ 0 we have that
+pn (x) −
+
+1
+≤ λn1 .
+k
+
+Proof. From (2) we have that a vector ψ is an eigenvector of A with eigenvalue η if and only
+if ψ is an eigenvector of W with eigenvalue
+
+
+1
+1
+λ=
+1+ η .
+2
+d
+The eigenvalues of the adjacency matrix A of a degree d regular weighted graph lie in the
+interval [−d, d] with d being the largest eigenvalue; see for example Theorem 7.5 of [Ni18].
+Hence the eigenvalues of W satisfy the inequalities
+1 = λ0 > λ1 ≥ · · · λk−1 ≥ 0.
+
+7
+The eigenvector ψ0 corresponding to λ0 is such that ψ0 (x) = 1/k for all x ∈ V . With this,
+we have for any x ∈ V and all n ≥ 0 the expansion
+n
+
+pn (x) = W p0 (x) = hψ0 , p0 iψ0 (x) +
+
+k−1
+X
+
+1
+hψj , p0 iλnj ψj (x) = +
+k
+
+j=1
+
+k−1
+X
+hψj , p0 iλnj ψj (x),
+
+(4)
+
+j=1
+
+where the last equality follows from the assumption that p0 is a probability distribution.
+Since the set of eigenvalues are orthonormal, we have a version of Parseval’s formula, namely
+pn (x) −
+
+k−1
+
+k−1
+
+j=1
+
+j=1
+
+X
+2
+1 2 X
+1 2 X
+≤
+pn (y) −
+=
+hψj , p0 iλnj ≤ λ2n
+hψj , p0 i2 .
+1
+k
+k
+y∈V
+
+Moreover, by writing p0 =
+
+(5)
+
+k−1
+P
+
+hψj , p0 iψj we obtain
+
+j=0
+k−1
+X
+j=1
+
+hψj , p0 i2 ≤
+
+k−1
+X
+X
+X
+hψj , p0 i2 = hp0 , p0 i =
+p0 (x)2 ≤
+p0 (x) = 1.
+j=0
+
+x∈V
+
+x∈V
+
+The last inequality follows from the fact that p0 is a probability distribution on V . Combining
+this inequality with (5) we get
+1 2
+≤ λ2n
+pn (x) −
+1 ,
+k
+which completes the proof of the assertion.
+
+2.3
+
+Weighted Cayley graphs of finite abelian groups
+
+Let G be a finite abelian group, and let S ⊆ G be a fixed symmetric subset generating G. The
+symmetry condition means that if s ∈ S then −s ∈ S. Moreover, let α : S → R>0 be a function
+such that α(s) = α(−s). One can construct a weighted Cayley graph X = Cay(G, S, α) of G
+with respect to S and α as follows. The vertices of X are the elements of G. Two vertices x
+and y are connected with an edge if and only if x − y ∈ S. The weight w(x, y) of the edge
+(x, y) is w(x, y) = α(x − y). With all this, one can show that X is a regular weighted graph
+of degree
+X
+d=
+α(s).
+s∈S
+
+By assuming that S generates G it follows that the Cayley graph X is connected.
+Given x ∈ G, let χx denote the character of G corresponding to x; see, for example, [CR62].
+Then χx can be represented as an eigenvector of the adjacency operator A of X with corresponding eigenvalue equal to
+X
+ηx =
+α(s)χx (s);
+s∈S
+
+see Corollary 3.2 of [Ba79]. It follows that χx is an eigenvector of the half-lazy walk matrix
+W of X with eigenvalue
+
+
+1
+1
+λx =
+1 + ηx .
+2
+d
+
+8
+Let us number the distinct eigenvalues of W as
+1 = λ0 > λ1 > · · · > λl ≥ 0,
+where, obviously 1 ≤ l ≤ |G| − 1.
+The results of section 2.2 on half-lazy random walks on the graph X apply to deduce that
+for any initial probability distribution p0 on the set G of vertices of X, the half-lazy random
+walk {pn }∞
+n=0 converges to the uniform distribution on G as n → ∞. More precisely, for all
+x ∈ G and all positive integers n, the inequality
+pn (x) −
+
+1
+≤ λn1
+|G|
+
+holds true.
+Moreover, fix 1 ≤ i ≤ l, and let Ei ⊆ R|G| be the eigenspace corresponding to the eigenvalue
+λi . The set Bi = {χx : λx = λi } is an orthonormal basis for Ei , so the projection hi of p0
+onto the eigenspace Ei is given by
+X
+hi =
+hχx , p0 iG χx ,
+x∈G
+λx =λi
+
+where h·, ·iG denotes inner product on the set all complex-valued functions on G and is defined
+as
+1 X
+hf, giG :=
+f (x)g(x).
+|G|
+x∈G
+
+With this in mind, the solution pn of the discrete heat equation (3) on X subject to the initial
+probability distribution p0 : G → R can also be written as
+pn =
+
+l
+X
+
+λni hi .
+
+(6)
+
+i=0
+
+Expressing the solution in terms of the projections of the initial condition onto the eigenspaces
+of W has the advantage that it is not subject to a particular basis choice. As we shall see,
+this is particularly useful for defining the notion of a Diffusion Computer.
+
+2.4
+
+Diffusion process computing
+
+A diffusion process in X = Cay(G, S, α) may be regarded as an analog computation on X in
+the following sense.
+Definition 4. A real-valued function h on G is said to be computable by a diffusion process
+in X with initial condition p0 : G → R if the following holds. Let {pm }∞
+m=0 be the solution to
+the discrete heat equation (3) in X with initial probability distribution p0 . Then for any given
+ε > 0 there exists a positive integer n = n(ε) such that for all m > n() and all x ∈ G, we
+have that
+|pm (x) − h(x)| < ε.
+
+9
+Colloquially, we will refer to X as a Heat Computer or descriptively as a Diffusion Computer.
+The function h will be called diffusion computable. As stated, the concept of a Diffusion
+Computer first was developed in [HoRe20]. By the linearity of the discrete heat equation and
+the uniqueness of its solution, any linear combination of diffusion-computable functions on X
+is also computable by a diffusion process in X.
+Theorem 5. Let f be an arbitrary real-valued function on G, and let h0 , h1 . . . , hl be the
+corresponding projections of f onto the eigenspaces E0 , E1 . . . , El of the half-lazy walk matrix
+W . Then the functions h0 , h1 . . . , hl are diffusion computable on X = Cay(G, S, α).
+A formal proof is in [HoRe20]. The computation is carried out by induction and can be
+described in terms of the heat diffusion. First one computes h0 by just letting heat flow for
+enough time and then reading the temperature of the steady-state solution. We repeat the
+∗
+(f − h0 ) for a suitable value
+same procedure, this time with initial temperature function λ−n
+1
+of n∗ . The fact that the eigenvalues are strictly decreasing guarantees that the steady-state
+solution converges to h1 , and we can continue recursively in this manner.
+It is important to note that in the Definition 4 above and throughout this article we use the
+expression “diffusion process” instead of the “heat computer” which was coined in [HoRe20].
+We do so because the principle of computation stays the same if the heat is replaced by any
+other diffusion process.
+Any physical device capable of implementing the recursive procedure described in Theorem 5
+will be called a diffusion based computer, or simply a diffusion computer.
+In essence, a diffusion computer is a device that computes the Fourier expansion of a complexvalued function f defined on G in its base of characters. The Fourier spectrum of f can be
+obtained as follows. Fix 1 ≤ i ≤ l, and suppose that the eigenspace Ei has dimension mi .
+Recall that
+X
+hi (x) =
+hχa , f iG χa (x), x ∈ G.
+a∈G
+λa =λi
+
+Therefore, by first computing hi and then evaluating it at mi different elements of G we get
+a system of linear equations that allows us to solve for the Fourier coefficients hχa , f iG such
+that λa = λi . By letting i vary, we get the whole spectrum of f .
+It is an extraordinary fact that each one of the iterations is carried out by an extremely simple
+repetitive procedure, namely that the value of the function at each vertex is replaced by the
+average value of its neighbors, and this same thing occurs at every vertex. In many cases the
+first projections are enough to infer interesting properties about f . For that matter, in this
+article we only exploit the capability of computing the zeroth projection of f.
+
+2.5
+
+Equating quantum steps and diffusion steps
+
+In [Ma21], the author quotes the principal manager of the quantum-computing group at Microsoft Research in Redmond, Washington as saying that “Quantum computing is essentially
+matrix vector multiplication — it’s linear algebra underneath the hood”. From the linear algebra point of view, it is the opinion of the authors of this article that, in general, a diffusion
+computer can be regarded as the `1 version of the quantum computer, which itself is based
+on `2 theory. Let us describe the meaning of this comment.
+
+10
+As it is known, a quantum computation entails two different types of operations. The first is
+a deterministic operation which is just the abstract version of the classical evolution equation
+in quantum mechanics. For this, a unitary vector φ in a Hilbert space (Cn , `2 ) evolves into
+a new vector ψ = U φ where U is some unitary operator. The second operation involves
+a measurement of this new state. This procedure is non-deterministic and has the effect of
+“collapsing ψ”. More precisely, each particular measurement is modeled by the decomposition
+of Cn into finite orthogonal subspaces Hi . By “collapsing” we mean composing ψ with the
+projection ψi onto Hi , and this projection occurs with probability |ψi |2 .
+By comparison, on a diffusion computer the unitary vector φ is replaced by a stochastic vector
+(i.e. `1 −norm one vector) in (RN , `1 ). The evolution of φ is determined by the symmetric
+operator W . Then it is reasonable to define one diffusion computation step as one application
+of W which maps φ to W φ. A measurement, on the other hand, is just a classical inspection
+of the vertices of the graph X where the diffusion process takes place. It is evident that the
+inspection of a subset of elements of X is also a projection operation. As with a quantum
+computer, a projection also is counted as one step.
+In summary, one determines the steps in a quantum computation by counting the number of
+compositions of unitary matrices and projections, and in a diffusion process by counting the
+number of compositions of symmetric matrices and projections. As such, we consider a count
+of quantum steps to be comparable to a count of diffusion steps.
+
+3
+
+Some number theoretic considerations
+
+As before, we let N be a positive, odd integer which we write as a product
+m
+Y
+N=
+pei i
+
+(7)
+
+i=1
+
+with m ≥ 2 different odd prime factors with exponents ei > 0. As such, we assume that N is
+not prime and not a prime power. Let ZN denote the set of inequivalent classes of integers
+modulo N . There is a natural mapping
+ZN → Zpe1 × · · · × Zpemm
+1
+
+(8)
+
+defined by
+a 7→ (a mod pe11 , · · · , a mod pemm ).
+By the classical Chinese Remainder Theorem, (8) is an isomorphism. Furthermore, the mapping (8) yields an isomorphism of the respective commutative rings, which we write as
+gN : Z∗N → Z∗pe1 × · · · × Z∗pemm .
+
+(9)
+
+1
+
+In a slight abuse of notation, we occasionally use x to denote either an element in Z∗N or its
+image gN (x). For each i, the ring Z∗pei is a cyclic group under multiplication. Let us denote
+i
+its generator by ui . We shall write the order of ui as
+ordpei ui = piei −1 (pi − 1) = 2ci p0i
+i
+
+where ci > 0 and p0i is an odd positive integer.
+
+11
+Without loss of generality we assume that the primes p1 , . . . , pm are ordered so that we have
+the inequalities c1 ≥ c2 ≥ · · · ≥ cm .
+The following proposition computes, under certain circumstances, a non-trivial square root
+of 1 modulo N .
+Proposition 6. For any a ∈ Z∗N , let s ≥ 0 be the least power of 2 such that
+s
+
+a2 q ≡ 1 mod N
+for some odd integer q. Let us write
+gN (a) = (ud11 , . . . , udmm ).
+If there exist i, j with 1 ≤ i < j ≤ m such that di is odd and dj is even, then s > 0.
+s−1
+Furthermore, if we set x = a2 q then
+x2 ≡ 1 mod N
+
+x 6≡ ±1 mod N.
+
+and
+
+Proof. By assuming di is odd and dj is even, we can write dj = 2v d0j where v > 0 and d0j is
+an odd integer.
+s
+
+Because u2i qdi ≡ 1 in Z∗pei the order of ui , which is 2ci p0i , divides 2s qdi . This implies that
+i
+
+s ≥ ci > 0 and p0i divides qdi . Thus s ≥ 1. Set
+s−1 q
+
+x = a2
+Then
+
+s−1 qd
+1
+
+= (u12
+
+s
+
+s−1 qd
+m
+
+2
+, . . . , um
+
+).
+
+s
+
+x2 = (u21 qd1 , . . . , u2m qdm ) ≡ 1 mod N
+Moreover, by the minimality of s, we have that x 6≡ 1 mod N . It remains to show that
+x 6≡ −1 mod N .
+If x ≡ −1 mod N , then for every k we have that x ≡ −1 mod pekk . Therefore, if x 6≡ −1 mod pekk
+e
+for a single index k, then x 6≡ −1 mod N . Indeed, we now will prove that x 6≡ −1 mod pj j
+for the particular index j for which dj is odd and j > i, which is assumed to exist as stated
+e
+in the premise of the proposition. More specifically, we claim that x ≡ 1 mod pj j , which we
+rewrite as
+2s+v−1 qd0j
+2s−1 qdj
+e
+uj
+≡ uj
+≡ 1 mod pj j .
+(10)
+Equation (10) holds if and only if 2cj p0j , the order of uj divides 2s+v−1 qd0j . Equivalently,
+equation (10) holds if and only if
+s + v − 1 ≥ cj
+2s qd
+
+and
+
+p0j | qd0j .
+
+e
+
+(11)
+
+Because uj j ≡ 1 mod pj j , the order of uj , which is 2cj p0j , divides 2s qdj = 2s+v qd0j . Since
+all integers p0j , q and d0j are odd, we then have that s + v ≥ cj and p0j | qd0j . Thus, the second
+condition in (11) is proved. Since s ≥ ci ≥ cj and v > 0, we have that
+s + v − 1 ≥ ci + v − 1 ≥ cj ,
+which proves the first condition in (11) and completes the proof of the proposition.
+
+12
+Lemma 7. Let N be a product of m ≥ 2 distinct odd primes, and let M = blog2 N c + 1. For
+any a ∈ Z∗N , define the subset S = S(a) of Z∗N by
+t
+
+S = {a±2 mod N : for all t = 0, . . . , M }.
+If there are repetitions in S, then with probability p(m) = 1 − (m + 1)/2m we can find an
+x ∈ Z∗N in at most O(log2 N ) deterministic steps for which
+x2 ≡ 1 mod N
+
+and
+
+x 6≡ ±1 mod N.
+
+(12)
+
+Proof. Let us assume there is at least one repetition in S, meaning that for some ` and `0 we
+l
+l0
+have that a2 ≡ a±2 mod N . Without loss of generality, we may assume that l > l0 . In other
+words, we have that
+l
+l0
+a2 ±2 ≡ 1 mod N.
+(13)
+Solving this equation, we obtain
+l0
+
+l−l0 ±1)
+
+a2 (2
+
+≡ 1 mod N
+
+so then
+
+l0
+
+a2 q ≡ 1 mod N,
+
+0
+
+where q = 2l−l ± 1, which is an odd integer.
+Once the set S has been constructed, and once one is given the values of ` and `0 in (13), then
+s
+one can determine the smallest s such that a2 q ≡ 1 mod N in at most O(log2 N ) deterministic
+computations.
+As stated, the mapping (9) is a bijection between Z∗N and Z∗pe1 × · · · × Z∗pemm . Let {u1 , . . . , um }
+1
+denote a set of generators of the cyclic multiplicative groups Z∗pe1 , . . . , Z∗pemm . With this, we
+1
+
+conclude that any element a ∈ Z∗N is uniquely determined by the set of exponents (d1 , . . . , dm )
+for which gN (a) ≡ (ud11 , . . . , udmm ). In other words, choosing a random element a ∈ Z∗N
+is equivalent to choosing a random m-tuple (d1 , . . . , dm ), where each di is randomly and
+uniformly chosen from the set {1, . . . , piei −1 (pi − 1)}, i = 1, . . . , m. Note that the set of
+integers from 1 to pei i −1 (pi − 1) has equal number of even and odd elements.
+With the above discussion, we can now estimate the probability p(m). Proposition 6 proves
+s−1
+that when s > 0 and if we set x = a2 q , then (12) holds when di is odd and dj is even for
+some 1 ≤ i < j ≤ m. Assuming a is chosen randomly and uniformly, let us show that the
+probability that a satisfies the conditions on i and j, hence di and dj , by showing that the
+probability of the complementary event is (m + 1)/2m .
+The complementary event consists of the following m + 1 mutually exclusive events: First,
+there is an integer k with 1 ≤ i ≤ m such that for i ≤ k each di is even and for all j > k each
+dj is odd; and, second, all values of dk are odd. Each of these events has probability 1/2m ,
+hence the union has probability (m + 1)/2m , so then p(m) has probability 1 − (m + 1)/2m ,
+as claimed.
+Remark 8. In the statement of Lemma 7, we assumed that we were given the two elements
+in S which form a repetition, meaning they are equivalent mod N . In other words, the
+analysis in Lemma 7 begins with (13). Since S has O(log2 N ) elements, the straightforward,
+exhaustive search in S to determine if (13) occurs takes at most O((log2 N )2 ) deterministic
+steps.
+
+13
+Lemma 9. Let G be a finite cyclic group of even order n, which we write as n = 2c m where
+c > 0 and m is an odd integer. Let u be a generator of G. Then for 1 ≤ d ≤ 2c m we have
+the following statements.
+1. If d is odd, then ordG (ud ) = 2c k 0 , where k 0 is odd.
+2. If d is even, which we write as d = 2v d0 with d0 odd, then ordG (ud ) = 2c−t m0 , where
+t = min(c, v) > 0 and m0 is odd.
+Proof. The assertion follows immediately from the elementary observation that ordG (ud ) =
+n/ gcd(n, d).
+Lemma 10. For any a ∈ Z∗N , the largest power of 2 that divides ordN (a) is less than log2 N .
+M
+Therefore, if M = [log2 N ] + 1, then the order of b = a2 must be odd.
+Proof. As above, let gN (a) = (ud11 , . . . , udmm ), from which we have that
+ordN (a) = lcm(ordp1 (ud11 ), . . . , ordpm (udmm )) = lcm(2c1 p01 , . . . , 2cm p0m ).
+Then by Lemma 9 the largest power of 2 that divides ordN (a) is less than or equal to
+max{c1 , . . . , cm } which is necessarily less than log2 N because
+!
+m
+m
+X
+Y
+
+ci 0
+ci + log2 p0i > max{c1 , . . . , cm }.
+log2 N > log2
+2 pi =
+i=1
+
+i=1
+
+Let r = ordN (a), and write r = 2v r0 where r0 is odd. Since r < N , it follows that v < M .
+M
+Let ordN (a2 ) = 2e t where t is odd and e ≥ 0. Then r | 2M +e t; consequently, r0 | t, so we
+can factor t as t = r0 t0 where t0 is odd. Then
+Mt
+
+a2
+
+v M −v r 0 t0
+
+= a2 2
+
+v 0
+
+M −v t0
+
+= (a2 r )2
+
+M
+
+≡ 1 mod N.
+M
+
+Thus, ordN (a2 ) divides t, which is odd, so then ordN (a2 ) itself is odd, as claimed.
+M
+
+Proposition 11. Set M = [log2 N ] + 1. For any a ∈ Z∗N , let rb = ordN (a2 ). If rb is known,
+we can compute ra = ordN (a) in at most O(log2 N ) deterministic steps. Furthermore, ra is
+even with probability at least p(m) = 1 − (m + 1)/2m in which case x = ara /2 satisfies
+x2 ≡ 1 mod N
+
+and
+
+x 6≡ ±1 mod N.
+
+Proof. By Lemma 10, rb is odd. Then ordN (a) is equal to 2k rb , where k is the smallest
+k
+exponent such that a2 rb ≡ 1 mod N . Necessarily, we have that k ≤ M . Given rb , we can
+compute such k in at most O(log2 N ) steps. Let gN (a) = (ud11 , . . . , udmm ). Proposition 6 shows
+that k > 0, i.e. ordN (a) is even if there exist i, j with 1 ≤ i < j ≤ m such that di is odd and
+dj is even . According to the proof of Lemma 7, the probability of this is at least p(m). The
+statement now follows from Proposition 6.
+
+14
+
+4
+
+Proof of Theorem 1
+
+Let N ≥ 2 be a fixed positive integer, and let b be an integer which is relatively prime to
+N and of odd order r in ZN . The proof that we can determine r in at most O((log2 N )2 )
+diffusion steps runs as follows.
+1. We construct an appropriate weighted Cayley graph Xr,S with r vertices and study the
+X
+half-lazy random walk {pk r,S }∞
+k=0 on this graph in n steps. The construction of the
+graph is undertaken without the explicit knowledge of r.
+2. By using the bounds for the Korobov-type exponential sums as proved in [KM12], we
+X
+will deduce an upper bound for the second largest eigenvalue λ∗ r,S of the half-lazy
+random walk on Xr,S . We note here that results related to those from [KM12] are given
+in [LLW98], [Mo09] and [Va09].
+X
+
+3. We determine the number of diffusion steps n so that λ∗ r,S < N −2 . In doing so, the
+X
+integer r can be characterized as the integer closest to 1/pn r,S (e), where e = 0 is the
+starting vertex of the graph Xr,S in additive notation.
+As it will be shown, n can be taken to be the smallest integer bigger than 4 log N (blog2 N c+2).
+
+4.1
+
+Graph construction in multiplicative notation
+
+For a fixed b ∈ Z∗N of odd order r, let GN,b = hbi ⊆ Z∗N be the subgroup of Z∗N generated by b.
+t
+The elements of GN,b are the classes of bk mod N for k = 0, 1, . . . , r − 1. Take SN,b = {b±2 :
+t = 0, . . . , M } with M = blog2 N c + 1. Define the weight function αN,b by
+t
+
+t
+
+l
+
+t
+
+l
+
+αN,b (b2 ) := |{l ∈ {0, . . . , M } : b2 ≡ b2 mod N or b2 ≡ b−2 mod N }|,
+t
+
+where |A| denotes the number of elements of a finite set A. It is immediate that αN,b (b2 ) =
+t
+αN,b (b−2 ), for t = 0, . . . , M . Therefore, αN,b can be used as the weight function in the
+construction of the weighted Cayley graph in the multiplicative notation, as in [Ba79].
+Let XN,b = Cay(GN,b , SN,b , αN,b ) be the weighted Cayley graph of GN,b with respect to SN,b
+and the weight function αN,b . It is immediate that XN,b has r vertices and it is a regular
+graph of degree 2(M + 1).
+It is important to note that in the construction of XN,b we do not know the value of r. Indeed,
+all that is required is the value of N since we begin with one point b and, recursively, let the
+diffusion process develop in 2(M + 1) possible directions from any given point.
+From the beginning, we do not know the entire graph. Nevertheless, since diffusion is local
+in nature, this allows us to build XN,b one diffusion step at a time. Our main theorem states
+that after a number of steps which is polynomial in log2 N we will have enough information
+to approximate the number of vertices of XN,b , and thus the order of b. What makes the
+process effective is the fact that diffusion occurs simultaneously at all constructed vertices,
+which provides some form of parallel computation.
+
+15
+
+4.2
+
+An equivalent description of the graph
+
+In this section we will describe the graph XN,b in additive notation, which we find to be more
+amenable for describing the bounds for the eigenvalues. Since b is fixed, we will simplify the
+notation by omitting the index b and emphasizing the dependence upon r.
+It is important to emphasize that, ultimately, we will use diffusion to compute r. The only
+information we will use about r itself is that 0 < r ≤ N and that r is the order of an element b
+modulo N . Nonetheless, this section is provided as a notational aid in our proofs of Theorem
+1 and Theorem 2.
+Let Cr = {0, . . . , r − 1} denote the additive group of integers modulo r, and set
+S = {±2j : j = 0, . . . , M }
+
+with
+
+M = blog2 N c + 1.
+
+Note that S ⊆ Cr is a symmetric set which generates Cr , and that the numbers ±2j for j ∈
+{0, . . . , M } are not necessarily distinct modulo r. We define the weight function α : S → R>0
+as follows. For 2j ∈ S, we let
+α(2j ) := |{l ∈ {0, . . . , M } : 2j ≡ 2l mod r or 2j ≡ −2l mod r}|.
+The congruence ±2j ≡ −2l mod r is equivalent to ±2j ≡ 2l mod r. Hence, α(−2j ) = α(2j ), so
+it can be used as the weight function in the construction of the weighted Cayley graph with
+respect to S.
+Since b has order r modulo N , the weight function α is equal to the weight function αN,b . As
+a result, the values of α can be determined by computing powers of b modulo N where the
+value of r is unknown.
+Let Xr,S = Cay(Cr , S, α) be the weighted Cayley graph of Cr with respect to S and α. The
+graph Xr,S has r vertices, and it is regular of degree |S| = 2(M + 1). In case all numbers ±2j
+with j ∈ {0, . . . , M } are distinct modulo r, the graph Xr,S is the Cayley graph of Cr with
+respect to S. If there are repetitions modulo r in the sequence ±2j with j ∈ {0, . . . , M }, then
+we can view Xr,S in such a way that the vertex x ∈ Cr is connected to the vertex y ∈ Cr with
+possibly more than one edge; the number of edges connecting x and y being the number of
+elements of the set {l ∈ {0, . . . , M } : x − y ≡ 2l mod r or x − y ≡ −2l mod r}.
+For this choice of S, the eigenvalues ηk for k = 0, . . . , r − 1 of the adjacency matrix for the
+graph are known. Specifically, η0 = 2(M + 1) and
+ηk =
+
+X
+
+α(x)e
+
+2πi
+kx
+r
+
+=
+
+M
+X
+
+e
+
+2πi
+k2j
+r
+
++
+
+j=0
+
+x∈S
+
+M
+X
+
+2πi
+
+j
+
+e− r k2
+
+for each
+
+1 ≤ k ≤ r − 1.
+
+j=0
+
+Thus, the eigenvalues of the half-lazy walk matrix Wr,S of Xr,S are
+
+
+ηk
+1
+Xr,S
+1+
+for k = 0, 1, . . . , r − 1.
+λk
+=
+2
+2(M + 1)
+Proposition 3 implies that for any vertex x we have
+X
+
+pn r,S (x) −
+X
+
+1
+X
+≤ (λ∗ r,S )n ,
+r
+
+where, as above, λ∗ r,S is the largest eigenvalue of Wr,S less than 1.
+
+(14)
+
+16
+
+4.3
+
+Eigenvalue bounds
+
+Our next task is to find an upper bound independent of r for the quantity
+M
+
+M
+
+j=0
+
+j=0
+
+X 2πi j X 2πi j
+1
+1
+max |ηk | =
+max
+e− r k2 .
+e r k2 +
+2(M + 1) k∈{1,...r−1}
+2(M + 1) k∈{1,...r−1}
+
+(15)
+
+Let k ∈ {1, . . . , r − 1} be arbitrary, and let d = gcd(k, r). Set k1 = k/d and r1 = r/d. Then,
+we have that
+M
+M
+X
+X
+2πi
+2πi
+k ·2j
+k·2j
+r
+(16)
+=
+e
+e r1 1 .
+j=0
+
+j=0
+2πi
+k
+r1 1
+
+Since r1 and k1 are relatively prime, e
+is a primitive r1 -th root of unity. Let τ1 = ordr1 2.
+In order to bound (16), we consider the following three cases.
+(i) Assume r1 ≥ 4 and M ≥ τ1 − 1. Since M + 1 ≥ τ1 , we can write M + 1 = qτ1 + s
+for q ≥ 1 and some 0 ≤ s ≤ τ1 − 1. Equivalently, M = qτ1 + s1 , for q ≥ 1 and
+−1 ≤ s1 ≤ τ1 − 2. Then, we have that
+M
+X
+
+e
+
+2πi
+k ·2j
+r1 1
+
+=q
+
+j=0
+
+τX
+1 −1
+
+e
+
+2πi
+k ·2j
+r1 1
+
++
+
+s1
+X
+
+2πi
+
+e r1
+
+k1 ·2j
+
+,
+
+j=0
+
+j=0
+
+where, in the case that s1 = −1 the sum on the right-hand side is taken to be zero. The
+second statement of Corollary 1 of [KM12], in our notation, states that when r1 > 3 we
+have the bound
+τ1
+X
+2πi
+k ·2j
+max
+e r1 1
+< τ1 − 1,
+(k1 ,r1 )=1
+
+j=1
+
+where the maximum is taken over all pairs of coprime k1 and r1 . Since τ1 = ordr1 2, it
+is immediate that
+τX
+τ1
+1 −1
+X
+2πi
+2πi
+k1 ·2j
+k ·2j
+r
+1
+=
+e r1 1 .
+e
+j=0
+
+j=1
+
+Therefore,
+M
+X
+j=0
+
+2πi
+
+e r1
+
+k1 ·2j
+
+≤q
+
+τX
+1 −1
+
+2πi
+
+e r1
+
+k1 ·2j
+
++
+
+j=0
+
+s1
+X
+
+2πi
+
+e r1
+
+k1 ·2j
+
+j=0
+
+≤ q(τ1 − 1) + s1 + 1
+= M + 1 − q ≤ M.
+(ii) Assume r1 ≥ 4 and M < τ1 − 1. Since r1 is odd, we actually have that r1 ≥ 5. In
+this case we proceed analogously as in the proof of [KM12], Theorem 2. This approach
+is justified, because in the notation of [KM12], L = blog2 r1 c ≤ blog2 rc ≤ blog2 N c =
+M − 1, so there are sufficiently many summands in the series so that the results of
+[KM12], Lemma 3, apply.
+
+17
+More precisely, Lemma 3 from [KM12], claims that if (a, q) = 1, q > 3, then for every
+integer m ≥ 0 there exist an integer ` with m < ` ≤ blog2 qc + 1 + m and such that
+
+
+
+
+2πi `
+2πi `−1
+a2 − 1 < exp
+a2
+−1 .
+exp
+q
+q
+Taking q = r1 ≥ 5, a = k1 and m = 0, we conclude that there exist an integer
+`0 ∈ {1, . . . , M } such that
+
+
+
+
+2πi
+2πi
+`0
+`0 −1
+− 1 < exp
+k1 2
+k1 2
+−1 .
+exp
+r1
+r1
+Therefore,
+
+exp
+
+2πi
+k1 2`0 −1
+r1
+
+
+
+
++ exp
+
+2πi
+k1 2`0
+r1
+
+
+
+
+
+
+2πi
+`0 −1
+≤ exp
++1
+k1 2
+r1
+
+
+`0 − 1
+exp 2πi
+r1 k1 2
+
+
+=
+< 1.
+`0 −1 − 1
+exp 2πi
+k
+2
+r1 1
+
+This shows that
+M
+X
+
+e
+
+2πi
+k ·2j
+r1 1
+
+
+= exp
+
+j=0
+
++
+
+2πi
+k1 2`0 −1
+r1
+X
+
+
+
+
++ exp
+2πi
+
+e r1
+
+k1 ·2j
+
+2πi
+k1 2`0
+r1
+
+
+
+< 1 + M − 1 = M.
+
+(17)
+
+j∈{0,...,M }\{`0 −1,`0 }
+
+(iii) Assume r1 = 3. In this case r = 3d. Since k1 and r1 are relatively prime, k1 ∈ {1, 2},
+so then k = k1 d < 3d. Therefore, we need to find the upper bound for the absolute
+value of the sums
+M
+M
+X
+X
+4πi j
+2πi j
+·2
+3
+or
+e 3 ·2 .
+e
+j=0
+
+j=0
+
+Trivially, both sums are bounded by M . Indeed, all terms in either sum are cube roots
+√ of
+unity. In both case, the terms corresponding to j = 0 and j = 1 add to give 1/2±i 3/2,
+respectively, which has absolute value equal to one. The remaining M − 1 terms have
+absolutely value equal to one, from which the bound of M for each series is obtained.
+2πi
+
+j
+
+2πi
+
+j
+
+Since e− r k·2 = e r (r−k)·2 , the inequality (17) holds true for the negative exponents as
+well. Hence the bound for (15) becomes
+1
+2M
+1
+max |ηk | <
+=1−
+.
+2(M + 1) k∈{1,...r−1}
+2(M + 1)
+M +1
+In summary, we have proved that the largest eigenvalue of the half-lazy random walk matrix
+Wr,S on Gr,S satisfies the bound
+
+
+1
+1
+1
+Xr,S
+λ∗
+≤
+.
+(18)
+1+1−
+=1−
+2
+M +1
+2(M + 1)
+
+18
+
+4.4
+
+Counting the number of diffusion steps
+
+It is now left to establish the number of diffusion steps needed to determine r by performing
+the half-lazy random walk on the weighted graph Xr,S , constructed above, by starting at
+vertex e = 0.
+By combining (18) with (14) we deduce, for any positive integer n, that
+n
+
+1
+1
+Xr,S
+pn (e) −
+.
+≤ 1−
+r
+2(M + 1)
+X
+
+We know that pn r,S (e) converges to 1/r as n tends to infinity. For any two distinct positive
+integers m1 and m2 less than N , the smallest distance between their reciprocals 1/m1 and
+1/m2 is bounded from below by
+1
+1
+1
+1
+−
+=
+≥ 2.
+N
+N −1
+N (N − 1)
+N
+X
+
+Thus, if we have pn r,S (e) = 1/r within an error of 1/N 2 , we have determined r. Therefore,
+the smallest number of diffusion steps needed to determine r is bounded from above by the
+smallest positive integer n for which
+n
+
+1
+1
+< 2.
+1−
+2(M + 1)
+N
+Since N ≥ 2, we have that 0 < 1/(2M ) < 1 so then
+
+− log 1 −
+
+1
+2(M + 1)
+
+
+=
+
+∞
+X
+`=1
+
+1
+1
+.
+>
+`
+2(M + 1)
+`(2(M + 1))
+
+Choose n to be the smallest integer for which
+n > 4(M + 1) log N = 2 log N (blog2 N c + 2).
+Then, the inequality
+X
+
+pn r,S (e) −
+
+1
+1
+< 2
+r
+N
+
+holds true, and then we can compute the integer r uniquely after n diffusion steps, followed
+by one measurement (of the “heat” at the starting point e).
+
+5
+
+Proof of Theorem 2
+
+Our algorithm receives as input a positive integer N which is assumed to be neither prime
+nor the power of a prime. The algorithm returns a divisor d of N , with probability at least
+p(m), and it runs as follows:
+1. Select a ∈ ZN = {1, . . . , N } uniformly at random.
+Compute d = gcd(a, N ).
+If 1 < d < N , return d.
+Else go to step 2.
+
+19
+t
+
+2. Compute the set S = {a±2 mod N : t = 0, . . . , M } where M = blog2 N c + 1.
+l
+
+l0
+
+3. If there are repetitions in S, say a2 = a±2 with l > l0 , do:
+0
+Set q = 2l−l ± 1.
+s
+Compute the smallest integer s ≥ 0 such that a2 q ≡ 1 mod N .
+s−1
+If s > 0, compute d = gcd(a2 q − 1, N )
+If 1 < d < N , return d.
+Else terminate (with no answer).
+Else terminate (with no answer).
+Else go to step 4.
+M
+
+4. Set b = a2 .
+Run the diffusion computer algorithm to determine the order of b modulo N .
+Set rb = ordN (b).
+k
+
+5. Compute the smallest integer k ≥ 0 such that a2 rb ≡ 1 mod N .
+Set ra = 2k rb which is the order of a modulo N .
+If ra is even, compute d = gcd(ara /2 − 1, N )
+If 1 < d < N , return d.
+Else terminate (with no answer).
+Else terminate (with no answer).
+The Euclidean algorithm determines the greatest common divisor of two numbers in ZN using
+at most O((log N )2 ) deterministic steps. With this, we can bound the complexity of each of
+the above steps as follows.
+Step 1: This steps uses the Euclidean algorithm to find gcd(a, N ), so it runs in deterministic time O((log N )2 ).
+Step 2: Using the method of repeated squaring, we can compute the set S in at most
+O(2M ) = O(blog2 N c + 1) deterministic steps.
+Step 3: Checking for repetitions in S requires O(log2 N ) steps. By Lemma 7, we can
+s
+compute the smallest integer s ≥ 0 such that a2 q ≡ 1 mod N in O(log2 N ) deterministic
+s−1
+steps. If s > 0, computing gcd(a2 q −1, N ) takes O((log N )2 ) more deterministic steps.
+Step 4: Theorem 1 states that using a diffusion computer allows us to compute rb in at
+most O((log2 N )2 ) diffusion steps.
+Step 5: By Lemma 11, we can compute ra , the order of a, in O(log2 N ) deterministic
+steps. If ra is even, computing gcd(ara /2 − 1, N ) takes O((log N )2 ) more deterministic
+steps.
+The algorithm runs Steps 1 and 2, and then runs either Step 3 or Steps 4 and 5. Therefore, the
+algorithm runs in at most O((log N )2 )+O(blog2 N c+1)+O(log2 N )+O((log N )2 ) determistic
+steps plus at most O((log2 N )2 ) diffusion steps.
+The algorithm is successful if it returns a nontrivial factor d of N . Both Steps 3 and 5 have a
+success probability of at least p(m) = 1 − (m + 1)/2m , by Lemmas 7 and 11. Hence, whether
+the algorithm runs Step 3 or Steps 4 and 5, the success probability is at least p(m).
+
+20
+
+6
+
+Examples
+
+The following examples illustrate the above described algorithm.
+
+6.1
+
+Example 1: N = 33
+
+Step 1. We choose a = 5 which is relatively prime to 33.
+0
+
+1
+
+5
+
+1
+
+Step 2. M = blog2 (N )c+1 = 6, and S = {52 = 5, 52 ≡ 25, . . . , 52 ≡ 25, 5−2 ≡ 20 . . .} mod 33.
+5
+
+1
+
+0
+
+Step 3. A repetition in S is detected: 52 −2 ≡ 1 mod 33, so then s = 1 and d = gcd(52 ·15 −
+1, 33) = 11.
+Therefore, 11 divides N , from which we obtain that N = 3 × 11.
+
+6.2
+
+Example 2: N = 1363
+
+Step 1. We choose a = 991 which is relatively prime to 1363.
+t
+
+0
+
+1
+
+Step 2. M = blog2 (N )c + 1 = 11, and S = {a±2 : t = 0, . . . , 11} = {9912 = 991, 9912 =
+11
+1
+721, . . . , 9912 = 944, 991−2 = 905, . . .} mod 1363. There are no repetitions in S.
+Therefore we go to Step 4.
+11
+
+t
+
+Step 4. We set b = 9912 ≡ 944 mod 1363 and calculate the set S = {b±2 : t = 0, . . . , 11}. We
+run the diffusion computer in order to determine the order rb of b = 944.
+Note: In order to get an estimate for 1/rb with an error less than 1/N 2 ≈ 5.38 × 10−7 ,
+the diffusion computer requires at least b4(M + 1) log(N )c + 1 = 347 diffusion steps.
+As we will describe below, after 36 diffusion steps, consisting of n = 25 iterations of the
+diffusion process and 11 measurements, we were able to conclude that rb = 161.
+k
+
+Step 5. The smallest non negative integer k such that 9912 ×161 ≡ 1 mod 1363 turns out to be
+1. We conclude that ra = 322. So then we computed gcd(991161 − 1, 1363) = 47. Thus,
+47 divides N , from which we obtain that N = 47 × 29.
+Note that since 47 and 29 are prime and odd, then ra must divide (47 − 1)(29 − 1) = 1288.
+Indeed, we have that, as expected, 1288 = 322 · 4.
+Let us now discuss the details behind Step 4. After iterating the diffusion process n = 25
+times, we then measured the probability distribution p25 (v) for the 11 values of v which are
+the vertices on the graph corresponding to S. As it turns out, for each such v we had that
+1/160 < p25 (v) < 1/162. This narrows the possibilities for the order of b to just three integer
+values. By trying every one of these values we then confirmed that, indeed, rb = 161.
+Though not needed, the Maple code in the Appendix produces the values of p25 (v) for all v.
+A histogram for the reciprocals of these probabilities is presented in Figure 1.
+In the next section we discuss a way in which the methodology of Example 2 can be encoded,
+possibly yielding a faster algorithm.
+
+21
+
+Figure 1: Histogram for the reciprocals of probabilities after 36 diffusion steps
+
+7
+
+Concluding remarks
+
+7.1
+
+Reducing the number of diffusion steps
+
+Note that the bound in Proposition 3 is somewhat crude since it used inequality (5). More
+specifically, it is possible that there are additional cancellations in the exponential sums
+appearing in the spectral expansion of the heat kernel for the half-lazy random walk. If so,
+then one would need fewer than the number of diffusion steps given by (1) in Theorem 1. The
+discussion provides a guide by which the implementation of the diffusion computation may
+yield results before reaching the number of steps stated in (1).
+Let us suppose that after m diffusion steps we have that
+pm (v) −
+
+1
+≤ Am
+r
+
+(19)
+
+for any vertex v and some constant Am . This is equivalent to
+pm (v) − Am ≤
+
+1
+≤ pm (v) + Am .
+r
+
+Trivially, one has that 1/N ≤ 1/r ≤ 1. Let S denote any subset of the vertices of X. We now
+can conclude that
+
+
+
+
+1
+(20)
+max 1/N, max (pm (v) − Am ) ≤ ≤ min 1, min (pm (v) + Am ) .
+v∈S
+v∈S
+r
+Proposition 3 shows that the worst-case scenario happens when Am = λm
+1 . However, it
+may be the case that additional cancellations occur in the spectral expansion (4) and in the
+exponential sums defining λ1 .
+In general, let us suppose that, for whatever reason, after m diffusion steps we have the bound
+(19) for some Am . Then the order r is amongst the integers h such that 1/h lies in the interval
+
+
+
+
+ \
+IS := max 1/N, max (pm (v) − Am ) , min 1, min (pm (v) + Am )
+{1/h ∈ Q : h ∈ Z} .
+v∈S
+
+v∈S
+
+(21)
+
+22
+Theorem 1 amounts to saying that by taking m = b4(M + 1) log(N )c + 1 = O((log N )2 ), there
+is only one integer, namely the order r, such that 1/r lies in the interval (21).
+Certainly, for smaller m, and in the presence of an improved bound for Am , the interval
+(21) could contain a small number of entries. One could stop the implementation of further
+diffusion steps and then check one by one each entry of IS to determine which value yields the
+sought-for order. In other words, one can reduce the number of iterations of the symmetric
+matrix W from the bound stated in (1) to m, but then increase the number of measurements
+from one to |IS |, where |IS | is the cardinality of IS . If it takes t steps on a digital computer
+to determine if a given integer h is the sought-for order, one would increase the number of
+digital steps by t · |IS |. For example, if for some constant c > 0 we take
+m = 2 log((log N )/c)(blog2 N c + 2),
+then, as in section 4.4, we get that
+
+Am ≤ 1 −
+
+1
+2(M + 1)
+
+m
+
+
+≤
+
+c
+(log N )
+
+2
+.
+
+Let us rewrite the interval in (20) as
+Lm ≤ 1/r ≤ Um .
+then
+|IS | ≤
+
+1
+1
+Um − Lm
+−
+=
+Lm Um
+Lm Um
+
+and |IS | could be as small as O((log N )k ) for some constant k ≥ 2.
+In other words, there may be circumstances under which the number of diffusion steps could
+be reduced to O(log N ), with an effective constant, while the number of digital steps would
+become O((log N )k ), thus not significantly changing the complexity of the number of digital
+steps. This discussion leads to an interesting optimization problem, we which will leave for a
+future study.
+
+7.2
+
+Searching for additional repetitions
+
+The algorithm which proves Theorem 2 has, as Step 3, a check for repetitions amongst the
+set S only at the initial construction of the graph. However, this point could be exploited
+further at future diffusion steps, and the detection of such a repetition would detect the order
+r. For example, if the order of the element is 561, then by writing 561 = 512 + 32 + 16 + 1,
+we will have a repetition on the fourth diffusion step. Also, if the order of the element is 111,
+then since 111 = 128 − 16 − 1, one would have a repetition on the second diffusion step. In
+general, there will be a repetition after n + 1 steps if and only if one has ak ≡ a` mod N
+for distinct integers k and ` each of whose binary expansion consists of h or fewer non-zero
+digits.
+In Step 3 of Theorem 2, we used O(log N ) digital steps to detect repetitions. This investigation
+occurred at the first diffusion step. The naive method to test for further repetitions at diffusion
+step h would require O((log N )h ) digital steps. At this time, we have not devised a diffusion
+algorithm which would more efficiently undertake the problem of seeking higher repetitions.
+
+23
+
+7.3
+
+Diffusion solutions of the Simon and Deutsch-Jozsa problems
+
+For each integer h ≥ 2, the Hamming cube, or hypercube graph, Qh of dimension h is
+constructed as follows. The vertices correspond to h-tuples where each entry is either 0 or 1.
+There are 2h vertices. An edge is formed by connecting two vertices v1 and v2 if and only if
+v1 and v2 differ in one and only one place. There are 2h−1 h edges.
+(h)
+
+In [HoRe20] the discrete time heat kernel pn (v) on Qh is studied, and its spectral expansion
+is explicitly stated. With this information, Simon’s problem and the Deutsch-Jozsa problem
+are studied in Chapter 4 of [HoRe20]. To recall, the statement of these problems are as
+follows.
+1. The Deutsch-Jozsa problem. Let f be a Boolean function on the vertices of Qh ,
+meaning the range of values of f is {0, 1}. Suppose we know that f is either constant
+or balanced, by which we mean that the pre-image of either value 0 or 1 is one-half of
+the vertices of Qh . Determine the number of steps required to decide if f is constant or
+balanced.
+2. Simon’s problem. Let f be a real-valued function on the vertices of Qh . Let us view
+v1 and v2 as vectors of integers mod 2. Assume there is a vertex s, meaning an h-tuple
+mod 2, such that f (v1 ) = f (v2 ) if and only v1 + v2 ≡ 0 mod 2 or v1 + v2 ≡ 0 mod 2.
+Determine the number of steps required to compute s.
+Using a digital computer, the Deutsch-Jozsa problem requires, in the worst case, 2h−1 + 1
+evaluations to be solved. On a quantum computer, the solution is obtained after a single
+quantum step. It is shown in section 4.4.1 of [HoRe20] that a heat computer constructed from
+discrete time heat diffusion on Qh provides a heat computer solution to the Deutsch-Jozsa
+problem in a single heat step, which means the same as a diffusion step.
+Using a probabilistic approach, Simon’s problem can be solved on a digital computer in
+O(2h/2 ) steps, whereas on a quantum computer a solution is obtained in O(h) quantum steps.
+Similarly, it is shown in section 4.4.2 of [HoRe20] that a heat computer can solve Simon’s
+problem in O(h) diffusion steps.
+We find it fascinating that a diffusion computer, or heat computer as the concept was called in
+[HoRe20], can efficiently solve the Deutsch-Jozsa problem and Simon’s problem. In addition,
+the number of diffusion steps in the solutions coincide with the number of quantum steps
+needed to answer the questions using a quantum computer. In that regard, Theorem 2 can
+be compared to Shor’s algorithm.
+
+References
+[Ad94] Adelman, L.: Molecular computation of solutions to combinatorial problems, Science
+266 (1994), 1021–1024.
+[AKS04] Agrawal, M., Kayal, N., Saxena, N.: Primes in P, Annals of Math 160 (2004),
+781–793.
+[Ah01] Aharonov, D., Ambainis, A., Kempe, J., Vazirani, U.: Quantum walks on graphs,
+in: STOC ’01: Proceedings of the thirty-third annual ACM symposium on Theory of
+computing (2001) Pages 50—59.
+
+24
+[Ba79] Babai, L.: Spectra of Cayley graphs, J. Combin. Theory Ser. B 27 (1979), no. 2,
+180–189.
+[Be07] Bernstein, D.J., Lenstra, H.W., Pila, J.: Detecting perfect powers by factoring into
+coprimes, J. Math. Comput. 76(257) (2007), 385–388.
+[BV97] Bernstein, E., Vazirani, U.: Quantum complexity theory, SIAM Journal on Computing
+26(5) (1997) 1411–1473.
+[Cu17] Currin, A., Korovin, K., Ababi, M., Roper, K., Kell, D., Day, P., King, R.: Computing exponentially faster: implementing a non-deterministic universal Turing machine
+using DNA, Journal of The Royal Society Interface 14(120) (2017), 20160990.
+[CR62] Curtis, C.W., Reiner, I.: Representation theory of finite groups and associative algebras, Reprint of the 1962 original. Wiley Classics Library. A Wiley-Interscience Publication. John Wiley & Sons, Inc., New York, 1988.
+[Fey60] Feynman, R.: There’s plenty of room at the bottom, Caltech. Eng. Sci. 23 (1960),
+22–36.
+[Hig21] Higgins, J., Lawson, T., Lloyd, S., Sohail, S., Allodi, M., Otto, J., Saer, R., Wood,
+R., Massey, S., Ting, P-C., Blankenship, R., Enge, G.: Photosynthesis tunes quantummechanical mixing of electronic and vibrational states to steer exciton energy transfer,
+Proc. Natl. Acad. Sci., 118(11) (2021), e2018240118.
+[HoRe20] Hoyos Restrepo, P.: On the discrete heat equation and Kolmogorov complexity theory, MSc thesis, Universidad Nacional de Colombia, Medellı́n, Colombia, 2020.
+P
+[KM12] Kaczorowski, J., Molteni, G. : Extremal values for the sum τr=1 e(a2r /q), J. Number
+Theory 132 (2012), 2595–2603.
+[KoM10] Kondo, S., Miura, T.: Reaction-Diffusion Model as a Framework for Understanding
+Biological Pattern Formation, Science 329 (2010), 1616–1620.
+[LLW98] Liu, J., Liu, M., Wang, T.: The number of powers of 2 in a representation of large
+even integers II, Sci. China Ser. A-Math. 41 (1998), article no. 1255 .
+[Lo75] Lovász, L.: Spectra of graphs with transitive groups, Period. Math. Hungar. 6 (1975),
+no. 2, 191–195.
+[vMW12] van Melkebeek, D., Watson, T.: Time-space efficient simulations of quantum computations, Theory Comput. 8 (2012), 1–51.
+[Mar18] Marletto, C., Coles, D., Farrow, T., Vedral, V.: Entanglement between living bacteria
+and quantized light witnessed by Rabi splitting, Journal of Physics Communications, 2
+(2018), No. 101001
+[Ma21] Matthews, D.: How to get started in quantum computing, Nature 591 7848 (2021).
+[Mo09] Molteni, G.: Cancellation in a short exponential sum, J. Number Theory 130 (2010),
+2011–2027.
+[Mo16] Monz, T., Nigg, D., MArtinez, E., Brandl, M., Schinder, P., Rines, R., Wang, S.,
+Chuang, I., Blatt, R.: Realization of a scalable Shor algorithm, Science 351, (2016)
+1068–1070.
+
+25
+[Ni18] Nica, B.: A brief introduction to spectral graph theory, EMS Textbooks in Mathematics, European Mathematical Society, Zurich, 2018.
+[Pol09] Politi, A., Matthews, J., O’Brien, J.: Shor’s quantum factoring algorithm on a photonic chip, Science 325 (2009), no. 5945, 1221.
+[Ra80] Rabin, M.O.: Probabilistic algorithm for testing primality, J. Number Theory 12(1)
+(1980), 128–138.
+[Than13] Thanou, D., Dong, X., Kressner, D., Frossard, P.: Learning heat diffusion graphs,
+IEEE Trans. Signal Inform. Process. Netw. 3 (2017), no. 3, 484–499.
+[Va09] Vandehey, J.: Differencing methods for Korobov-type exponential sums, J. Anal. Math.
+138 (2019), 405–439.
+[WHH17] Wang, D. Hill, C., Hollenberger, L.: Simulations of Shor’s algorithm using matrix
+product states, Quantum Inf. Process. 16 (2017), no. 7, Paper No. 176, 13 pp.
+[Wa12] Watrous, J.: Quantum computational complexity, in: Computational complexity.
+Vols. 1–6, 2361–2387, Springer, New York, 2012.
+[Za13] Zawadzki, P.: Closed-form formula on quantum factorization effectiveness, Quantum
+Inf. Process. 12 (2013), 97–108.
+
+Carlos A. Cadavid
+Department of Mathematics
+Universidad Eafit
+Carrera 49 No 7 Sur-50
+Medellı́n, Colombia
+e-mail: ccadavid@eafit.edu.co
+Paulina Hoyos
+Department of Mathematics
+The University of Texas at Austin
+C2515 Speedway, PMA 8.100
+Austin, TX 78712 U.S.A.
+e-mail: paulinah@utexas.edu
+Jay Jorgenson
+Department of Mathematics
+The City College of New York
+Convent Avenue at 138th Street
+New York, NY 10031 U.S.A.
+e-mail: jjorgenson@mindspring.com
+Lejla Smajlović
+Department of Mathematics
+University of Sarajevo
+Zmaja od Bosne 35, 71 000 Sarajevo
+
+26
+Bosnia and Herzegovina
+e-mail: lejlas@pmf.unsa.ba
+Juan D. Vélez
+Department of Mathematics
+Universidad Nacional de Colombia
+Carrera 65 Nro. 59A - 110
+Medellı́n, Colombia
+e-mail: jdvelez@unal.edu.co
+
+27
+
+Appendix: Computer code in Maple
+For the reader convenience we present the Maple implementation of the algorithm described
+in Section 5, which we used to do the examples in Section 6. For a better understanding we
+show in detail the steps for carrying out Example 2.
+with(numtheory):
+with(ArrayTools):
+with(Statistics):
+ArrayAsList := proc(ArrayWithTwoColumns) local A, s, List, i; A := ArrayWithTwoColumns;
+s := Size(A, 1); List := [ ]; for i to s do List := [op(List), [A[i, 1], A[i, 2]]]; end do; return
+List; end proc
+Joint := proc(ArrayWithTwoColumns) local M, i, z, C, A, s, T, P, NA; A := ArrayWithTwoColumns; s := Size(A, 1); T := ArrayAsList(A); M := sort(T, (x, y) → x[1] ≤ y[1]); P :=
+convert(M, Array); NA := Array(1 .. 1, 1 .. 2); NA[1, 1] := P[1, 1]; NA[1, 2] := P[1, 2]; for i
+from 2 to s do z := Size(NA, 1); if M[i][1] = NA[z, 1] then NA[z, 2] := M[i][2] + NA[z, 2]; else
+NA := Concatenate(1, NA, Vector[row]([M[i][1], M[i][2]])); end if; end do; return NA; end proc
+FromMultisetToList := proc(Multiset) local List, M, T, i, j; List := []; M := Entries(Multiset);
+T := nops(M); for i to T do for j to M[i][2] do List := [op(List), M[i][1]]; end do; end do;
+return List; end proc:
+N := 47*29
+a := 991
+M := floor(log[2](N)) + 1
+M:=11
+FormS := proc( c ) local i, SeparatedList; SeparatedList := [[c], [1/c mod N]]; for i to M do
+SeparatedList := [[op(SeparatedList[1]), (SeparatedList[1][i])2 mod N], [op(SeparatedList[2]),
+SeparatedList[2][i]2 mod N]]; end do; return SeparatedList; end proc
+Sa := FormS(a)
+Sa := [[991, 721, 538, 488, 982, 683, 343, 431, 393, 430, 895, 944], [905, 1225, 1325, 81, 1109,
+455, 1212, 993, 600, 168, 964, 1093]]
+ConectS := proc(S) local UniqueList, j; UniqueList := S[1]; for j to M + 1 do UniqueList :=
+[op(UniqueList), S[2][j]]; end do; return UniqueList; end proc
+Ta := ConectS(Sa)
+Ta := [991, 721, 538, 488, 982, 683, 343, 431, 393, 430, 895, 944, 905, 1225, 1325, 81, 1109,
+
+28
+455, 1212, 993, 600, 168, 964, 1093]
+FirstRepetition := proc(List) local long, H, i, j, K; K := []; long := nops(List); H := 0; for i
+to long do for j to i - 1 while H = 0 do if List[i] = List[j] then K := [j, i]; H := 1; end if; end
+do; end do; return K; end proc
+FirstRepetitionInTwoListsOfSameLength := proc(L, M) local Repetition, u, i, Rep1, j, d1,
+Rep2, k, d2; Repetition := []; u := nops(L); for i to u while Repetition = [] do Rep1 := []; for j
+to i while Rep1 = [] do if L[i] = M[j] then Rep1 := [i, j]; d1 := j + i; Repetition := [Rep1]; end
+if; end do; Rep2 := []; for k to i while Rep2 = [] do if M[i] = L[k] then Rep2 := [k, i]; d2 := k +
+i; Repetition := [op(Repetition), Rep2]; end if; end do; end do; if nops(Repetition) = 0 then
+return []; end if; if nops(Repetition) = 2 then if d1 ¡= d2 then Repetition := [Repetition[1]];
+else Repetition := [Repetition[2]]; end if; end if; return op(Repetition); end proc
+RepetitionAndFactors := proc(S) local PositPot, NegAndPositPot, Answer, d1, d2, l1, l2,
+k1, k2, r, q, pot, u, v, t, h, b, f1, f2; PositPot := FirstRepetition(S[1]); NegAndPositPot :=
+FirstRepetitionInTwoListsOfSameLength(S[1], S[2]); if PositPot = [ ] and NegAndPositPot
+= [ ] then return No repetition; else if PositPot = [ ] and NegAndPositPot 6= [ ] then u := NegAndPositPot[1] - 1; v := NegAndPositPot[2] - 1; r := min(u, v); t := max(u, v); q :=2t−r +1;
+else if PositPot 6= [ ] and NegAndPositPot = [ ] then u := PositPot[1] - 1; v := PositPot[2] - 1;
+r := min(u, v); t := max(u, v); q := 2t−r − 1; else d1 := abs(PositPot[1] - PositPot[2]); d2 :=
+abs(NegAndPositPot[1] - NegAndPositPot[2]); if d1 ≤ d2 then Answer := [op(PositPot[1]),
+op(PositPot[2])]; else Answer := [op(NegAndPositPot[1]), -op(NegAndPositPot[2])]; if Answer[2] < 0 then l1 := abs(Answer[1]) - 1; l2 := abs(Answer[2]) - 1; k1 := min(l1, l2); k2 :=
+max(l1, l2); r := k1; q := 2k2−k1 + 1; else l1 := Answer[2] - 1; k1 := min(l1, l2); k2 := max(l1,
+l2); r := k1; q := 2k2−k1 − 1; end if; end if; end if; end if; end if; pot := r; for h from 0 to r
+pot
+while a2 q = 1 mod N do pot := pot - 1; end do; b := 2(pot−1)q ; f1 := gcd(N, ab + 1); f2 :=
+gcd(N, ab - 1); return f1, f2; end proc
+RepetitionAndFactors(Sa)
+No repetition
+M
+
+b:= a2
+
+mod N
+
+b:= 944
+Tb := ConectS(FormS(b))
+Tb:=[944, 1097, 1243, 770, 1358, 25, 625, 807, 1098, 712, 1271, 286, 1093, 661, 761, 1209,
+545, 1254, 977, 429, 36, 1296, 400, 529]
+InitialNumberOfHeatUnits := 1
+OneDiffusionStep := proc(ArrayWithTwoColumns) local NewMultiset, R, Q, i, j, H, U, A,
+NA; A := ArrayWithTwoColumns; NA := Array(1 .. 1, 1 .. 2); R := Size(A, 1); Q := 2*M +
+
+29
+2; for i to R do NA := Concatenate(1, NA, Vector[row]([A[i, 1], 1/2*A[i, 2]])); for j to Q do
+NA := Concatenate(1, NA, Vector[row]([A[i, 1]*Tb[j] mod N, 1/2*A[i, 2]/Q])); end do; end
+do; U := Joint(NA); return U[2 .. ]; end proc
+SeveralDiffusionSteps := proc(k) local P, i, Z; P := Array(1 .. 1, 1 .. 2, [[1, InitialNumberOfHeatUnits]]); for i to k do P := OneDiffusionStep(P); end do; return P; end proc
+distrib := SeveralDiffusionSteps(25)
+
+ListToGraph := ArrayAsList(distrib)
+TransfReciprocals := proc(Lista) local NuevaLista, i; NuevaLista := []; for i to nops(Lista)
+do NuevaLista := [op(NuevaLista), evalf(1/Lista[i][2])]; end do; return NuevaLista; end proc
+RR := TransfReciprocals(ListToGraph)
+Histogram(RR, bincount = 11)
+
+30
+
+Figure 2: Histogram for the reciprocals of probabilities after 36 diffusion steps
+
+

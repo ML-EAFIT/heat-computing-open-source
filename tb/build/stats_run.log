@@ -1,0 +1,21 @@
+tb_pbit_array[../model/vectors/ring8/]: N=8, 200000 sweeps, 208 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+tb_pbit_array[../model/vectors/ring8_q6/]: N=8, 200000 sweeps, 208 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+tb_pbit_array[../model/vectors/maxcut12/]: N=12, 200000 sweeps, 360 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+tb_pbit_array[../model/vectors/grid16/]: N=16, 200000 sweeps, 544 cycles/sweep, bit-exact over first 2000 sweeps: 0 mismatches
+tb_pbit_array: PASS
+/usr/bin/python3 compare.py --sweeps 200000 --cases ring8 ring8_q6 maxcut12 grid16 --out build/stats.json
+case      fmt    samples  trace TV rtl/exact       KL TV rtl/fxstat TV rtl/golden TV gold/exact TV iid floor TV quant  TV mag
+ring8     Q3.4   199000      0       0.0092   0.0007        0.0092        0.0136        0.0097       0.0085   0.0534  0.0014
+ring8_q6  Q1.6   199000      0       0.0106   0.0007        0.0087        0.0132        0.0090       0.0097   0.0130  0.0028
+maxcut12  Q3.4   199000      0       0.0341   0.0102        0.0341        0.0474        0.0356       0.0333   0.0000  0.0012
+grid16    Q3.4   199000      0       0.0560   0.0666        0.0560        0.0673        0.0519       0.0522   0.0417  0.0073
+columns: trace = RTL vs fixed.py post-sweep mismatches over the whole run; TV quant = exact(quantized params) vs exact(original float params); TV mag = magnetisation-distribution TV
+compare: PASS (all RTL traces bit-exact)
+/usr/bin/python3 plot_hist.py --stats build/stats.json --out build
+plot_hist: wrote build/hist_ring8.png
+plot_hist: wrote build/hist_ring8_q6.png
+plot_hist: wrote build/hist_maxcut12.png
+plot_hist: wrote build/hist_grid16.png

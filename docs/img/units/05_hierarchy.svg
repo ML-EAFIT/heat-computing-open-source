@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" role="img" aria-label="Layers of the thermodynamic computer from noise up to the host program, with the classical analogue and the Verilog file for each layer" font-family="IBM Plex Sans, system-ui, sans-serif">
+<style>
+svg{--bg:#faf9f6;--ink:#1d2329;--mut:#66707a;--line:#8f99a3;--warm:#c4501d;--warmf:#fbe5d8;
+--cool:#16708a;--coolf:#dbeef3;--ok:#2c8a4b;--okf:#ddf0e3;--bad:#b9b5ac;--badf:#efede8;--panel:#f1efea}
+@media (prefers-color-scheme:dark){svg{--bg:#14181c;--ink:#e5e8eb;--mut:#9aa4ae;--line:#64707b;
+--warm:#f08a5c;--warmf:#3b2418;--cool:#5cc1d9;--coolf:#12303a;--ok:#6dca8b;--okf:#163322;--bad:#6d6a64;
+--badf:#24272a;--panel:#1b2025}}
+
+.bg{fill:var(--bg)} .panel{fill:var(--panel)}
+.t{fill:var(--ink);font:13px 'IBM Plex Sans',system-ui,sans-serif}
+.ts{fill:var(--mut);font:11px 'IBM Plex Sans',system-ui,sans-serif}
+.tm{fill:var(--ink);font:11.5px 'IBM Plex Mono',ui-monospace,monospace}
+.tms{fill:var(--mut);font:10.5px 'IBM Plex Mono',ui-monospace,monospace}
+.th{fill:var(--ink);font:600 15px 'IBM Plex Sans',system-ui,sans-serif}
+.tb{fill:var(--ink);font:600 13px 'IBM Plex Sans',system-ui,sans-serif}
+.tw{fill:var(--warm)} .tc{fill:var(--cool)} .tok{fill:var(--ok)}
+.warm{fill:var(--warmf);stroke:var(--warm);stroke-width:1.4}
+.cool{fill:var(--coolf);stroke:var(--cool);stroke-width:1.4}
+.ok{fill:var(--okf);stroke:var(--ok);stroke-width:1.4}
+.bad{fill:var(--badf);stroke:var(--bad);stroke-width:1.2}
+.plain{fill:var(--bg);stroke:var(--line);stroke-width:1.2}
+.ln{stroke:var(--line);stroke-width:1.4;fill:none}
+.lw{stroke:var(--warm);stroke-width:1.6;fill:none}
+.lc{stroke:var(--cool);stroke-width:1.6;fill:none}
+.lk{stroke:var(--ink);stroke-width:1.6;fill:none}
+.dash{stroke-dasharray:4 4}
+.fw{fill:var(--warm)} .fc{fill:var(--cool)} .fk{fill:var(--ink)} .fl{fill:var(--line)}
+</style>
+<rect width="1000" height="580" class="bg"/>
+<text x="24.0" y="32.0" class="th" text-anchor="start" >How the units stack into a computer</text>
+<text x="24.0" y="52.0" class="ts" text-anchor="start" >Read bottom-up: each layer is made only of the layer below it.</text>
+<rect x="150.0" y="96.0" width="560.0" height="48.0" rx="8" class="plain"/>
+<text x="166.0" y="116.0" class="tb" text-anchor="start" >Host program</text>
+<text x="166.0" y="133.0" class="ts" text-anchor="start" >anneal · sample · denoise · factor</text>
+<text x="24.0" y="124.0" class="ts" text-anchor="start" >software</text>
+<text x="976.0" y="124.0" class="tms" text-anchor="end" >fpga/host.py over UART</text>
+<line x1="430.0" y1="158.0" x2="430.0" y2="146.0" class="ln"/>
+<polygon points="430.0,146.0 434.0,154.0 426.0,154.0" class="fl"/>
+<text x="438.0" y="156.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="160.0" width="560.0" height="48.0" rx="8" class="plain"/>
+<text x="166.0" y="180.0" class="tb" text-anchor="start" >Instruction set</text>
+<text x="166.0" y="197.0" class="ts" text-anchor="start" >W H O T B R S C D U Q X P</text>
+<text x="24.0" y="188.0" class="ts" text-anchor="start" >ISA / bus</text>
+<text x="976.0" y="188.0" class="tms" text-anchor="end" >top.v command FSM</text>
+<line x1="430.0" y1="222.0" x2="430.0" y2="210.0" class="ln"/>
+<polygon points="430.0,210.0 434.0,218.0 426.0,218.0" class="fl"/>
+<text x="438.0" y="220.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="224.0" width="560.0" height="48.0" rx="8" class="plain"/>
+<text x="166.0" y="244.0" class="tb" text-anchor="start" >Programs as energies</text>
+<text x="166.0" y="261.0" class="ts" text-anchor="start" >Max-Cut · p-gate circuits · denoising chain</text>
+<text x="24.0" y="252.0" class="ts" text-anchor="start" >compiled code</text>
+<text x="976.0" y="252.0" class="tms" text-anchor="end" >model/cases.py → hex</text>
+<line x1="430.0" y1="286.0" x2="430.0" y2="274.0" class="ln"/>
+<polygon points="430.0,274.0 434.0,282.0 426.0,282.0" class="fl"/>
+<text x="438.0" y="284.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="288.0" width="560.0" height="48.0" rx="8" class="cool"/>
+<text x="166.0" y="308.0" class="tb" text-anchor="start" >Sweep + schedule</text>
+<text x="166.0" y="325.0" class="ts" text-anchor="start" >colour blocks in turn; β rises over time</text>
+<text x="24.0" y="316.0" class="ts" text-anchor="start" >clock + PC</text>
+<text x="976.0" y="316.0" class="tms" text-anchor="end" >pbit_array.v · schedule_ctrl.v</text>
+<line x1="430.0" y1="350.0" x2="430.0" y2="338.0" class="ln"/>
+<polygon points="430.0,338.0 434.0,346.0 426.0,346.0" class="fl"/>
+<text x="438.0" y="348.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="352.0" width="560.0" height="48.0" rx="8" class="cool"/>
+<text x="166.0" y="372.0" class="tb" text-anchor="start" >Ising array</text>
+<text x="166.0" y="389.0" class="ts" text-anchor="start" >N p-bits + coupling graph J, biases h</text>
+<text x="24.0" y="380.0" class="ts" text-anchor="start" >datapath + RAM</text>
+<text x="976.0" y="380.0" class="tms" text-anchor="end" >pbit_array.v · coupling_row.v</text>
+<line x1="430.0" y1="414.0" x2="430.0" y2="402.0" class="ln"/>
+<polygon points="430.0,402.0 434.0,410.0 426.0,410.0" class="fl"/>
+<text x="438.0" y="412.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="416.0" width="560.0" height="48.0" rx="8" class="warm"/>
+<text x="166.0" y="436.0" class="tb" text-anchor="start" >p-bit</text>
+<text x="166.0" y="453.0" class="ts" text-anchor="start" >field → σ → compare with noise → latch</text>
+<text x="24.0" y="444.0" class="ts" text-anchor="start" >gate + flip-flop</text>
+<text x="976.0" y="444.0" class="tms" text-anchor="end" >pbit.v · weight_mac.v · sigmoid_lut.v</text>
+<line x1="430.0" y1="478.0" x2="430.0" y2="466.0" class="ln"/>
+<polygon points="430.0,466.0 434.0,474.0 426.0,474.0" class="fl"/>
+<text x="438.0" y="476.0" class="ts" text-anchor="start" >makes up</text>
+<rect x="150.0" y="480.0" width="560.0" height="48.0" rx="8" class="warm"/>
+<text x="166.0" y="500.0" class="tb" text-anchor="start" >Noise</text>
+<text x="166.0" y="517.0" class="ts" text-anchor="start" >fresh random bits every update</text>
+<text x="24.0" y="508.0" class="ts" text-anchor="start" >transistor</text>
+<text x="976.0" y="508.0" class="tms" text-anchor="end" >lfsr.v · noise_bank.v</text>
+<text x="24.0" y="88.0" class="ts" text-anchor="start" letter-spacing="1">CLASSICAL ANALOGUE</text>
+<text x="976.0" y="88.0" class="ts" text-anchor="end" letter-spacing="1">WHERE IT LIVES</text>
+<text x="24.0" y="558.0" class="ts" text-anchor="start" >Orange = units with a physical counterpart in the papers; teal = control the papers describe at system level; neutral = our host interface.</text>
+</svg>
