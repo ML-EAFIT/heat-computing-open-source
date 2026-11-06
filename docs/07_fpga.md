@@ -137,3 +137,36 @@ python3 fpga/host.py --port /dev/ttyUSB1 stream --case grid16 --sweeps 50
 - `sample` programs W/H/O, sets a constant β, reseeds, clears, runs n sweeps, then dumps the 4096-bin histogram. It reports TV/KL against exact Boltzmann. For ≤ 20,000 sweeps it also checks bit-exactness against `model/fixed.py` on the padded 16-node array.
 - Without a host: press the run button (pin 3). The board restarts the annealing table schedule (power-on model = maxcut16) and runs 128 sweeps. LEDs 0–4 show spins 0–4, and LED 5 lights while busy.
 - Dump sizes at 115200 baud: histogram 16 KiB ≈ 1.4 s, up-counters 68 B. `S` streaming is limited to about 5,700 samples/s for N = 16 (2 bytes per sample), so long statistics should use on-chip `R` + `D`.
+
+## Tang Nano 20K port (added 2026-11-05) — first on-hardware runs
+
+The same RTL also builds for the Tang Nano 20K (GW2AR-LV18QN88C8/I7, family GW2A-18C). `openFPGALoader --detect` reports idcode 0x81b, GW2A(R)-18(C).
+
+```bash
+cd fpga
+make BOARD=20k           # -> build_20k/top.fs   (BOARD=9k is the default and is unchanged)
+make BOARD=20k report
+make BOARD=20k flash     # SRAM; flash-fl / case / sparse / pmode / flash-* take BOARD=20k too
+```
+
+- **Pins (`tangnano20k.cst`).** clk 4, LEDs 15–20 (active low), UART TX 69 / RX 70, keys 88 (reset) and 87 (run). All LVCMOS33. Checked against apicula `examples/tangnano20k.cst` and Sipeed `TangNano-20K-example/uart/src/top.cst`.
+- **Keys are active high on the 20K** (Sipeed: `wire rst_n = !rst`). `tn20k_top.v` inverts them around `top`. With `-DINNER=<module>` it wraps the generated `case_top` / `sparse_top` / `pmode_wrap` / `sweep_top` instead. `rtl/` is unchanged.
+- **Default build (N = 16):** LUT4 2803/20736 (13 %), ALU 1002, DFF 1326, BSRAM 10/46, IOB 11, 0 DSP, Fmax 105.70 MHz (27 MHz target).
+
+**Measured on the board** (host.py, `/dev/ttyUSB1`):
+
+| test | result |
+|---|---|
+| `ping` | N = 16, HIST_BITS = 12 |
+| `sample --case maxcut12 --sweeps 20000` | TV 0.1102, KL 0.0872, **bit-exact vs model/fixed.py**; identical numbers to `--sim`; 48 k sweeps/s incl. UART |
+| `pgate pgate_and Y=1` | 11 → 0.965 |
+| `pgate pgate_and Y=0` | 00/01/10 → 0.333 / 0.332 / 0.329, 11 → 0.006 |
+| `pgate pgate_xor Y=1` | 10/01 → 0.468 / 0.463 |
+| `pgate fulladder` (free) | 8 valid rows 0.097–0.116 each, invalid ≈ 0.02 |
+| `entropy --sweeps 100000` | P(1) = 0.50009 (z = +0.22), max \|r\| 0.0019 (0 lags outside band), min-entropy 0.9968 / Markov 0.9993 bit/bit, byte χ² p = 0.683 |
+| `train --case xor_h` | KL 0.8377 → 0.0510 nats; P(000, 011, 101, 110) = 0.278 / 0.191 / 0.217 / 0.245 |
+
+**USB-UART bridge (BL616) quirks, fixed in `host.py`:**
+- Back-to-back bursts of more than ~32 commands lose data: 140 of 288 `H` acks came back, while the FPGA parser stayed in sync. `Board.cmd_w` / `flush` now keep at most `WINDOW = 16` commands un-acknowledged. This gives 288/288, and programming N = 16 takes about 0.1 s.
+- The bridge keeps about 1 kB of an aborted stream after the host has stopped reading. `Board` now drains the line on open.
+- `Board.read` times out per stall, not per call. The `N` noise stream (200 kB ≈ 17 s at 115200) used to hit the 5 s timeout.

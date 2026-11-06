@@ -154,6 +154,8 @@ python3 host.py --port /dev/ttyUSB1 temper --case factor6_pt --clamp p0=1,p1=1,p
 python3 host.py --port /dev/ttyUSB1 solve --problem ../examples/factor6.json   # your own program (docs/09)
 python3 host.py --sim solve --problem ../examples/qubo_small.json              # same, no board (Python model)
 ```
+**Tang Nano 20K:** add `BOARD=20k` to any target (`make BOARD=20k && make BOARD=20k flash`). It was flashed and tested on a real board on 2026-11-05: `sample` is bit-exact with the Python model, and p-gates, entropy and `train` all work. See `docs/07_fpga.md`.
+
 `nextpnr-gowin`, named in the original request, is not in current OSS CAD Suite; `nextpnr-himbaechel` is its replacement. Bitstream generation was run. **Flashing and `host.py` were not run, because no board was attached.** After power-up the board works stand-alone: the run button (pin 3) anneals the built-in 16-node Max-Cut instance and shows spins on the LEDs.
 
 ## Open questions — where the sources were insufficient

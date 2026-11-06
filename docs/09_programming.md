@@ -29,6 +29,15 @@ All types take `beta` and optionally `schedule: {beta_start, beta_end, sweeps_pe
 
 Clamping a circuit's outputs runs it backwards. `examples/factor6.json` clamps the product of a 2×2 multiplier to 6, and the chip answers with the factors.
 
+**Bigger multipliers:** `tools/make_multiplier.py N [--bits NA NB] [--sps S] -o examples/factorN.json` writes an NA×NB-bit array multiplier (AND partial products, half and full adders) with the product clamped to N. It lists the expected answers, or warns when N has no factorization at those widths (for example, a prime). Sizes: 2×2 = 14 p-bits (identical to `factor6.json`), 3×3 ≈ 47, 4×4 = 92 (max degree 8), 4×5 ≈ 120. Anything over 16 p-bits needs the SPARSE build.
+
+Measured on a Tang Nano 20K (2026-11-05, `make BOARD=20k flash-sparse`, then `host.py solve --runs 20`):
+- `factor143.json` (4×4, sps 1024): 10/20 anneals give 11×13 or 13×11 with all gates satisfied. The `--sim` sparse model also gives 10/20.
+- `factor91.json` (4×4): 2/20 give 7×13. `factor91_3x4.json` (3×4, 66 p-bits, a single answer): 7/20.
+- `factor77.json` (4×4): 5/20 give 7×11 or 11×7. `factor77_3x4.json` (3×4): 8/20.
+- `factor103.json`: 103 is prime. No anneal satisfies every gate, so the best states always violate at least one adder.
+- Shorter anneals fail more often: at sps 32, 2/10 reach the lowest energy found, and those states still violate gates. At sps 256, 5/20 satisfy all gates (sparse model).
+
 Limits:
 - **Size:** n ≤ 16 on the default dense bitstream; n ≤ 256 on the SPARSE build (`make sparse`).
 - **Precision:** coefficients are stored in 1/16 steps within ±8. `problem.py` warns when rounding or saturation changes your numbers.

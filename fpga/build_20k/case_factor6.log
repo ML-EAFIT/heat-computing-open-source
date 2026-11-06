@@ -1,0 +1,355 @@
+Info: Using uarch 'gowin' for device 'GW2AR-LV18QN88C8/I7'
+
+Info: Cell O_sdram_clk not found
+Info: Cell O_sdram_cke not found
+Info: Cell O_sdram_cs_n not found
+Info: Cell O_sdram_cas_n not found
+Info: Cell O_sdram_ras_n not found
+Info: Cell O_sdram_wen_n not found
+Info: Cell O_sdram_dqm[0] not found
+Info: Cell O_sdram_dqm[1] not found
+Info: Cell O_sdram_dqm[2] not found
+Info: Cell O_sdram_dqm[3] not found
+Info: Cell O_sdram_addr[0] not found
+Info: Cell O_sdram_addr[1] not found
+Info: Cell O_sdram_addr[2] not found
+Info: Cell O_sdram_addr[3] not found
+Info: Cell O_sdram_addr[4] not found
+Info: Cell O_sdram_addr[5] not found
+Info: Cell O_sdram_addr[6] not found
+Info: Cell O_sdram_addr[7] not found
+Info: Cell O_sdram_addr[8] not found
+Info: Cell O_sdram_addr[9] not found
+Info: Cell O_sdram_addr[10] not found
+Info: Cell O_sdram_ba[0] not found
+Info: Cell O_sdram_ba[1] not found
+Info: Cell IO_sdram_dq[0] not found
+Info: Cell IO_sdram_dq[1] not found
+Info: Cell IO_sdram_dq[2] not found
+Info: Cell IO_sdram_dq[3] not found
+Info: Cell IO_sdram_dq[4] not found
+Info: Cell IO_sdram_dq[5] not found
+Info: Cell IO_sdram_dq[6] not found
+Info: Cell IO_sdram_dq[7] not found
+Info: Cell IO_sdram_dq[8] not found
+Info: Cell IO_sdram_dq[9] not found
+Info: Cell IO_sdram_dq[10] not found
+Info: Cell IO_sdram_dq[11] not found
+Info: Cell IO_sdram_dq[12] not found
+Info: Cell IO_sdram_dq[13] not found
+Info: Cell IO_sdram_dq[14] not found
+Info: Cell IO_sdram_dq[15] not found
+Info: Cell IO_sdram_dq[16] not found
+Info: Cell IO_sdram_dq[17] not found
+Info: Cell IO_sdram_dq[18] not found
+Info: Cell IO_sdram_dq[19] not found
+Info: Cell IO_sdram_dq[20] not found
+Info: Cell IO_sdram_dq[21] not found
+Info: Cell IO_sdram_dq[22] not found
+Info: Cell IO_sdram_dq[23] not found
+Info: Cell IO_sdram_dq[24] not found
+Info: Cell IO_sdram_dq[25] not found
+Info: Cell IO_sdram_dq[26] not found
+Info: Cell IO_sdram_dq[27] not found
+Info: Cell IO_sdram_dq[28] not found
+Info: Cell IO_sdram_dq[29] not found
+Info: Cell IO_sdram_dq[30] not found
+Info: Cell IO_sdram_dq[31] not found
+Info: Reading constraints...
+Info: Create constant nets...
+Info: Modify LUTs...
+Info: Pack IOBs...
+Info: Pack I3C IOs...
+Info: Pack MIPI IOs...
+Info: Pack diff IOBs...
+Info: Pack FFs into IO cells...
+Info: Pack IODELAY...
+Info: Pack Input Edge Monitors...
+Info: Pack IO logic...
+Info: Pack DESER16 logic...
+Info: Pack GSR...
+Info: Pack HCLK cells...
+Info: Pack DLLDLYs...
+Info: Pack wide LUTs...
+Info: Packed MUX2_LUT8:6, MUX2_LU7:18, MUX2_LUT6:10, MUX2_LUT5:167
+Info: Pack ALUs...
+Info: Pack SSRAMs...
+Info: Constrained 345 LUTFF pairs.
+Info: Pack PLL...
+Info: Pack ADC...
+Info: Pack GW JTAG...
+Info: Pack BSRAMs...
+Info: Pack DSP...
+Info: Pack INV...
+Info: Pack buffered nets...
+Info: Pack EMCU and UserFlash cells...
+Info: Pack UserFlash cells...
+Info: Pack DQCE cells...
+Info: Pack DCS cells...
+Info: Checksum: 0xf4b6c014
+
+Info: Device utilisation:
+Info: 	                 VCC:       1/      1   100%
+Info: 	                 IOB:      11/    384     2%
+Info: 	                LUT4:    2730/  20736    13%
+Info: 	            IOLOGICI:       0/    384     0%
+Info: 	            IOLOGICO:       0/    384     0%
+Info: 	           MUX2_LUT5:     307/  10368     2%
+Info: 	           MUX2_LUT6:      70/   5184     1%
+Info: 	           MUX2_LUT7:      30/   2592     1%
+Info: 	           MUX2_LUT8:       6/   2592     0%
+Info: 	                 ALU:     932/  15552     5%
+Info: 	                 GND:       1/      1   100%
+Info: 	                 DFF:    1257/  15552     8%
+Info: 	           RAM16SDP4:       7/    648     1%
+Info: 	               BSRAM:      10/     46    21%
+Info: 	              ALU54D:       0/     24     0%
+Info: 	     MULTADDALU18X18:       0/     24     0%
+Info: 	        MULTALU18X18:       0/     24     0%
+Info: 	        MULTALU36X18:       0/     24     0%
+Info: 	           MULT36X36:       0/     12     0%
+Info: 	           MULT18X18:       0/     48     0%
+Info: 	             MULT9X9:       0/     96     0%
+Info: 	              PADD18:       0/     48     0%
+Info: 	               PADD9:       0/     96     0%
+Info: 	                 GSR:       1/      1   100%
+Info: 	                 OSC:       0/      1     0%
+Info: 	                rPLL:       0/      2     0%
+Info: 	             GW_JTAG:       0/      1     0%
+Info: 	                BUFG:       1/     24     4%
+Info: 	                DQCE:       0/     24     0%
+Info: 	                 DCS:       0/      8     0%
+Info: 	               DHCEN:       0/     24     0%
+Info: 	              CLKDIV:       0/      8     0%
+Info: 	             CLKDIV2:       0/     16     0%
+
+Info: Running custom HCLK placer...
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 2261 cells, random placement wirelen = 143239.
+Info:     at initial placer iter 0, wirelen = 2008
+Info:     at initial placer iter 1, wirelen = 1787
+Info:     at initial placer iter 2, wirelen = 2299
+Info:     at initial placer iter 3, wirelen = 2289
+Info: Running main analytical placer, max placement attempts per cell = 3596562.
+Info:     at iteration #1, type ALL: wirelen solved = 1643, spread = 22755, legal = 37893; time = 0.37s
+Info:     at iteration #2, type ALL: wirelen solved = 2719, spread = 21819, legal = 38457; time = 0.26s
+Info:     at iteration #3, type ALL: wirelen solved = 2837, spread = 21717, legal = 36271; time = 0.30s
+Info:     at iteration #4, type ALL: wirelen solved = 2984, spread = 20722, legal = 34992; time = 0.26s
+Info:     at iteration #5, type ALL: wirelen solved = 3899, spread = 24596, legal = 36493; time = 0.33s
+Info:     at iteration #6, type ALL: wirelen solved = 3894, spread = 25084, legal = 36773; time = 0.23s
+Info:     at iteration #7, type ALL: wirelen solved = 4780, spread = 21367, legal = 30890; time = 0.22s
+Info:     at iteration #8, type ALL: wirelen solved = 4992, spread = 22728, legal = 32259; time = 0.20s
+Info:     at iteration #9, type ALL: wirelen solved = 5493, spread = 20120, legal = 29287; time = 0.19s
+Info:     at iteration #10, type ALL: wirelen solved = 5869, spread = 20468, legal = 27956; time = 0.29s
+Info:     at iteration #11, type ALL: wirelen solved = 6808, spread = 19391, legal = 28670; time = 0.21s
+Info:     at iteration #12, type ALL: wirelen solved = 6888, spread = 22764, legal = 32373; time = 0.25s
+Info:     at iteration #13, type ALL: wirelen solved = 7066, spread = 23453, legal = 30413; time = 0.42s
+Info:     at iteration #14, type ALL: wirelen solved = 7561, spread = 20032, legal = 27677; time = 0.25s
+Info:     at iteration #15, type ALL: wirelen solved = 7930, spread = 20199, legal = 30703; time = 0.39s
+Info:     at iteration #16, type ALL: wirelen solved = 8915, spread = 21315, legal = 31949; time = 0.32s
+Info:     at iteration #17, type ALL: wirelen solved = 9793, spread = 20679, legal = 28566; time = 0.23s
+Info:     at iteration #18, type ALL: wirelen solved = 9333, spread = 22021, legal = 28721; time = 0.25s
+Info:     at iteration #19, type ALL: wirelen solved = 9167, spread = 22327, legal = 28128; time = 0.23s
+Info: HeAP Placer Time: 6.12s
+Info:   of which solving equations: 1.39s
+Info:   of which spreading cells: 0.16s
+Info:   of which strict legalisation: 3.82s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 236, wirelen = 27677
+Info:   at iteration #5: temp = 0.000000, timing cost = 89, wirelen = 21386
+Info:   at iteration #10: temp = 0.000000, timing cost = 84, wirelen = 19942
+Info:   at iteration #15: temp = 0.000000, timing cost = 69, wirelen = 18973
+Info:   at iteration #20: temp = 0.000000, timing cost = 101, wirelen = 18436
+Info:   at iteration #25: temp = 0.000000, timing cost = 87, wirelen = 17984
+Info:   at iteration #30: temp = 0.000000, timing cost = 74, wirelen = 17884
+Info:   at iteration #31: temp = 0.000000, timing cost = 78, wirelen = 17864 
+Info: SA placement time 12.93s
+
+Info: Max frequency for clock 'u_inner.clk': 105.30 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 7 endpoint(s)
+Info:          + represents [1,7) endpoint(s)
+Info: [ 27540,  28002) |**+
+Info: [ 28002,  28464) |***+
+Info: [ 28464,  28926) |***********+
+Info: [ 28926,  29388) |*************************+
+Info: [ 29388,  29850) |*******************************+
+Info: [ 29850,  30312) |*********************************+
+Info: [ 30312,  30774) |***********************************************+
+Info: [ 30774,  31236) |************************************************************ 
+Info: [ 31236,  31698) |********+
+Info: [ 31698,  32160) |************+
+Info: [ 32160,  32622) |*************+
+Info: [ 32622,  33084) |********************+
+Info: [ 33084,  33546) |********************************+
+Info: [ 33546,  34008) |*****************************+
+Info: [ 34008,  34470) |****************************+
+Info: [ 34470,  34932) |**************************+
+Info: [ 34932,  35394) |*****************+
+Info: [ 35394,  35856) |********************+
+Info: [ 35856,  36318) |*************+
+Info: [ 36318,  36780) |****************************************+
+Info: Checksum: 0xb7a8bd72
+Info: Routing globals...
+Info:     'u_inner.clk' net was routed.
+Info:     'u_inner.top_inst.word_reg_DFFE_Q_D_LUT4_F_I2_LUT4_F_I1_ALU_I1_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I1_LUT4_I1_F_LUT3_F_I2_LUT2_I1_F_LUT2_F_I1_LUT4_I2_F_LUT4_F_I2_LUT2_I1_F[0]' is routed using segments.
+Info:     'u_inner.top_inst.run_prev_LUT2_I1_F_LUT2_I1_F_LUT2_F_I1_LUT2_I1_F' is routed using segments.
+Info:     'u_inner.top_inst.word_reg_DFFE_Q_31_D_LUT4_F_I1_LUT3_F_I0_LUT3_I1_F_LUT3_I2_F[0]' is routed using segments.
+Info:     'u_inner.top_inst.rst_s2_LUT2_I0_1_F[0]' is routed using segments.
+Info:     'u_inner.top_inst.args_reg[4]' is routed using segments.
+Info:     'u_inner.top_inst.gen_dense.a_spins_DFFRE_Q_13_D_LUT4_F_I3[0]' is routed using segments.
+Info:     'u_inner.top_inst.readout_counter_inst.gen_hist.hist_mem.0.0_DOB[1]' is routed using segments.
+Info:     'u_inner.top_inst.args_reg[1]' is routed using segments.
+Info:     'u_inner.top_inst.args_reg[9]' is routed using segments.
+Info:     'u_inner.top_inst.readout_counter_inst.state_reg_DFFRE_Q_D_LUT3_I1_F[1]' is routed using segments.
+Info:     'u_inner.top_inst.gen_dense.a_spins_DFFRE_Q_10_D_LUT4_F_I3[2]' is routed using segments.
+Info:     'u_inner.top_inst.gen_dense.pbit_array_inst.coupling_row_inst.done_reg_LUT4_I0_F_LUT4_I3_F[1]' is routed using segments.
+Info:     'u_inner.top_inst.rst_s2_LUT2_I0_F_LUT3_F_I2_LUT4_I3_F[3]' is routed using segments.
+Info:     'u_inner.top_inst.n_samples_DFFRE_Q_10_D_LUT2_F_I0[1]' is routed using segments.
+Info:     'u_inner.top_inst.readout_counter_inst.state_reg_LUT2_I1_F[2]' is routed using segments.
+Info:     'u_inner.top_inst.schedule_ctrl_inst.cnt_reg_DFFRE_Q_8_D_LUT2_F_I0_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT[4]' is routed using segments.
+Info:     'u_inner.top_inst.gen_dense.pbit_array_inst.pbit_inst.bit_reg_DFFE_Q_D_LUT1_F_I0_ALU_COUT_CIN_ALU_COUT_I0_LUT2_F_I1_LUT3_I2_F_LUT4_F_I2[0]' is routed using segments.
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 12378 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |        4        995 |    4   995 |     11385|       0.64       0.64|
+Info:       2000 |       31       1968 |   27   973 |     10425|       0.53       1.17|
+Info:       3000 |       71       2928 |   40   960 |      9474|       0.56       1.73|
+Info:       4000 |      144       3855 |   73   927 |      8589|       0.54       2.27|
+Info:       5000 |      274       4725 |  130   870 |      7777|       0.56       2.82|
+Info:       6000 |      414       5535 |  140   810 |      7006|       0.68       3.51|
+Info:       7000 |      527       6214 |  113   679 |      6203|       0.58       4.09|
+Info:       8000 |      636       6778 |  109   564 |      5422|       0.52       4.61|
+Info:       9000 |      745       7398 |  109   620 |      4616|       0.56       5.17|
+Info:      10000 |      851       7896 |  106   498 |      3765|       0.46       5.63|
+Info:      11000 |      922       8682 |   71   786 |      2849|       0.34       5.97|
+Info:      12000 |     1023       9500 |  101   818 |      2002|       0.41       6.38|
+Info:      13000 |     1078      10369 |   55   869 |      1088|       0.34       6.72|
+Info:      14000 |     1105      11225 |   27   856 |       125|       0.41       7.13|
+Info:      14125 |     1106      11336 |    1   111 |         0|       0.07       7.21|
+Info: Routing complete.
+Info: Router1 time 7.21s
+Info: Checksum: 0xf8d8afd7
+
+Info: Critical path report for clock 'u_inner.clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.23  0.23 Source u_inner.top_inst.cnt_reg_DFFRE_Q_2.Q
+Info:    routing  1.09  1.32 Net u_inner.top_inst.cnt_reg[2] (6,15) -> (2,11)
+Info:                          Sink u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN.I1
+Info:                          Defined in:
+Info:                               ../rtl/top.v:226.14-226.21
+Info:      logic  0.57  1.89 Source u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN.COUT
+Info:    routing  0.00  1.89 Net u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT (2,11) -> (2,11)
+Info:                          Sink u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/top.v:520.26-520.41
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  1.92 Source u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  1.92 Net u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT (2,11) -> (2,11)
+Info:                          Sink u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/top.v:520.26-520.41
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  1.96 Source u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  1.96 Net u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (2,11) -> (3,11)
+Info:                          Sink u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/top.v:520.26-520.41
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  2.00 Source u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  2.00 Net u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (3,11) -> (3,11)
+Info:                          Sink u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               ../rtl/top.v:520.26-520.41
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.47  2.46 Source u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.SUM
+Info:    routing  0.71  3.17 Net u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM[1] (3,11) -> (7,11)
+Info:                          Sink u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_SUM_LUT2_F.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  3.74 Source u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_SUM_LUT2_F.F
+Info:    routing  0.55  4.29 Net u_inner.top_inst.cnt_reg_DFFRE_Q_1_D_ALU_SUM_COUT_ALU_CIN_SUM[5] (7,11) -> (6,12)
+Info:                          Sink u_inner.top_inst.rst_s2_LUT2_I0_F_LUT3_F_I2_LUT4_I3_F_MUX2_LUT5_S0_O_MUX2_LUT8_O_I1_MUX2_LUT7_O_I0_MUX2_LUT6_O.S0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.10  4.39 Source u_inner.top_inst.rst_s2_LUT2_I0_F_LUT3_F_I2_LUT4_I3_F_MUX2_LUT5_S0_O_MUX2_LUT8_O_I1_MUX2_LUT7_O_I0_MUX2_LUT6_O.O
+Info:    routing  0.00  4.39 Net u_inner.top_inst.rst_s2_LUT2_I0_F_LUT3_F_I2_LUT4_I3_F_MUX2_LUT5_S0_O_MUX2_LUT8_O_I1_MUX2_LUT7_O_I0 (6,12) -> (6,12)
+Info:                          Sink u_inner.top_inst.rst_s2_LUT2_I0_F_LUT3_F_I2_LUT4_I3_F_MUX2_LUT5_S0_O_MUX2_LUT8_O_I1_MUX2_LUT7_O.I0
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:171.43-171.68
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:163.9-163.11
+Info:      logic  0.27  4.66 Source u_inner.top_inst.rst_s2_LUT2_I0_F_LUT3_F_I2_LUT4_I3_F_MUX2_LUT5_S0_O_MUX2_LUT8_O_I1_MUX2_LUT7_O.O
+Info:    routing  0.00  4.66 Net u_inner.top_inst.rst_s2_LUT2_I0_F_LUT3_F_I2_LUT4_I3_F_MUX2_LUT5_S0_O_MUX2_LUT8_O_I1 (6,12) -> (6,12)
+Info:                          Sink u_inner.top_inst.rst_s2_LUT2_I0_F_LUT3_F_I2_LUT4_I3_F_MUX2_LUT5_S0_O_MUX2_LUT8_O.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:169.13-169.15
+Info:      logic  0.27  4.93 Source u_inner.top_inst.rst_s2_LUT2_I0_F_LUT3_F_I2_LUT4_I3_F_MUX2_LUT5_S0_O_MUX2_LUT8_O.O
+Info:    routing  0.64  5.57 Net u_inner.top_inst.rst_s2_LUT2_I0_F_LUT3_F_I2_LUT4_I3_F_MUX2_LUT5_S0_O[2] (6,12) -> (10,12)
+Info:                          Sink u_inner.top_inst.ret_reg_DFFRE_Q_2_D_MUX2_LUT7_O_I1_MUX2_LUT6_O_I1_MUX2_LUT5_O_I1_LUT4_F.I2
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  6.03 Source u_inner.top_inst.ret_reg_DFFRE_Q_2_D_MUX2_LUT7_O_I1_MUX2_LUT6_O_I1_MUX2_LUT5_O_I1_LUT4_F.F
+Info:    routing  0.00  6.03 Net u_inner.top_inst.ret_reg_DFFRE_Q_2_D_MUX2_LUT7_O_I1_MUX2_LUT6_O_I1_MUX2_LUT5_O_I1 (10,12) -> (10,12)
+Info:                          Sink u_inner.top_inst.ret_reg_DFFRE_Q_2_D_MUX2_LUT7_O_I1_MUX2_LUT6_O_I1_MUX2_LUT5_O.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:165.42-165.67
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:159.41-159.66
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:151.13-151.15
+Info:      logic  0.27  6.30 Source u_inner.top_inst.ret_reg_DFFRE_Q_2_D_MUX2_LUT7_O_I1_MUX2_LUT6_O_I1_MUX2_LUT5_O.O
+Info:    routing  0.00  6.30 Net u_inner.top_inst.ret_reg_DFFRE_Q_2_D_MUX2_LUT7_O_I1_MUX2_LUT6_O_I1 (10,12) -> (10,12)
+Info:                          Sink u_inner.top_inst.ret_reg_DFFRE_Q_2_D_MUX2_LUT7_O_I1_MUX2_LUT6_O.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:165.42-165.67
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:157.13-157.15
+Info:      logic  0.27  6.57 Source u_inner.top_inst.ret_reg_DFFRE_Q_2_D_MUX2_LUT7_O_I1_MUX2_LUT6_O.O
+Info:    routing  0.00  6.57 Net u_inner.top_inst.ret_reg_DFFRE_Q_2_D_MUX2_LUT7_O_I1 (10,12) -> (10,12)
+Info:                          Sink u_inner.top_inst.ret_reg_DFFRE_Q_2_D_MUX2_LUT7_O.I1
+Info:                          Defined in:
+Info:                               /home/jero98772/tools/oss-cad-suite/lib/../share/yosys/gowin/cells_map.v:163.13-163.15
+Info:      logic  0.27  6.84 Source u_inner.top_inst.ret_reg_DFFRE_Q_2_D_MUX2_LUT7_O.O
+Info:    routing  0.55  7.38 Net u_inner.top_inst.ret_reg_DFFRE_Q_2_D (10,12) -> (9,14)
+Info:                          Sink u_inner.top_inst.ret_reg_DFFRE_Q_2_passthrough_lut$.I3
+Info:      logic  0.37  7.75 Source u_inner.top_inst.ret_reg_DFFRE_Q_2_passthrough_lut$.F
+Info:    routing  0.00  7.75 Net u_inner.top_inst.ret_reg_DFFRE_Q_2$conn$D (9,14) -> (9,14)
+Info:                          Sink u_inner.top_inst.ret_reg_DFFRE_Q_2.D
+Info:      setup  0.04  7.79 Source u_inner.top_inst.ret_reg_DFFRE_Q_2.D
+Info: 4.25 ns logic, 3.53 ns routing
+
+Info: Max frequency for clock 'u_inner.clk': 128.40 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 9 endpoint(s)
+Info:          + represents [1,9) endpoint(s)
+Info: [ 29249,  29617) |*+
+Info: [ 29617,  29985) |*+
+Info: [ 29985,  30353) |****+
+Info: [ 30353,  30721) |***************+
+Info: [ 30721,  31089) |*******************************************+
+Info: [ 31089,  31457) |************************************************************ 
+Info: [ 31457,  31825) |********************************+
+Info: [ 31825,  32193) |*****************+
+Info: [ 32193,  32561) |*******+
+Info: [ 32561,  32929) |************+
+Info: [ 32929,  33297) |**************+
+Info: [ 33297,  33665) |**********************+
+Info: [ 33665,  34033) |******************************* 
+Info: [ 34033,  34401) |***********************+
+Info: [ 34401,  34769) |******************+
+Info: [ 34769,  35137) |******************+
+Info: [ 35137,  35505) |*****************+
+Info: [ 35505,  35873) |***************** 
+Info: [ 35873,  36241) |************* 
+Info: [ 36241,  36609) |***+
+
+Info: Program finished normally.

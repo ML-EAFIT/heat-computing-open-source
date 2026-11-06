@@ -62,7 +62,14 @@ class SimSerial:
 
 
 class Board:
+    # Bulk programming keeps at most WINDOW commands un-acknowledged. The Tang
+    # Nano 20K's BL616 USB-UART bridge drops data on long bursts (measured: 140
+    # of 288 back-to-back 'H' acks returned, 288/288 with a 16..32 window, while
+    # the FPGA parser stayed in sync). The window costs ~nothing on the 9K.
+    WINDOW = 16
+
     def __init__(self, port, baud=115200, timeout=5.0, sim=False, transport=None):
+        self.pending = 0
         if transport is not None:       # any object with write / read / reset_input_buffer (web/server.py)
             self.s = transport
         elif sim:
@@ -70,21 +77,47 @@ class Board:
         else:
             import serial
             self.s = serial.Serial(port, baud, timeout=timeout)
+            self._drain()
         self.s.reset_input_buffer()
+
+    def _drain(self, quiet=0.3):
+        """Discard bytes left over from an aborted session. reset_input_buffer()
+        only clears the host side; the 20K's USB bridge can still hold ~1 kB."""
+        t, self.s.timeout = self.s.timeout, quiet
+        while self.s.read(4096):
+            pass
+        self.s.timeout = t
 
     def cmd(self, c, *args):
         self.s.write(bytes([ord(c)] + list(args)))
 
     def read(self, n):
-        b = self.s.read(n)
-        if len(b) != n:
-            raise IOError(f"timeout: wanted {n} bytes, got {len(b)}")
-        return b
+        # the timeout is per stall, not per call: long streams ('N', 'S') run
+        # for many seconds at 115200 baud (200 kB = 17 s) but never stall
+        b = bytearray()
+        while len(b) < n:
+            chunk = self.s.read(n - len(b))
+            if not chunk:
+                raise IOError(f"timeout: wanted {n} bytes, got {len(b)}")
+            b += chunk
+        return bytes(b)
 
     def ack(self):
         b = self.read(1)
         if b != b"K":
             raise IOError(f"expected 'K', got {b!r}")
+
+    def cmd_w(self, c, *args):
+        """Command answered by a single 'K', sent through the ack window."""
+        if self.pending >= self.WINDOW:
+            self.flush()
+        self.cmd(c, *args)
+        self.pending += 1
+
+    def flush(self):
+        while self.pending:
+            self.ack()
+            self.pending -= 1
 
     def ping(self):
         """-> (N, HIST_BITS, sparse) with sparse = dict(P, D, LW) or None (dense build)."""
@@ -103,19 +136,16 @@ class Board:
         lay = ev.sparse_layout(c, sp["P"])
         assert c["n"] <= n_board and lay["D"] <= sp["D"] and lay["R"] <= (1 << sp["LW"]), \
             f"case needs N={c['n']} D={lay['D']} rounds={lay['R']}, board has N={n_board} {sp}"
-        self.cmd("G", lay["R"] >> 8, lay["R"] & 0xFF)
-        nack = 1
+        self.cmd_w("G", lay["R"] >> 8, lay["R"] & 0xFF)
         for e in range(sp["P"]):
             for r, row in enumerate(lay["rounds"]):
                 i = row[e]
                 nb = lay["nbr"][i] if i is not None else []
-                self.cmd("M", e, r, int(i is not None), i or 0, (c["hq"][i] if i is not None else 0) & 0xFF)
+                self.cmd_w("M", e, r, int(i is not None), i or 0, (c["hq"][i] if i is not None else 0) & 0xFF)
                 for slot in range(sp["D"]):              # also clears stale slots
                     j, w = nb[slot] if slot < len(nb) else (0, 0)
-                    self.cmd("E", e, r, slot, j, w & 0xFF)
-                nack += 1 + sp["D"]
-        for _ in range(nack):
-            self.ack()
+                    self.cmd_w("E", e, r, slot, j, w & 0xFF)
+        self.flush()
         return lay
 
     def load(self, c, n_board):
@@ -127,14 +157,13 @@ class Board:
             for j in range(n_board):
                 v = c["Jq"][i][j] if (i < n and j < n) else 0
                 a = i * stride + j
-                self.cmd("W", a >> 8, a & 0xFF, v & 0xFF)
+                self.cmd_w("W", a >> 8, a & 0xFF, v & 0xFF)
         for i in range(n_board):
-            self.cmd("H", i, (c["hq"][i] if i < n else 0) & 0xFF)
+            self.cmd_w("H", i, (c["hq"][i] if i < n else 0) & 0xFF)
         order = c["order"] + list(range(n, n_board))      # unused nodes stay -1 (J=0, h=0)
         for k, i in enumerate(order):
-            self.cmd("O", k, i)
-        for _ in range(n_board * n_board + 2 * n_board):
-            self.ack()
+            self.cmd_w("O", k, i)
+        self.flush()
 
     def schedule(self, mode, b0, b1=0, delta=0, sps=1, table=None):
         if table is not None:

@@ -11,15 +11,39 @@
 #   make sparse SNOISE=1        SPARSE build with the 'Y' noise options (NOISE_CTL = 1)
 #   make pmode PMCASE=chain4    continuous p-mode board image -> build/pmode_<PMCASE>.fs
 #   make pmode-fit              p-mode fit study (M = 4, 8, 16 sites)
-#   make flash      program SRAM      (openFPGALoader -b tangnano9k)
+#   make flash      program SRAM      (openFPGALoader -b $(OFL_BOARD))
 #   make flash-fl   program the flash (persists over power cycles)
 # NOTE: nextpnr-gowin is no longer shipped in OSS CAD Suite; the Gowin
 # backend now lives in nextpnr-himbaechel (--vopt family=GW1N-9C).
 
+# BOARD=9k (default, Tang Nano 9K) or BOARD=20k (Tang Nano 20K, GW2AR-18C).
+# Generated wrapper sources (*_wrapper.py) always go to build/ (board-independent);
+# netlists, logs and bitstreams go to $(BUILD) (build/ for 9k, build_20k/ for 20k).
+BOARD   ?= 9k
+GEN     := build
+ifeq ($(BOARD),20k)
+DEVICE  := GW2AR-LV18QN88C8/I7
+FAMILY  := GW2A-18C
+BUILD   := build_20k
+CST     := tangnano20k.cst
+OFL_BOARD := tangnano20k
+IS20K   := 1
+else ifeq ($(BOARD),9k)
 DEVICE  := GW1NR-LV9QN88PC6/I5
 FAMILY  := GW1N-9C
 BUILD   := build
-TOPMOD  := top
+CST     := tangnano9k.cst
+OFL_BOARD := tangnano9k
+IS20K   :=
+else
+$(error BOARD must be 9k or 20k)
+endif
+# 20K keys are active high: tn20k_top.v inverts them around the real top.
+#   $(call WSRC,inner) : extra yosys read command   $(call WTOP,inner) : yosys top module
+WSRC = $(if $(IS20K),; read_verilog -defer $(if $(1),-DINNER=$(1)) tn20k_top.v)
+WFILE := $(if $(IS20K),tn20k_top.v)
+WTOP = $(if $(IS20K),tn20k_top,$(if $(1),$(1),top))
+TOPMOD  := $(call WTOP,)
 N       ?= 16
 HIST    ?= 12
 RTL := ../rtl/top.v ../rtl/pbit_array.v ../rtl/coupling_row.v ../rtl/weight_mac.v \
@@ -35,16 +59,16 @@ PY      ?= /usr/bin/python3
 all: $(BUILD)/top.fs
 
 $(BUILD):
-	mkdir -p $(BUILD)
+	mkdir -p $(BUILD) $(GEN)
 
-$(BUILD)/top.json: $(RTL) | $(BUILD)
-	yosys -q -l $(BUILD)/yosys.log -p "read_verilog -defer $(RTL); \
+$(BUILD)/top.json: $(RTL) $(WFILE) | $(BUILD)
+	yosys -q -l $(BUILD)/yosys.log -p "read_verilog -defer $(RTL) $(call WSRC,); \
 	  hierarchy -top $(TOPMOD) -chparam N $(N) -chparam HIST_BITS $(HIST); \
 	  synth_gowin -top $(TOPMOD) -json $@; tee -o $(BUILD)/yosys_stat.txt stat"
 
-$(BUILD)/pnr.json: $(BUILD)/top.json tangnano9k.cst
+$(BUILD)/pnr.json: $(BUILD)/top.json $(CST)
 	nextpnr-himbaechel --json $< --write $@ --device $(DEVICE) \
-	  --vopt family=$(FAMILY) --vopt cst=tangnano9k.cst \
+	  --vopt family=$(FAMILY) --vopt cst=$(CST) \
 	  --freq 27 --report $(BUILD)/pnr_report.json -l $(BUILD)/nextpnr.log
 
 $(BUILD)/top.fs: $(BUILD)/pnr.json
@@ -59,11 +83,11 @@ SWEEP_N ?= 8 16 32 64 128
 sweep: | $(BUILD)
 	@for n in $(SWEEP_N); do \
 	  $(PY) sweep_wrapper.py $$n; \
-	  yosys -q -l $(BUILD)/sweep_yosys_$$n.log -p "read_verilog -defer $(RTL) $(BUILD)/sweep_top_$$n.v; \
-	    hierarchy -top sweep_top; synth_gowin -top sweep_top -json $(BUILD)/sweep_$$n.json" \
+	  yosys -q -l $(BUILD)/sweep_yosys_$$n.log -p "read_verilog -defer $(RTL) $(GEN)/sweep_top_$$n.v $(call WSRC,sweep_top); \
+	    hierarchy -top $(call WTOP,sweep_top); synth_gowin -top $(call WTOP,sweep_top) -json $(BUILD)/sweep_$$n.json" \
 	    > /dev/null 2>&1 || { echo "N=$$n: synthesis FAILED (see $(BUILD)/sweep_yosys_$$n.log)"; continue; }; \
 	  nextpnr-himbaechel --json $(BUILD)/sweep_$$n.json --write $(BUILD)/sweep_pnr_$$n.json \
-	    --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=tangnano9k.cst --freq 27 \
+	    --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=$(CST) --freq 27 \
 	    -l $(BUILD)/sweep_$$n.log > /dev/null 2>&1 || { echo "N=$$n: place & route FAILED (see $(BUILD)/sweep_$$n.log)"; continue; }; \
 	  printf "N=%-4s %s | %s | %s | %s\n" $$n \
 	    "$$(grep -E 'LUT4:' $(BUILD)/sweep_$$n.log | head -1 | sed 's/Info: *//;s/  */ /g')" \
@@ -79,11 +103,11 @@ SD       ?= 12
 sweep-sparse: | $(BUILD)
 	@for n in $(SWEEP_SN); do for p in $(SWEEP_SP); do t=$${n}_p$${p}; \
 	  $(PY) sparse_wrapper.py $$n $$p $(SD) > /dev/null; \
-	  yosys -q -l $(BUILD)/sparse_yosys_$$t.log -p "read_verilog -defer $(RTL) $(BUILD)/sparse_top_$$t.v; \
-	    hierarchy -top sparse_top; synth_gowin -top sparse_top -json $(BUILD)/sparse_$$t.json" \
+	  yosys -q -l $(BUILD)/sparse_yosys_$$t.log -p "read_verilog -defer $(RTL) $(GEN)/sparse_top_$$t.v $(call WSRC,sparse_top); \
+	    hierarchy -top $(call WTOP,sparse_top); synth_gowin -top $(call WTOP,sparse_top) -json $(BUILD)/sparse_$$t.json" \
 	    > /dev/null 2>&1 || { echo "N=$$n P=$$p: synthesis FAILED (see $(BUILD)/sparse_yosys_$$t.log)"; continue; }; \
 	  nextpnr-himbaechel --json $(BUILD)/sparse_$$t.json --write $(BUILD)/sparse_pnr_$$t.json \
-	    --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=tangnano9k.cst --freq 27 \
+	    --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=$(CST) --freq 27 \
 	    -l $(BUILD)/sparse_$$t.log > /dev/null 2>&1 || { echo "N=$$n P=$$p: place & route FAILED (see $(BUILD)/sparse_$$t.log)"; continue; }; \
 	  printf "N=%-4s P=%s %s | %s | %s | %s\n" $$n $$p \
 	    "$$(grep -E 'LUT4:' $(BUILD)/sparse_$$t.log | head -1 | sed 's/Info: *//;s/  */ /g')" \
@@ -100,41 +124,41 @@ SNOISE ?= 0
 STAG  := $(SN)_p$(SP)_$(SCASE)$(if $(filter 1,$(SNOISE)),_noise)
 sparse: | $(BUILD)
 	$(PY) sparse_wrapper.py $(SN) $(SP) $(SD) $(SCASE) $(if $(filter 1,$(SNOISE)),noise)
-	yosys -q -l $(BUILD)/sparse_yosys_$(STAG).log -p "read_verilog -defer $(RTL) $(BUILD)/sparse_top_$(STAG).v; \
-	  hierarchy -top sparse_top; synth_gowin -top sparse_top -json $(BUILD)/sparse_$(STAG).json"
+	yosys -q -l $(BUILD)/sparse_yosys_$(STAG).log -p "read_verilog -defer $(RTL) $(GEN)/sparse_top_$(STAG).v $(call WSRC,sparse_top); \
+	  hierarchy -top $(call WTOP,sparse_top); synth_gowin -top $(call WTOP,sparse_top) -json $(BUILD)/sparse_$(STAG).json"
 	nextpnr-himbaechel --json $(BUILD)/sparse_$(STAG).json --write $(BUILD)/sparse_pnr_$(STAG).json \
-	  --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=tangnano9k.cst --freq 27 \
+	  --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=$(CST) --freq 27 \
 	  -l $(BUILD)/sparse_$(STAG).log > /dev/null 2>&1
 	gowin_pack -d $(FAMILY) -o $(BUILD)/sparse_$(STAG).fs $(BUILD)/sparse_pnr_$(STAG).json
 	@grep -E "LUT4:|ALU:| DFF:|BSRAM:" $(BUILD)/sparse_$(STAG).log | head -4
 	@grep -E "Max frequency for clock" $(BUILD)/sparse_$(STAG).log | tail -1
 
 flash-sparse:
-	openFPGALoader -b tangnano9k $(BUILD)/sparse_$(STAG).fs
+	openFPGALoader -b $(OFL_BOARD) $(BUILD)/sparse_$(STAG).fs
 
 # case build: top.v with the RAMs initialised from model/vectors/$(CASE)/
 case: | $(BUILD)
 	$(PY) case_wrapper.py $(CASE)
-	yosys -q -l $(BUILD)/case_yosys_$(CASE).log -p "read_verilog -defer $(RTL) $(BUILD)/case_top_$(CASE).v; \
-	  hierarchy -top case_top; synth_gowin -top case_top -json $(BUILD)/case_$(CASE).json"
+	yosys -q -l $(BUILD)/case_yosys_$(CASE).log -p "read_verilog -defer $(RTL) $(GEN)/case_top_$(CASE).v $(call WSRC,case_top); \
+	  hierarchy -top $(call WTOP,case_top); synth_gowin -top $(call WTOP,case_top) -json $(BUILD)/case_$(CASE).json"
 	nextpnr-himbaechel --json $(BUILD)/case_$(CASE).json --write $(BUILD)/case_pnr_$(CASE).json \
-	  --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=tangnano9k.cst --freq 27 \
+	  --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=$(CST) --freq 27 \
 	  -l $(BUILD)/case_$(CASE).log > /dev/null 2>&1
 	gowin_pack -d $(FAMILY) -o $(BUILD)/case_$(CASE).fs $(BUILD)/case_pnr_$(CASE).json
 	@grep -E "LUT4:|ALU:| DFF:|BSRAM:" $(BUILD)/case_$(CASE).log | head -4
 	@grep -E "Max frequency for clock" $(BUILD)/case_$(CASE).log | tail -1
 
 flash-case:
-	openFPGALoader -b tangnano9k $(BUILD)/case_$(CASE).fs
+	openFPGALoader -b $(OFL_BOARD) $(BUILD)/case_$(CASE).fs
 
 # continuous p-modes (pmode_top.v): power-on case, run button toggles stepping, LEDs = sign(x)
 PMCASE ?= chain4
 pmode: | $(BUILD)
 	$(PY) pmode_wrapper.py $(PMCASE)
-	yosys -q -l $(BUILD)/pmode_yosys_$(PMCASE).log -p "read_verilog -defer $(PMODE_RTL) $(BUILD)/pmode_top_$(PMCASE).v; \
-	  hierarchy -top pmode_wrap; synth_gowin -top pmode_wrap -json $(BUILD)/pmode_$(PMCASE).json"
+	yosys -q -l $(BUILD)/pmode_yosys_$(PMCASE).log -p "read_verilog -defer $(PMODE_RTL) $(GEN)/pmode_top_$(PMCASE).v $(call WSRC,pmode_wrap); \
+	  hierarchy -top $(call WTOP,pmode_wrap); synth_gowin -top $(call WTOP,pmode_wrap) -json $(BUILD)/pmode_$(PMCASE).json"
 	nextpnr-himbaechel --json $(BUILD)/pmode_$(PMCASE).json --write $(BUILD)/pmode_pnr_$(PMCASE).json \
-	  --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=tangnano9k.cst --freq 27 \
+	  --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=$(CST) --freq 27 \
 	  -l $(BUILD)/pmode_$(PMCASE).log > /dev/null 2>&1
 	gowin_pack -d $(FAMILY) -o $(BUILD)/pmode_$(PMCASE).fs $(BUILD)/pmode_pnr_$(PMCASE).json
 	@grep -E "LUT4:|ALU:| DFF:|BSRAM:|MULT" $(BUILD)/pmode_$(PMCASE).log | head -8
@@ -144,11 +168,11 @@ PM_FIT ?= 4 8 16
 pmode-fit: | $(BUILD)
 	@for m in $(PM_FIT); do \
 	  $(PY) pmode_wrapper.py fit $$m > /dev/null; \
-	  yosys -q -l $(BUILD)/pmode_yosys_fit$$m.log -p "read_verilog -defer $(PMODE_RTL) $(BUILD)/pmode_top_fit$$m.v; \
-	    hierarchy -top pmode_wrap; synth_gowin -top pmode_wrap -json $(BUILD)/pmode_fit$$m.json" \
+	  yosys -q -l $(BUILD)/pmode_yosys_fit$$m.log -p "read_verilog -defer $(PMODE_RTL) $(GEN)/pmode_top_fit$$m.v $(call WSRC,pmode_wrap); \
+	    hierarchy -top $(call WTOP,pmode_wrap); synth_gowin -top $(call WTOP,pmode_wrap) -json $(BUILD)/pmode_fit$$m.json" \
 	    > /dev/null 2>&1 || { echo "M=$$m: synthesis FAILED"; continue; }; \
 	  nextpnr-himbaechel --json $(BUILD)/pmode_fit$$m.json --write $(BUILD)/pmode_pnr_fit$$m.json \
-	    --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=tangnano9k.cst --freq 27 \
+	    --device $(DEVICE) --vopt family=$(FAMILY) --vopt cst=$(CST) --freq 27 \
 	    -l $(BUILD)/pmode_fit$$m.log > /dev/null 2>&1 || { echo "M=$$m: place & route FAILED"; continue; }; \
 	  printf "M=%-3s %s | %s | %s | %s\n" $$m \
 	    "$$(grep -E 'LUT4:' $(BUILD)/pmode_fit$$m.log | head -1 | sed 's/Info: *//;s/  */ /g')" \
@@ -158,13 +182,13 @@ pmode-fit: | $(BUILD)
 	done
 
 flash-pmode:
-	openFPGALoader -b tangnano9k $(BUILD)/pmode_$(PMCASE).fs
+	openFPGALoader -b $(OFL_BOARD) $(BUILD)/pmode_$(PMCASE).fs
 
 flash: $(BUILD)/top.fs
-	openFPGALoader -b tangnano9k $<
+	openFPGALoader -b $(OFL_BOARD) $<
 
 flash-fl: $(BUILD)/top.fs
-	openFPGALoader -b tangnano9k -f $<
+	openFPGALoader -b $(OFL_BOARD) -f $<
 
 clean:
 	rm -rf $(BUILD)

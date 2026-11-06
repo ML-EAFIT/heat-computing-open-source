@@ -1,0 +1,39 @@
+
+20. Printing statistics.
+
+=== tn20k_top ===
+
+        +----------Local Count, excluding submodules.
+        | 
+     3697 wires
+     6950 wire bits
+     3697 public wires
+     6950 public wire bits
+        6 ports
+       11 port bits
+     4368 cells
+       14   $scopeinfo
+      921   ALU
+      117   DFF
+      184   DFFE
+       59   DFFR
+      875   DFFRE
+        5   DFFS
+       44   DFFSE
+        8   DPB
+        1   DPX9B
+        1   GND
+        4   IBUF
+      214   LUT1
+      248   LUT2
+      366   LUT3
+      917   LUT4
+      289   MUX2_LUT5
+       61   MUX2_LUT6
+       20   MUX2_LUT7
+        4   MUX2_LUT8
+        7   OBUF
+        7   RAM16SDP4
+        1   SPX9
+        1   VCC
+
