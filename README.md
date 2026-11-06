@@ -158,6 +158,25 @@ python3 host.py --sim solve --problem ../examples/qubo_small.json              #
 
 `nextpnr-gowin`, named in the original request, is not in current OSS CAD Suite; `nextpnr-himbaechel` is its replacement. Bitstream generation was run. **Flashing and `host.py` were not run, because no board was attached.** After power-up the board works stand-alone: the run button (pin 3) anneals the built-in 16-node Max-Cut instance and shows spins on the LEDs.
 
+## References (`data/`)
+
+The papers this reconstruction is based on. Claims in `docs/` cite them by file and page; `docs/00_inventory.md` summarises each one.
+
+1. **[DTM]** A. Jelinčič, O. Lockwood, A. Garlapati, P. Schillinger, I. L. Chuang, G. Verdon, T. McCourt. *An efficient probabilistic hardware architecture for diffusion-like models.* Extropic Corp. / MIT, arXiv:2510.23972v2 (2025).  
+   [`data/An efficient probabilistic hardware architecture for diffusion-like models - 2510.23972v2.pdf`](data/An%20efficient%20probabilistic%20hardware%20architecture%20for%20diffusion-like%20models%20-%202510.23972v2.pdf) — Primary source for the p-bit cell, the bias network, the RNG, chromatic Gibbs and the denoising chain (`rtl/pbit.v`, `noise_bank.v`, `denoise_demo.v`).
+2. **[SDP]** G. Verdon, L. Tyrpak, O. Lockwood, S. Morton, A. Neagoe, A. Sugolov, I. MacCormack, M. Amico. *A Framework for Stochastic Differentiable Programming.* Extropic Corp., arXiv:2608.01612v2 (2026).  
+   [`data/A Framework for Stochastic Differentiable Programming - 2608.01612v2.pdf`](data/A%20Framework%20for%20Stochastic%20Differentiable%20Programming%20-%202608.01612v2.pdf) — The probabilistic-gate vocabulary (PNOT, PSWAP, PISING…), the XTR-0 / Z1 platforms and X0 p-bit figures (`docs/02`, `docs/05`, `rtl/pgates.v`).
+3. **[Blueprint]** O. Lockwood, J. Béjanin, J. Bus, C. Chamberland, P. Huembeli, F. Schäfer, G. Verdon. *A Blueprint for Equilibrium-Based Differentiable Continuous-Variable Thermodynamic Computing.* Extropic Corp., arXiv:2607.16183v2 (2026).  
+   [`data/A Blueprint for Equilibrium-Based Differentiable Continuous-Variable Thermodynamic Computing - 2607.16183v2.pdf`](data/A%20Blueprint%20for%20Equilibrium-Based%20Differentiable%20Continuous-Variable%20Thermodynamic%20Computing%20-%202607.16183v2.pdf) — Continuous variables and Langevin dynamics, the basis of the p-mode cells (`rtl/pmode_array.v`, `model/pmode.py`).
+4. **[Factorization]** J. D. Vélez. *Diffusion-Driven and Divisor-Sensitive Integer Factorization: Exact Kernels, Certified Collision Detection, Thermodynamic Interfaces and an Industrial Evaluation Dossier.* Research monograph, 16 Oct 2026.  
+   [`data/Tratado_Factorizacion_Extropic_Overleaf.pdf`](data/Tratado_Factorizacion_Extropic_Overleaf.pdf) — §21.3 multiplier-as-constraint-energy, implemented by `tools/make_multiplier.py` and `examples/factor*.json` (run on the board, `docs/09`). §4–10 and §20.6 cover diffusion order-finding. Its N = 299 and 1 022 117 examples were reproduced in software but are not in RTL.
+5. **[TLA]** M. Aifer, K. Donatella, M. Hunter Gordon, S. Duffield, T. Ahle, D. Simpson, G. Crooks, P. J. Coles. *Thermodynamic Linear Algebra.* Normal Computing, arXiv:2308.05660v2 (2024).  
+   [`data/Thermodynamic_Linear_Algebra.pdf`](data/Thermodynamic_Linear_Algebra.pdf) — Background: linear algebra by sampling a Gaussian (Langevin) equilibrium, the continuous-variable use case.
+6. **[TNGD]** K. Donatella, M. Aifer, S. Duffield, D. Melanson, G. Crooks, P. J. Coles. *Thermodynamic Natural Gradient Descent.* Normal Computing, arXiv:2405.13817v1 (2024).  
+   [`data/Thermodynamic Natural_Gradient_Descent.pdf`](data/Thermodynamic%20Natural_Gradient_Descent.pdf) — Background: training with a thermodynamic co-processor in the loop. Related to the chip-as-sampler learning loop (`model/train.py`).
+7. **[Course]** *Thermodynamic Computing for Artificial Intelligence: Physics, Probabilistic Hardware, Algorithms and Thermodynamic Language Models.* Master's course syllabus, v1.0, Oct 2026.  
+   [`data/thermodynamic_computing_course-1.pdf`](data/thermodynamic_computing_course-1.pdf) — Background and bibliography for the whole field.
+
 ## Open questions — where the sources were insufficient
 
 1. **Transistor-level RNG.** DTM App. K says "a digitizing comparator fed by a source of Gaussian noise" and delegates the noise circuit to its Ref. [16], which is not in `data/`. The noise-source schematic, bias-control circuit and comparator design are [NOT IN SOURCES].
