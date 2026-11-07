@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Zoomable wiring map of a p-bit thermodynamic sampler on a Tang Nano 9K FPGA: from the host PC down to block RAM cells and single transistors.">
+<meta name="theme-color" content="#141c25">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Thermodynamic Computer Map">
+<meta property="og:description" content="Zoomable wiring map of a p-bit thermodynamic sampler on a Tang Nano 9K FPGA: from the host PC down to block RAM cells and single transistors.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<title>Thermodynamic Computer Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/map.css"></head><body>
+<div class="app">
+<header class="bar">
+ <div class="brand"><h1>Thermodynamic Computer Map</h1><span>Tang Nano 9K · p-bit sampler · host PC to transistor</span></div>
+ <nav class="crumbs" id="crumbs" aria-label="Zoom path"></nav>
+ <div class="tools">
+  <label class="sr" for="jump">Jump to a component</label>
+  <select id="jump"><option value="">Jump to…</option><option value="top">Board top (top.v)</option><option value="cmdfsm">Command FSM</option><option value="dense">Dense engine</option><option value="pbit">p-bit decision</option><option value="sigrom">Sigmoid ROM</option><option value="lfsr0">LFSR noise lane 0</option><option value="sparse">Sparse lanes</option><option value="temper">Parallel tempering</option><option value="readout">Readout counters</option><option value="pmode">Langevin p-modes</option><option value="wmac">weight_mac</option><option value="carry">Carry chain</option><option value="lut4">LUT4</option><option value="dff">D flip-flop</option><option value="bsram">Block SRAM</option><option value="sram6t">6T SRAM cell</option><option value="inverter">CMOS inverter</option><option value="nmos_x">NMOS transistor</option></select>
+  <a class="navlink" href="reference.html" title="Full reference page: tables, findings, signal dictionary">Reference</a>
+  <button class="ic" id="zin" aria-label="Zoom in" title="Zoom in (+)">+</button>
+  <button class="ic" id="zout" aria-label="Zoom out" title="Zoom out (−)">−</button>
+  <button id="up" title="Up one level (Esc)">Up</button>
+  <button id="home" title="Whole map (0)">Whole map</button>
+  <button id="ptog" class="ptog">Info</button>
+ </div>
+</header>
+<div class="main">
+ <ol class="ladder" id="ladder" aria-label="Abstraction layers"><li><button data-l="6" title="L6 · host + board">L6<small>host</small></button></li><li><button data-l="5" title="L5 · bitstream top">L5<small>top</small></button></li><li><button data-l="4" title="L4 · block / engine">L4<small>block</small></button></li><li><button data-l="3" title="L3 · mechanism">L3<small>mech</small></button></li><li><button data-l="2" title="L2 · datapath element">L2<small>data</small></button></li><li><button data-l="1" title="L1 · FPGA primitive">L1<small>prim</small></button></li><li><button data-l="0" title="L0 · transistor">L0<small>trans</small></button></li></ol>
+ <div class="canvas" id="canvas">
+  <svg id="zm" class="zm dia" role="img" aria-label="Zoomable schematic of the thermodynamic computer, from the host PC down to single transistors" xmlns="http://www.w3.org/2000/svg">
+   <defs>
+    <marker id="z-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="ah"/></marker>
+    <marker id="z-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="ahm"/></marker>
+    <marker id="z-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="ahn"/></marker>
+    <marker id="z-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="ahc"/></marker>
+   </defs>
+   <g id="stage"></g>
+   <g id="ovl" pointer-events="none"><rect id="hov" width="0" height="0"/><text id="hovt"></text></g>
+  </svg>
+  <div class="hint" id="hint">Scroll or pinch to zoom · drag to pan · click a block to dive in · Esc goes up</div>
+  <div class="scale" id="scale"></div>
+ </div>
+ <aside class="panel" id="panel" aria-label="Component details"><div id="pinfo"></div></aside>
+</div>
+</div>
+<script src="assets/views.js"></script>
+<script src="assets/map.js"></script>
+</body></html>

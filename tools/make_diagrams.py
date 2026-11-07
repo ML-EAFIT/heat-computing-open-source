@@ -27,13 +27,15 @@ ROOT = os.path.join(HERE, "..")
 sys.path.insert(0, os.path.join(ROOT, "model"))
 import pgates as pg      # noqa: E402
 
-STYLE = """<style>
-svg{--bg:#faf9f6;--ink:#1d2329;--mut:#66707a;--line:#8f99a3;--warm:#c4501d;--warmf:#fbe5d8;
---cool:#16708a;--coolf:#dbeef3;--ok:#2c8a4b;--okf:#ddf0e3;--bad:#b9b5ac;--badf:#efede8;--panel:#f1efea}
-@media (prefers-color-scheme:dark){svg{--bg:#14181c;--ink:#e5e8eb;--mut:#9aa4ae;--line:#64707b;
---warm:#f08a5c;--warmf:#3b2418;--cool:#5cc1d9;--coolf:#12303a;--ok:#6dca8b;--okf:#163322;--bad:#6d6a64;
---badf:#24272a;--panel:#1b2025}}
-</style>"""
+# Palettes for the standalone SVGs. They are written as literal colours (no CSS
+# custom properties) because many viewers (librsvg, Inkscape, PDF converters)
+# do not support var() and would paint everything black.
+LIGHT = dict(bg="#faf9f6", ink="#1d2329", mut="#66707a", line="#8f99a3", warm="#c4501d",
+             warmf="#fbe5d8", cool="#16708a", coolf="#dbeef3", ok="#2c8a4b", okf="#ddf0e3",
+             bad="#b9b5ac", badf="#efede8", panel="#f1efea")
+DARK = dict(bg="#14181c", ink="#e5e8eb", mut="#9aa4ae", line="#64707b", warm="#f08a5c",
+            warmf="#3b2418", cool="#5cc1d9", coolf="#12303a", ok="#6dca8b", okf="#163322",
+            bad="#6d6a64", badf="#24272a", panel="#1b2025")
 
 # class -> presentation (works with the page CSS of explainer.html too)
 CSS_CLASSES = """
@@ -57,6 +59,18 @@ CSS_CLASSES = """
 .dash{stroke-dasharray:4 4}
 .fw{fill:var(--warm)} .fc{fill:var(--cool)} .fk{fill:var(--ink)} .fl{fill:var(--line)}
 """
+
+
+def resolve(css, pal):
+    """Replace every var(--name) in css with the literal colour pal[name]."""
+    for k in sorted(pal, key=len, reverse=True):
+        css = css.replace(f"var(--{k})", pal[k])
+    return css
+
+
+def standalone_style():
+    return ("<style>" + resolve(CSS_CLASSES, LIGHT)
+            + "@media (prefers-color-scheme:dark){" + resolve(CSS_CLASSES, DARK) + "}\n</style>")
 
 
 class Svg:
@@ -112,9 +126,10 @@ class Svg:
         self.add(f'<path d="{d}" class="{cls}"/>')
 
     def render(self, style=True):
-        head = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {self.w} {self.h}" role="img" '
+        size = f'width="{self.w}" height="{self.h}" ' if style else ""
+        head = (f'<svg xmlns="http://www.w3.org/2000/svg" {size}viewBox="0 0 {self.w} {self.h}" role="img" '
                 f'aria-label="{self.label}" font-family="IBM Plex Sans, system-ui, sans-serif">')
-        st = (STYLE.replace("</style>", CSS_CLASSES + "</style>")) if style else ""
+        st = standalone_style() if style else ""
         bg = f'<rect width="{self.w}" height="{self.h}" class="bg"/>'
         return "\n".join([head, st, bg] + self.parts + ["</svg>"])
 

@@ -1,30 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 500" role="img" aria-label="p-gates NOT, AND, OR and XOR as small Ising graphs with their biases, couplings and exact truth-table probabilities" font-family="IBM Plex Sans, system-ui, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="500" viewBox="0 0 1260 500" role="img" aria-label="p-gates NOT, AND, OR and XOR as small Ising graphs with their biases, couplings and exact truth-table probabilities" font-family="IBM Plex Sans, system-ui, sans-serif">
 <style>
-svg{--bg:#faf9f6;--ink:#1d2329;--mut:#66707a;--line:#8f99a3;--warm:#c4501d;--warmf:#fbe5d8;
---cool:#16708a;--coolf:#dbeef3;--ok:#2c8a4b;--okf:#ddf0e3;--bad:#b9b5ac;--badf:#efede8;--panel:#f1efea}
-@media (prefers-color-scheme:dark){svg{--bg:#14181c;--ink:#e5e8eb;--mut:#9aa4ae;--line:#64707b;
---warm:#f08a5c;--warmf:#3b2418;--cool:#5cc1d9;--coolf:#12303a;--ok:#6dca8b;--okf:#163322;--bad:#6d6a64;
---badf:#24272a;--panel:#1b2025}}
-
-.bg{fill:var(--bg)} .panel{fill:var(--panel)}
-.t{fill:var(--ink);font:13px 'IBM Plex Sans',system-ui,sans-serif}
-.ts{fill:var(--mut);font:11px 'IBM Plex Sans',system-ui,sans-serif}
-.tm{fill:var(--ink);font:11.5px 'IBM Plex Mono',ui-monospace,monospace}
-.tms{fill:var(--mut);font:10.5px 'IBM Plex Mono',ui-monospace,monospace}
-.th{fill:var(--ink);font:600 15px 'IBM Plex Sans',system-ui,sans-serif}
-.tb{fill:var(--ink);font:600 13px 'IBM Plex Sans',system-ui,sans-serif}
-.tw{fill:var(--warm)} .tc{fill:var(--cool)} .tok{fill:var(--ok)}
-.warm{fill:var(--warmf);stroke:var(--warm);stroke-width:1.4}
-.cool{fill:var(--coolf);stroke:var(--cool);stroke-width:1.4}
-.ok{fill:var(--okf);stroke:var(--ok);stroke-width:1.4}
-.bad{fill:var(--badf);stroke:var(--bad);stroke-width:1.2}
-.plain{fill:var(--bg);stroke:var(--line);stroke-width:1.2}
-.ln{stroke:var(--line);stroke-width:1.4;fill:none}
-.lw{stroke:var(--warm);stroke-width:1.6;fill:none}
-.lc{stroke:var(--cool);stroke-width:1.6;fill:none}
-.lk{stroke:var(--ink);stroke-width:1.6;fill:none}
+.bg{fill:#faf9f6} .panel{fill:#f1efea}
+.t{fill:#1d2329;font:13px 'IBM Plex Sans',system-ui,sans-serif}
+.ts{fill:#66707a;font:11px 'IBM Plex Sans',system-ui,sans-serif}
+.tm{fill:#1d2329;font:11.5px 'IBM Plex Mono',ui-monospace,monospace}
+.tms{fill:#66707a;font:10.5px 'IBM Plex Mono',ui-monospace,monospace}
+.th{fill:#1d2329;font:600 15px 'IBM Plex Sans',system-ui,sans-serif}
+.tb{fill:#1d2329;font:600 13px 'IBM Plex Sans',system-ui,sans-serif}
+.tw{fill:#c4501d} .tc{fill:#16708a} .tok{fill:#2c8a4b}
+.warm{fill:#fbe5d8;stroke:#c4501d;stroke-width:1.4}
+.cool{fill:#dbeef3;stroke:#16708a;stroke-width:1.4}
+.ok{fill:#ddf0e3;stroke:#2c8a4b;stroke-width:1.4}
+.bad{fill:#efede8;stroke:#b9b5ac;stroke-width:1.2}
+.plain{fill:#faf9f6;stroke:#8f99a3;stroke-width:1.2}
+.ln{stroke:#8f99a3;stroke-width:1.4;fill:none}
+.lw{stroke:#c4501d;stroke-width:1.6;fill:none}
+.lc{stroke:#16708a;stroke-width:1.6;fill:none}
+.lk{stroke:#1d2329;stroke-width:1.6;fill:none}
 .dash{stroke-dasharray:4 4}
-.fw{fill:var(--warm)} .fc{fill:var(--cool)} .fk{fill:var(--ink)} .fl{fill:var(--line)}
+.fw{fill:#c4501d} .fc{fill:#16708a} .fk{fill:#1d2329} .fl{fill:#8f99a3}
+@media (prefers-color-scheme:dark){
+.bg{fill:#14181c} .panel{fill:#1b2025}
+.t{fill:#e5e8eb;font:13px 'IBM Plex Sans',system-ui,sans-serif}
+.ts{fill:#9aa4ae;font:11px 'IBM Plex Sans',system-ui,sans-serif}
+.tm{fill:#e5e8eb;font:11.5px 'IBM Plex Mono',ui-monospace,monospace}
+.tms{fill:#9aa4ae;font:10.5px 'IBM Plex Mono',ui-monospace,monospace}
+.th{fill:#e5e8eb;font:600 15px 'IBM Plex Sans',system-ui,sans-serif}
+.tb{fill:#e5e8eb;font:600 13px 'IBM Plex Sans',system-ui,sans-serif}
+.tw{fill:#f08a5c} .tc{fill:#5cc1d9} .tok{fill:#6dca8b}
+.warm{fill:#3b2418;stroke:#f08a5c;stroke-width:1.4}
+.cool{fill:#12303a;stroke:#5cc1d9;stroke-width:1.4}
+.ok{fill:#163322;stroke:#6dca8b;stroke-width:1.4}
+.bad{fill:#24272a;stroke:#6d6a64;stroke-width:1.2}
+.plain{fill:#14181c;stroke:#64707b;stroke-width:1.2}
+.ln{stroke:#64707b;stroke-width:1.4;fill:none}
+.lw{stroke:#f08a5c;stroke-width:1.6;fill:none}
+.lc{stroke:#5cc1d9;stroke-width:1.6;fill:none}
+.lk{stroke:#e5e8eb;stroke-width:1.6;fill:none}
+.dash{stroke-dasharray:4 4}
+.fw{fill:#f08a5c} .fc{fill:#5cc1d9} .fk{fill:#e5e8eb} .fl{fill:#64707b}
+}
 </style>
 <rect width="1260" height="500" class="bg"/>
 <text x="24.0" y="32.0" class="th" text-anchor="start" >p-gates: Boolean gates as energy landscapes</text>
